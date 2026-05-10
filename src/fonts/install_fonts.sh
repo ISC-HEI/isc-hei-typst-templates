@@ -8,6 +8,7 @@ VU="${GREEN}✔${NC}"
 echo -e "Downloading and installing fonts locally..."
 
 fonts_dir="${HOME}/.local/share/fonts"
+fontconfig_dir="${HOME}/.config/fontconfig/conf.d"
 
 wget https://files.isc-vs.ch/typst/modern-isc-fonts.tar.gz
 
@@ -43,6 +44,23 @@ if [ $? -ne 0 ]; then
 else
     echo -e "Copied .otf files $VU"
 fi
+
+# Ensure Linux can resolve "Source Sans Pro" to "Source Sans 3".
+# The Typst template still references "Source Sans Pro" for web compatibility.
+mkdir -p "${fontconfig_dir}"
+cat > "${fontconfig_dir}/99-source-sans-pro-alias.conf" <<'EOF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <alias>
+        <family>Source Sans Pro</family>
+        <prefer>
+            <family>Source Sans 3</family>
+        </prefer>
+    </alias>
+</fontconfig>
+EOF
+echo -e "Installed font alias Source Sans Pro -> Source Sans 3 $VU"
 
 echo -e "Rebuilding cache with fc-cache -f $VU"
 fc-cache -f

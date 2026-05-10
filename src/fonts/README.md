@@ -11,3 +11,6 @@ source install_fonts.sh
 ```
 
 from within the `fonts` directory and voilà!
+
+The installer also creates a local fontconfig alias so Linux maps `Source Sans Pro` to `Source Sans 3`.
+This keeps Typst/web template naming compatibility while avoiding missing-font warnings on Linux.
