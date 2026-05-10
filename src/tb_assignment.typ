@@ -20,7 +20,8 @@
 #let tb-mandator = hes()
 #let tb-location = school("MOVE, Tokyo University")
 #let tb-confidential = false
-#let tb-title = [A hardware-software co-design approach for embedded systems]
+#let tb-title = [A hardware-software co-design approach for embedded systems] // Must be concise and descriptive, ideally not exceeding 10 words.
+#let tb-subtitle = [An exploration of the intersection between science and engineering]  // Optional, use none if not needed
 
 #let tb-description = [
   In this work, we propose a novel approach for designing embedded systems that integrates hardware and software components. The approach is based on a co-design methodology that allows for the simultaneous development of hardware and software components, leading to improved performance and reduced development time.
