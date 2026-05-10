@@ -1,19 +1,19 @@
 #import "@preview/isc-hei-tb-assignment:0.7.1" : *
 
-#let language = "fr"
+#let language = "fr" // Document language (fr or en), choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name
-#let tb-id = "ISC-ID-26-1" // TB identifier, given by the secretariat (format: ISC-ID-XX-Y, where XX last two digits of the academic year, and Y is a sequential number)
+#let tb-id = "ISC-ID-26-1" // TB identifier, please ask the secretariat for the proper number (format: ISC-ID-XX-Y, where XX last two digits of the academic year, and Y is a sequential number)
 #let tb-supervisor = "Prof. Dr L. Lettry" // Responsible supervisor
 #let tb-co-supervisor = none // Co-superviseur·e (none = tiret)
-#let tb-study-program = "ISC"
-#let tb-academic-year = "2025-26"
+#let tb-study-program = "ISC" // Do not change
+#let tb-academic-year = "2025-26" // Update accordingly
 
 // Expert·e, with address and email address (use \ for new lines)
 #let tb-expert = [
   Dr John Carmack \
   Rue de la Paix 24 \
   CH - 1211 Genève \
-  john.carmack\@example.com
+  #link("mailto:john.carmack@example.com")
 ]
 
 // Mandator and location of where the work will be done (either hes(), industry("Acme Corp"), school("EPFL"))
