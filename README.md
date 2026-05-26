@@ -73,10 +73,6 @@ source install_fonts.sh
 
 from within the `fonts` directory.
 
-## PDF images inclusion
-
-Unfortunately, `typst` does not support PDF file types inclusion at the time of writing this documentation. As a temporary workaround, PDF files can be converted to SVG via `pdf2svg`.
-
 # Usage
 
 When used locally, creating a PDF is straightforward with the command

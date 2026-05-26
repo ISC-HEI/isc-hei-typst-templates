@@ -1,6 +1,6 @@
 #import "@preview/isc-hei-tb-assignment:0.7.2" : *
 
-#let language = "fr" // Document language (fr or en), choose to your liking
+#let language = "en" // Document language (fr or en), choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name
 #let tb-id = "ISC-ID-26-1" // TB identifier, please ask the secretariat for the proper number (format: ISC-ID-XX-Y, where XX last two digits of the academic year, and Y is a sequential number)
 #let tb-supervisor = "Prof. Dr L. Lettry" // Responsible supervisor
@@ -73,16 +73,16 @@ En cas d'indisponibilité, nous utiliserons un ancien modèle que nous avons dé
 // Extra information (none = empty section)
 #let tb-extra-info = []
 
+/****
+ * DO NOT EDIT BELOW THIS LINE
+ * (unless you know what you are doing)
+ ****/
 // Let's get started with the document!
 #show: project.with(
   doc-type: "tb-assignment",
   language: language,
-  title: "Donnée du travail de bachelor", // Bachelor thesis description in english
   authors: tb-student,
-  date: doc-date, 
-  revision: version,
-  logo: none,
-  fancy-line: false,
+  date: doc-date,
 )
 
 #tb-assignment-page(

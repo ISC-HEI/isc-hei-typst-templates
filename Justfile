@@ -27,7 +27,7 @@ install-symblinks:
   ./scripts/dev_link "@preview" "tb-assignment"
 
 # compile all src/ documents in parallel
-compile_all:
+compile-all:
   typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
   typst compile src/report.typ examples/report.pdf
   typst compile src/document.typ examples/document.pdf
@@ -60,7 +60,7 @@ pack_distro_preview : (pack_distro "@preview")
 uninstall: (remove "@preview")
 
 # pack then run all test scripts
-test_all: pack_distro_preview
+test-all: pack_distro_preview
   ./scripts/test-thesis.sh
   ./scripts/test-report.sh
   ./scripts/test-document.sh
@@ -72,7 +72,7 @@ bump-version mode='patch':
   ./scripts/bump-version "{{mode}}"
 
 # generate thumbnails from examples
-generate_thumbs:
+generate-thumbs:
   convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png
   convert -density 150 'examples/report.pdf[0]' -flatten report_thumb.png
   convert -density 150 'examples/document.pdf[0]' -flatten document_thumb.png

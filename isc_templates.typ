@@ -341,7 +341,7 @@
 //////////////////////////
 // TB assignment sheet
 //////////////////////////
-#import "lib/pages/cover_assignment.typ": tb-assignment-page, hes, industry, school, project-types
+#import "lib/pages/cover_assignment.typ": tb-assignment-page, hes, industry, school, project-types, get-document-title
 
 //////////////////////////
 // Source code inclusion
@@ -359,6 +359,58 @@
   numbers-width: -1em,
   gutter: 1.2em,
 )
+
+// Warning page rendered instead of the full document when ISC fonts are absent.
+// Deliberately uses only Libertinus Serif (always bundled in Typst) so the page
+// itself renders correctly even without the custom fonts.
+#let _missing-fonts-page() = {
+  set page(paper: "a4", margin: (x: 3cm, y: 3cm), header: none, footer: none, numbering: none)
+  set text(font: ("Libertinus Serif",), size: 11pt, fill: black)
+
+  let accent = rgb("#E20571")
+
+  align(center + horizon,
+    rect(
+      width: 100%,
+      stroke: (left: 5pt + accent, rest: 0.8pt + luma(200)),
+      radius: 4pt,
+      inset: (x: 2em, y: 1.8em),
+      {
+        align(center,
+          text(size: 1.8em, weight: "bold", fill: accent)[⚠ ISC Template — Fonts Not Installed]
+        )
+        v(1em)
+        line(length: 100%, stroke: 0.5pt + luma(220))
+        v(1em)
+
+        [The fonts required by this template are *not installed* on this system.
+        This document cannot be rendered with the correct typography.]
+        v(1.2em)
+
+        [*Install the fonts by running this command once from the repository root:*]
+        v(0.5em)
+        block(width: 100%, fill: luma(245), inset: (x: 1em, y: 0.7em), radius: 3pt,
+          align(left, raw(lang: "sh", "source src/fonts/install_fonts.sh"))
+        )
+        v(1.2em)
+
+        [*Required fonts (all installed by the script above):*]
+        v(0.3em)
+        list(
+          [*Source Sans Pro* / Source Sans 3 — body text],
+          [*Fira Code* — source code listings],
+          [*Inria Sans* — headings],
+        )
+        v(1.2em)
+
+        text(style: "italic", size: 0.9em, fill: luma(100))[
+          After installing the fonts, recompile the document.
+          See #raw("README.md") or #raw("CLAUDE.md") for detailed instructions.
+        ]
+      }
+    )
+  )
+}
 
 /*********************************
  ** The template itself
@@ -431,6 +483,10 @@
   inc.global-keywords.update(keywords)
   inc.global-language.update(language)
 
+  // For tb-assignment: title is always i18n-derived, logo is always suppressed
+  let title = if doc-type == "tb-assignment" { get-document-title(language) } else { title }
+  let logo  = if doc-type == "tb-assignment" { none } else { logo }
+
   // Normalize show-toc: true -> 2, false -> 0, int -> int
   let toc-depth = if doc-type == "tb-assignment" or doc-type == "exec-summary" { 0 } else if show-toc == false { 0 } else if show-toc == true { 2 } else { int(show-toc) }
   inc.show-toc-enabled.update(toc-depth > 0)
@@ -447,7 +503,19 @@
   set document(author: authors, title: title, date: date, keywords: keywords, description: "Using ISC template ver. " + version)
 
   set par(justify: true)
-  
+
+  // Detect whether the ISC fonts are available using glyph-metric comparison.
+  // Source Sans Pro/3 (sans-serif) has markedly different capital widths from
+  // Libertinus Serif (always bundled in Typst). Equal widths means both ISC font
+  // names fell back to Libertinus Serif, i.e. the fonts are not installed.
+  // Works identically on the Typst web editor (has Source Sans Pro built in) and
+  // locally (has it after running install_fonts.sh).
+  context {
+  let _p   = "MMMMMMMMMM"
+  let _isc = measure(text(font: ("Source Sans Pro", "Source Sans 3"), size: 12pt, _p)).width
+  let _lib = measure(text(font: ("Libertinus Serif",),                size: 12pt, _p)).width
+  if _isc == _lib { _missing-fonts-page() } else {
+
   //  Fonts
   let body-font = ("Source Sans Pro", "Source Sans 3", "Libertinus Serif")
   let sans-font = ("Source Sans Pro", "Source Sans 3", "Inria Sans")
@@ -546,16 +614,11 @@
   }
 
   // Manage authors single and plural
-  let authors-str = ()
-
-  if type(authors) == str {
-    authors = (authors,)
-  }
-
-  if authors.len() > 1 {
-    authors-str = authors.join(", ")
-  } else if authors.len() == 1 {
-    authors-str = authors.at(0)
+  let authors-list = if type(authors) == str { (authors,) } else { authors }
+  let authors-str = if authors-list.len() > 1 {
+    authors-list.join(", ")
+  } else if authors-list.len() == 1 {
+    authors-list.at(0)
   } else {
     panic("No authors provided for the report")
   }  
@@ -699,7 +762,7 @@
     text(font: sans-font, 1.8em, weight: 700, title)
     linebreak()
     v(-0.2em)
-    text(1.1em, authors.join(", "))
+    text(1.1em, authors-list.join(", "))
     v(-0.1em)
 
     // A line to separate the header from the content
@@ -826,4 +889,6 @@
   if doc-type != "exec-summary" {
     body
   }
+  } // else (fonts available)
+  } // context font check
 }
