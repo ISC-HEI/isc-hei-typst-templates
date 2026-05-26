@@ -14,7 +14,7 @@
   expert: "Dr Grace Hopper", // Optional, use none if not needed
   academic-year: "2025-2026", // Optional, use none if not needed
   school: "Haute École d'Ingénierie de Sion",
-  programme: "Informatique et Systèmes de communication (ISC)",
+  programme: "Informatique et systèmes de communication (ISC)",
   keywords: ("engineering", "data", "machine learning", "meteorology"), // Some keywords related to your thesis
   major: "Data engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering""
   bind: none, // Bind the left side of the page

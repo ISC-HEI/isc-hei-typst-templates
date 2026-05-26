@@ -67,6 +67,10 @@ test_all: pack_distro_preview
   ./scripts/test-execsummary.sh
   ./scripts/test-tb-assignment.sh
 
+# bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
+bump-version mode='patch':
+  ./scripts/bump-version "{{mode}}"
+
 # generate thumbnails from examples
 generate_thumbs:
   convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png

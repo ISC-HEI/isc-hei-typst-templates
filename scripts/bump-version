@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -eu
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.."
+
+TOML_FILES=(
+  "$ROOT/typst.toml"
+  "$ROOT/templates/bachelor-thesis/typst.toml"
+  "$ROOT/templates/document/typst.toml"
+  "$ROOT/templates/exec-summary/typst.toml"
+  "$ROOT/templates/report/typst.toml"
+  "$ROOT/templates/tb-assignment/typst.toml"
+)
+
+usage() {
+  echo "Usage: $(basename "$0") [--patch | --minor | <X.Y.Z>]"
+  echo ""
+  echo "  --patch          Increment patch component (0.7.2 → 0.7.3)  [default]"
+  echo "  --minor          Increment minor component, reset patch (0.7.2 → 0.8.0)"
+  echo "  <X.Y.Z>          Set an explicit version string"
+  exit 1
+}
+
+# Read the version from the first template (all templates share the same version)
+current_version() {
+  grep -m1 '^version' "$ROOT/templates/bachelor-thesis/typst.toml" \
+    | sed 's/version = "\(.*\)"/\1/'
+}
+
+bump_patch() {
+  local ver="$1"
+  local major minor patch
+  IFS='.' read -r major minor patch <<< "$ver"
+  echo "${major}.${minor}.$((patch + 1))"
+}
+
+bump_minor() {
+  local ver="$1"
+  local major minor
+  IFS='.' read -r major minor _ <<< "$ver"
+  echo "${major}.$((minor + 1)).0"
+}
+
+validate_version() {
+  if ! [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: '$1' is not a valid semver version (expected X.Y.Z)" >&2
+    exit 1
+  fi
+}
+
+# Parse argument
+MODE="patch"
+NEW_VERSION=""
+
+if [[ $# -gt 1 ]]; then
+  usage
+elif [[ $# -eq 1 ]]; then
+  case "$1" in
+    --patch|patch) MODE="patch" ;;
+    --minor|minor) MODE="minor" ;;
+    --help|-h) usage ;;
+    --*) usage ;;
+    *) MODE="explicit"; NEW_VERSION="$1" ;;
+  esac
+fi
+
+CURRENT="$(current_version)"
+
+case "$MODE" in
+  patch)    NEW_VERSION="$(bump_patch "$CURRENT")" ;;
+  minor)    NEW_VERSION="$(bump_minor "$CURRENT")" ;;
+  explicit) validate_version "$NEW_VERSION" ;;
+esac
+
+echo "Current version : $CURRENT"
+echo "New version     : $NEW_VERSION"
+echo ""
+
+echo "--- typst.toml files"
+for f in "${TOML_FILES[@]}"; do
+  if grep -q '^version' "$f"; then
+    sed -i "s/^version = \".*\"/version = \"${NEW_VERSION}\"/" "$f"
+    echo "  Updated: ${f#$ROOT/}"
+  fi
+done
+
+echo ""
+echo "--- Typst import statements (@preview/isc-hei-*)"
+while IFS= read -r -d '' f; do
+  if grep -q '@preview/isc-hei-[^:]*:' "$f"; then
+    sed -i "s|@preview/isc-hei-\([^:]*\):[0-9]\+\.[0-9]\+\.[0-9]\+|@preview/isc-hei-\1:${NEW_VERSION}|g" "$f"
+    echo "  Updated: ${f#$ROOT/}"
+  fi
+done < <(find "$ROOT/src" -name "*.typ" -print0)
+
+echo ""
+echo "Done. All versions set to $NEW_VERSION"

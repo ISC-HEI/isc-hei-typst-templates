@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-bthesis:0.7.1" : *
+#import "@preview/isc-hei-bthesis:0.7.2" : *
 
 #let doc_language = "fr" // Valid values are en, fr
 

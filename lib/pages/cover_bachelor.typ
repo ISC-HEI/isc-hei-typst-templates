@@ -180,7 +180,7 @@
   set page(margin: (left: 31.5mm, right: 32mm, top: 75mm, bottom: 25mm), numbering: none, number-align: center)
 
   // School logo
-  place(top + center, dx: 0mm, dy: -55mm, image("../assets/isc_logo.svg", height: 1.4cm))
+  place(top + center, dx: 0mm, dy: -55mm, image("../assets/ISC Logo inline black v3.pdf", height: 1.4cm))
 
 
   stack(

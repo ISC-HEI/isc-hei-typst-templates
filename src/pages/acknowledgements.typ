@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-bthesis:0.7.1" : *
+#import "@preview/isc-hei-bthesis:0.7.2" : *
 
 // Get the proper title for acknowledgements if not written in English
 #page-title(context i18n(inc.global-language.get(), "acknowledgements"))

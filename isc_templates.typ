@@ -366,7 +366,7 @@
 #let project(
   title: [Report title],
   subtitle: none,
-  academic-year: [2025-2026],
+  academic-year: [2026-2027],
   
   // Document type: "report", "thesis", "document", "exec-summary"
   doc-type: "report",  
@@ -375,8 +375,8 @@
   // Document specific
   show-cover: true,
   show-toc: 2, // false = no TOC, true = TOC with depth 2, integer = TOC with given depth
-  fancy-line: true, // Use decorative line with squares (false = simple line)
-  fancy-chapter-rule: true, // Use decorative ornaments on chapter rules (false = plain line)
+  fancy-line: false, // Use decorative line with squares (false = simple line)
+  fancy-chapter-rule: false, // Use decorative ornaments on chapter rules (false = plain line)
 
   // Bachelor thesis specific
   thesis-supervisor: [Thesis supervisor],
@@ -387,7 +387,7 @@
   keywords: (),
   major: (),
   school: [School name],
-  programme: [Informatique et Systèmes de Communication],
+  programme: [Informatique et systèmes de communication],
   
   // Executive summary specific
   summary: none,
@@ -674,11 +674,11 @@
   // Cover pages
   /////////////////////////////////////////////////
   // Default logo for document type
-  let logo = if logo == auto and (doc-type == "document" or doc-type == "tb-assignment") {
+  let logo = if logo == auto and (doc-type == "document" or doc-type == "report" or doc-type == "tb-assignment") {
     if show-cover{
-      image("lib/assets/isc_logo.svg")      
+      image("lib/assets/ISC Logo inline black v3.pdf")
     } else {
-      image("lib/assets/isc_logo_raw.svg")
+      image("lib/assets/ISC Logo inline black v3.pdf")
     }
   } else if logo == auto {
     none
@@ -690,19 +690,14 @@
   let show-cover = if doc-type == "tb-assignment" { false } else { show-cover }
 
   if not show-cover and not no-decorations and (doc-type == "report" or doc-type == "document" or doc-type == "tb-assignment") {
-    // Compact inline header: logo, title, authors — no page break
+    // Compact inline header: logo right-aligned on its own row, then title + authors
     if logo != none {
-      place(
-        top + right,
-        dx: 0mm,
-        dy: -2mm,
-        clearance: 0em,
-        box(width: 2.2cm, logo),
-      )
+      v(0.3em)
+      align(right, box(height: 1.3cm, logo))
+      v(1.5em)
     }
-
     text(font: sans-font, 1.8em, weight: 700, title)
-    linebreak()    
+    linebreak()
     v(-0.2em)
     text(1.1em, authors.join(", "))
     v(-0.1em)
@@ -712,10 +707,10 @@
       layout(size => {
         let total-w = size.width
         let solid-end = 0.8 * total-w
-        let square-size = 1.5pt
+        let square-size = 0.8pt
         let color = luma(20)
         // Solid line for the first 80%
-        place(line(length: solid-end, stroke: (paint: color, thickness: 1.5pt)))
+        place(line(length: solid-end, stroke: (paint: color, thickness: 0.8pt)))
         // Small squares with increasing spacing for the remaining 40%
         let remaining = total-w - solid-end
         let x = solid-end + 0.5pt
@@ -732,9 +727,9 @@
         v(square-size)
       })
     } else {
-      line(length: 100%, stroke: (paint: luma(20), thickness: 1.5pt))
+      line(length: 100%, stroke: (paint: luma(20), thickness: 0.8pt))
     }
-    v(0.4em)
+    v(0.7em)
   } else if (doc-type == "report") {
     import "lib/pages/cover_report.typ": cover_page
 

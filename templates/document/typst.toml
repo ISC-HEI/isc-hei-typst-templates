@@ -1,6 +1,6 @@
 [package]
 name = "isc-hei-document"
-version = "0.7.1"
+version = "0.7.2"
 compiler = "0.14.2"
 entrypoint = "isc_templates.typ"
 repository = "https://github.com/ISC-HEI/isc-hei-student-templates"
