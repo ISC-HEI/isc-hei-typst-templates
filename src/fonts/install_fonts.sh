@@ -5,81 +5,55 @@ GREEN='\033[0;32m'
 NC='\033[0m' # No Color
 VU="${GREEN}✔${NC}"
 
+# v2: ships both "Source Sans 3" and "Source Sans Pro" (v2 name used by the
+# Typst web editor) so templates compile without font warnings on both CLI and web.
+FONTS_URL="https://files.isc-vs.ch/typst/modern-isc-fonts-v2.tar.gz"
+FONTS_ARCHIVE="modern-isc-fonts-v2.tar.gz"
+FONTS_DIR="modern-isc-fonts-v2"
+
 echo -e "Downloading and installing fonts locally..."
 
 fonts_dir="${HOME}/.local/share/fonts"
-fontconfig_dir="${HOME}/.config/fontconfig/conf.d"
-
-wget https://files.isc-vs.ch/typst/modern-isc-fonts.tar.gz
-
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Error: Failed to download modern-isc-fonts.tar.gz from the web.${NC}"
-    exit 1
-fi
-
-echo -e "Fonts downloaded successfullly $VU"
-
-tar -zxvf modern-isc-fonts.tar.gz
 
 if [ ! -d "${fonts_dir}" ]; then
-    echo "mkdir -p $fonts_dir"
     mkdir -p "${fonts_dir}"
     echo -e "Created fonts directory $fonts_dir $VU"
 else
     echo -e "Found fonts directory $fonts_dir $VU"
 fi
 
-cp modern-isc-fonts/*.ttf ${fonts_dir}
+wget -q --show-progress "${FONTS_URL}"
+
 if [ $? -ne 0 ]; then
-    echo -e "${RED}Error: Failed to copy .ttf files.${NC}"
+    echo -e "${RED}Error: Failed to download ${FONTS_ARCHIVE}.${NC}"
     exit 1
-else
-    echo -e "Copied .ttf files $VU"
 fi
 
-cp modern-isc-fonts/*.otf ${fonts_dir}
-if [ $? -ne 0 ]; then
-    echo -e "${RED}Error: Failed to copy .otf files.${NC}"
-    exit 1
-else
-    echo -e "Copied .otf files $VU"
-fi
+echo -e "Font bundle downloaded $VU"
+tar -zxf "${FONTS_ARCHIVE}"
 
-# Ensure Linux can resolve "Source Sans Pro" to "Source Sans 3".
-# The Typst template still references "Source Sans Pro" for web compatibility.
-mkdir -p "${fontconfig_dir}"
-cat > "${fontconfig_dir}/99-source-sans-pro-alias.conf" <<'EOF'
-<?xml version="1.0"?>
-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-<fontconfig>
-    <alias>
-        <family>Source Sans Pro</family>
-        <prefer>
-            <family>Source Sans 3</family>
-        </prefer>
-    </alias>
-</fontconfig>
-EOF
-echo -e "Installed font alias Source Sans Pro -> Source Sans 3 $VU"
+cp "${FONTS_DIR}"/*.ttf "${fonts_dir}/"
+cp "${FONTS_DIR}"/*.otf "${fonts_dir}/"
+echo -e "Fonts installed $VU"
 
-echo -e "Rebuilding cache with fc-cache -f $VU"
+echo -e "Rebuilding font cache..."
 fc-cache -f
+echo -e "Font cache rebuilt $VU"
 
-rm modern-isc-fonts.tar.gz
-rm -rf *.ttf
-rm -rf *.otf
+rm -f "${FONTS_ARCHIVE}"
+rm -rf "${FONTS_DIR}/"
 
-# Check if required fonts are available in typst fonts
+# Verify all required fonts are visible to Typst
 missing_fonts=()
-for font in "Source Sans 3" "Inria Sans" "Fira Code"; do
-    if ! typst fonts | grep -q "$font"; then
+for font in "Source Sans Pro" "Source Sans 3" "Inria Sans" "Fira Code"; do
+    if ! typst fonts | grep -q "^${font}$"; then
         missing_fonts+=("$font")
     fi
 done
 
 if [ ${#missing_fonts[@]} -eq 0 ]; then
-    echo -e "${VU} All required fonts found within Typst fonts. Install seems to be OK!${NC}"
+    echo -e "${VU} All required fonts found in Typst. Install successful!"
 else
-    echo -e "${RED}Error: The following fonts were not found in Typst fonts: ${missing_fonts[*]}. There's something wrong here.${NC}"
+    echo -e "${RED}The following fonts were not found by Typst: ${missing_fonts[*]}${NC}"
     exit 1
 fi

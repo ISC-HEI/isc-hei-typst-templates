@@ -704,30 +704,9 @@
 
     // A line to separate the header from the content
     if fancy-line {
-      layout(size => {
-        let total-w = size.width
-        let solid-end = 0.8 * total-w
-        let square-size = 0.8pt
-        let color = luma(20)
-        // Solid line for the first 80%
-        place(line(length: solid-end, stroke: (paint: color, thickness: 0.8pt)))
-        // Small squares with increasing spacing for the remaining 40%
-        let remaining = total-w - solid-end
-        let x = solid-end + 0.5pt
-        let gap = 0.5pt
-        let positions = ()
-        while x < total-w {
-          positions.push(x)
-          gap = gap * 1.3
-          x = x + square-size + gap
-        }
-        for px in positions {
-          place(dx: px, dy: -square-size / 2, rect(width: square-size, height: square-size, fill: color, stroke: none))
-        }
-        v(square-size)
-      })
+      rect(width: 100%, height: 0.6pt, fill: gradient.linear((luma(20), 0%), (luma(20), 80%), (luma(20).transparentize(100%), 100%)), stroke: none)
     } else {
-      line(length: 100%, stroke: (paint: luma(20), thickness: 0.8pt))
+      line(length: 100%, stroke: (paint: luma(20), thickness: 0.6pt))
     }
     v(0.7em)
   } else if (doc-type == "report") {
