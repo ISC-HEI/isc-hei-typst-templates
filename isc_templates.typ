@@ -1004,12 +1004,12 @@
   // sub: optional second line below the name (used for permanent-email).
   let make-entry = (l, val, sub: none) => stack(
     dir: ttb,
-    spacing: 7pt,
-    text(size: 20pt, weight: "regular", fill: luma(120), l),
+    spacing: 4pt,
+    text(size: 16pt, weight: "regular", fill: luma(120), l),
     if sub != none {
-      stack(dir: ttb, spacing: 4pt,
+      stack(dir: ttb, spacing: 3pt,
         val,
-        text(size: 18pt, weight: "regular", fill: luma(160), sub))
+        text(size: 15pt, weight: "regular", fill: luma(160), sub))
     } else { val },
   )
 
@@ -1028,22 +1028,22 @@
   // pt spacers to avoid implicit paragraph spacing artefacts.
   let tight-title = { set par(leading: 0.5em); title }
   let _affil-parts = (school, programme) + (if major != none { (major,) } else { () })
-  let affiliation  = text(size: 22pt, weight: "regular", fill: luma(140),
+  let affiliation  = text(size: 18pt, weight: "regular", fill: luma(140),
     _affil-parts.join([  ·  ]))
 
   // pad(bottom: …) reduces the natural gap placard inserts between the title
   // content and its accent rule — negative value pulls them closer together.
-  let full-title = pad(bottom: -8pt,
+  let full-title = pad(bottom: -20pt,
     if subtitle != none {
       stack(dir: ttb,
         tight-title,
-        24pt,
+        18pt,
         text(size: 28pt, weight: "regular", subtitle),
-        32pt,
+        18pt,
         affiliation,
       )
     } else {
-      stack(dir: ttb, tight-title, 28pt, affiliation)
+      stack(dir: ttb, tight-title, 16pt, affiliation)
     }
   )
 
@@ -1089,32 +1089,33 @@
     )
   ))
 
-  // ── Footer left: thesis ID + academic year in monospace ──────────────────
+  // ── Footer ID text: thesis-id · academic-year, monospace, bottom-left ──────
+  // Passed to placard's footer.content (left column under the accent line).
   let _footer-id-parts = (
-    (if thesis-id    != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), thesis-id),) }    else { () })
+    (if thesis-id    != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), thesis-id),) }       else { () })
     + (if academic-year != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), academic-year),) } else { () })
   )
   let _footer-left = if _footer-id-parts.len() > 0 {
-    _footer-id-parts.join([  #text(fill: luma(100))[·]  ])
+    _footer-id-parts.join(text(fill: luma(100), [  ·  ]))
   } else { [] }
 
-  // ── QR codes + pills for the footer right slot ───────────────────────────
-  // Each URL: QR code (machine-readable) above a brand pill (human-readable label).
-  // tiaoma is already imported at function scope above.
-  // scale: 1.5 ≈ 2–3 cm on A1 — scannable but fits the footer height.
+  // ── QR codes + pills — placed in page foreground, bottom-right ───────────
+  // Bypassing placard's footer grid entirely so we have full layout control.
+  // Each entry is a vertical stack: QR code → pill label.
+  // Foreground renders on top of the dot decoration (background) and the
+  // placard footer line, so QR codes are always legible.
+  // pad(bottom:) lifts the block above the footer accent line.
   let _make-qr(url, label) = stack(
     dir: ttb,
-    spacing: 3pt,
-    align(center,
-      box(fill: white, inset: 4pt, radius: 2pt,
-        tiaoma.barcode(url, "QRCode", options: (
-          scale: 1.5,
-          fg-color: black,
-          bg-color: white,
-          dot-size: 1.0,
-          output-options: (barcode-dotty-mode: false),
-        ))
-      )
+    spacing: 4pt,
+    box(fill: white, inset: 4pt, radius: 2pt,
+      tiaoma.barcode(url, "QRCode", options: (
+        scale: 1.5,
+        fg-color: black,
+        bg-color: white,
+        dot-size: 1.0,
+        output-options: (barcode-dotty-mode: false),
+      ))
     ),
     align(center,
       box(
@@ -1130,11 +1131,17 @@
     (_make-qr(_isc-tbs-website, "ISC TB"),)
     + (if repo-url != none { (_make-qr(repo-url, "GitHub"),) } else { () })
   )
-  let _qr-block = grid(
-    columns: _qr-entries.map(_ => auto),
-    column-gutter: 1em,
-    align: top,
-    .._qr-entries,
+  set page(foreground:
+    place(bottom + right,
+      pad(right: 2cm, bottom: 2.5cm,
+        grid(
+          columns: _qr-entries.map(_ => auto),
+          column-gutter: 1.2em,
+          align: bottom,
+          .._qr-entries,
+        )
+      )
+    )
   )
 
   // ── Initialise distribute-columns state before body renders ───────────────
@@ -1143,8 +1150,8 @@
   _isc-first-card.update(true)
 
   // ── Hand off to placard ───────────────────────────────────────────────────
-  // footer.content: thesis ID + academic year bottom-left in monospace.
-  // footer.logo:    ISC TB QR code (always) + GitHub QR code (when repo-url set).
+  // footer.content: thesis ID + academic year (simple text, left-aligned).
+  // footer.logo: none — QR codes live in the page foreground above.
   _placard(
     title: full-title,
     authors: authors-list,
@@ -1164,10 +1171,10 @@
       card:     "Source Sans Pro",
       footer:   "Source Sans Pro",
     ),
-    sizes: (authors: 26pt),
+    sizes: (authors: 22pt),
     footer: (
       content: _footer-left,
-      logo: _qr-block,
+      logo: none,
       logo-placement: right,
       text-placement: left,
     ),
