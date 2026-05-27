@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-tb-assignment:0.7.2" : *
+#import "@preview/isc-hei-tb-assignment:0.7.9" : *
 
 #let language = "fr" // Document language (fr or en), choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name

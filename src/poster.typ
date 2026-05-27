@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-poster:0.7.2": isc-poster, isc-card, isc-colbreak
+#import "@preview/isc-hei-poster:0.7.9": isc-poster, isc-card, isc-colbreak
 #import "@preview/cetz:0.4.0": canvas, draw
 
 // ─── Dodecahedron figure (reused from exec-summary) ──────────────────────────

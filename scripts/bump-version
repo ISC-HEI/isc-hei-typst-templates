@@ -11,6 +11,7 @@ TOML_FILES=(
   "$ROOT/templates/exec-summary/typst.toml"
   "$ROOT/templates/report/typst.toml"
   "$ROOT/templates/tb-assignment/typst.toml"
+  "$ROOT/templates/poster/typst.toml"
 )
 
 usage() {

@@ -1,6 +1,6 @@
 // Adapted from the BFH year book idea at https://www.bfh.ch/dam/jcr:e512ae31-a3ed-4b65-b589-870383d794b0/abschlussarbeiten-bsc-informatik.pdf
 
-#import "@preview/isc-hei-exec-summary:0.7.2" : *
+#import "@preview/isc-hei-exec-summary:0.7.9" : *
 
 // Must be <= 365 characters long.
 #let summary = "DataFlowX is a scalable data engineering platform for real-time analytics on large, heterogeneous datasets. DataFlowX automates data ingestion, transformation, and validation using distributed processing and intelligent scheduling. The system ensures data quality, accelerates insights, and supports seamless integration with modern business intelligence tools."

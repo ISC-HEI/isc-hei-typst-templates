@@ -49,9 +49,18 @@ just generate-thumbs
 ### Single-source, multi-package layout
 
 ```
-isc_templates.typ        ← sole public API; all user-callable functions live here
+isc_templates.typ        ← public API: a thin façade that re-exports the lib/ modules
 lib/
   includes.typ           ← shared state, brand color (hei-purple = #E20571), dep imports
+  settings.typ           ← shared metrics (heading sizes, spacing), version, keywords
+  fonts.typ              ← font stacks, ISC-font detection, "fonts not installed" page
+  i18n.typ               ← i18n() string resolution + langs (reads ../i18n.json)
+  decorations.typ        ← chapter-rule ornaments + the hashed bit-rule (hash-rule)
+  content.typ            ← page-title, TOC/figures, bibliography, appendix, abstract-footer, utilities
+  code.typ              ← code() source-listing block
+  covers.typ             ← front-matter(): per-document-type front matter dispatcher
+  project.typ            ← project(): the multi-type document template (orchestrator)
+  poster.typ             ← isc-poster() / isc-card() / isc-colbreak()
   pages/cover_*.typ      ← one cover renderer per document type
   assets/                ← SVG logos
 src/
@@ -66,7 +75,26 @@ scripts/                 ← pack, dev_link, uninstall, test-*.sh helpers
 
 The `scripts/pack` script copies the shared source into each package slot and sets `entrypoint = "isc_templates.typ"`. Each `templates/*/typst.toml` pins the compiler version and declares the template thumbnail.
 
-### How `isc_templates.typ` works
+### How the public API is assembled
+
+`isc_templates.typ` is the package entrypoint but contains no logic — it only
+`#import ": *"`s each `lib/` module and re-exports their bindings, so
+`#import "@preview/isc-hei-*": *` in a user document keeps exposing the same
+names (`project`, `isc-poster`, `page-title`, `code`, `i18n`, `hes`, …).
+
+> Path gotcha: `toml()`/`json()`/`image()`/`import`/`bibliography()` paths resolve
+> relative to the **file** that contains them. Code that moved into `lib/` therefore
+> uses `../` to reach the package root (e.g. `../typst.toml`, `../i18n.json`,
+> `../src/themes/`). `../` lands on the package root in both the dev-symlink layout
+> (`_dev/isc-hei-*/lib/…`) and the packed layout (`…/0.7.x/lib/…`), since `lib/` is a
+> subdirectory of the root in both. Assets are addressed as `assets/…` from inside `lib/`.
+
+> Cyclic-import gotcha: `lib/pages/cover_*.typ` import the entrypoint back
+> (`#import "/isc_templates.typ" as isc`). `covers.typ` must therefore import those
+> cover modules **lazily inside each branch of `front-matter()`**, not at module load,
+> or Typst raises a load-time `cyclic import`.
+
+### How `project()` works
 
 Everything is gated on a `doc-type` parameter passed to `project()`:
 
@@ -74,7 +102,17 @@ Everything is gated on a `doc-type` parameter passed to `project()`:
 "thesis" | "report" | "document" | "exec-summary" | "tb-assignment"
 ```
 
-`project()` sets margins, headers, footers, and calls the matching `lib/pages/cover_*.typ`. All other top-level functions (`page-title`, `chapter-rule`, `table-of-contents`, `the-bibliography`, `code`, `todo`, `i18n`, …) are thin wrappers that read the shared state variables declared in `lib/includes.typ`.
+`project()` (in `lib/project.typ`) is the orchestrator: it sets fonts, margins,
+running headers/footers, caption styling and code styling shared by every
+document type, then delegates the per-type front matter to
+`front-matter()` in `lib/covers.typ`, which selects and feeds the matching
+`lib/pages/cover_*.typ`. The other user-callable functions live in their topical
+module (`content.typ`, `decorations.typ`, `code.typ`, …) and read the shared
+state variables declared in `lib/includes.typ`.
+
+When verifying a refactor that should not change output, render the six examples
+to PNG before and after and diff `md5sum`s — PDFs embed timestamps so compare
+rasterised pages, not the PDFs themselves.
 
 ### State variables (lib/includes.typ)
 

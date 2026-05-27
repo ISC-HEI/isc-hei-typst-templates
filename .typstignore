@@ -9,6 +9,7 @@
 
 .github
 _dev
+tmp
 tests
 example
 scripts
@@ -18,7 +19,7 @@ Justfile
 *.ttf
 *.otf
 *.pdf
-!lib/assets/ISC Logo inline black v3.pdf
+!lib/assets/isc_logo.svg
 !lib/assets/hei_logo.pdf
 
 # PDF manuals should be included so that they can be linked, but not their sources

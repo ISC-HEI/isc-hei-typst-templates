@@ -48,7 +48,8 @@ test-poster:
 # ──────────────────────────────────────────────────────────────────────────────
 
 # bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
-bump-version mode='patch':
+# re-installs dev symlinks afterwards so @preview resolves the new version (returns the workspace to dev mode)
+bump-version mode='patch': && install-symblinks
   ./scripts/bump-version "{{mode}}"
 
 # pack all templates to @preview as the Universe artifact (replaces dev symlinks)

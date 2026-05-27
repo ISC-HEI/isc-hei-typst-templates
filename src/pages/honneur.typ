@@ -2,7 +2,7 @@
 // Filière Informatique et systèmes de communication (ISC)
 // Haute École d'Ingénierie — HES-SO Valais-Wallis
 //
-#import "@preview/isc-hei-bthesis:0.7.1" : *
+#import "@preview/isc-hei-bthesis:0.7.9" : *
 
 #page-title("Résumé")
 
