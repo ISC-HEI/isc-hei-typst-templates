@@ -107,6 +107,7 @@ if [[ "$TEMPLATE" == "bachelor-thesis" ]]; then
 	vrm "$TMP/exec_summary.png"
 	vrm "$TMP/document_thumb.png"
 	vrm "$TMP/tb_assignment_thumb.png"
+	vrm "$TMP/poster_thumb.png"
 fi
 
 if [[ "$TEMPLATE" == "document" ]]; then
@@ -128,6 +129,7 @@ if [[ "$TEMPLATE" == "document" ]]; then
 	vrm "$TMP/report_thumb.png"
 	vrm "$TMP/exec_summary.png"
 	vrm "$TMP/tb_assignment_thumb.png"
+	vrm "$TMP/poster_thumb.png"
 fi
 
 if [[ "$TEMPLATE" == "exec-summary" ]]; then
@@ -153,6 +155,7 @@ if [[ "$TEMPLATE" == "exec-summary" ]]; then
 	vrm "$TMP/report_thumb.png"
 	vrm "$TMP/document_thumb.png"
 	vrm "$TMP/tb_assignment_thumb.png"
+	vrm "$TMP/poster_thumb.png"
 fi
 
 if [[ "$TEMPLATE" == "report" ]]; then
@@ -177,6 +180,7 @@ if [[ "$TEMPLATE" == "report" ]]; then
 	vrm "$TMP/exec_summary.png"
 	vrm "$TMP/document_thumb.png"
 	vrm "$TMP/tb_assignment_thumb.png"
+	vrm "$TMP/poster_thumb.png"
 fi
 
 if [[ "$TEMPLATE" == "tb-assignment" ]]; then
@@ -202,6 +206,7 @@ if [[ "$TEMPLATE" == "tb-assignment" ]]; then
 	vrm "$TMP/report_thumb.png"
 	vrm "$TMP/exec_summary.png"
 	vrm "$TMP/document_thumb.png"
+	vrm "$TMP/poster_thumb.png"
 fi
 
 if [[ "$TEMPLATE" == "poster" ]]; then

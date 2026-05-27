@@ -16,6 +16,12 @@ scripts
 templates
 Justfile
 *.code-workspace
+
+# editor / agent tooling — not part of the published package
+.claude
+.vscode
+CLAUDE.md
+TODOS.md
 *.ttf
 *.otf
 *.pdf
