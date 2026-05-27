@@ -19,6 +19,8 @@
 #let _isc-poster-distribute = state("_isc-poster-distribute", false)
 // Tracks whether the next isc-card is the first in its column (no leading spacer)
 #let _isc-first-card = state("_isc-first-card", true)
+// Vertical offset applied to the first card in every column (negative = pull up)
+#let _isc-col-start-offset = state("_isc-col-start-offset", 0pt)
 
 //////////////////////////
 // User callable functions
@@ -1004,10 +1006,10 @@
   // sub: optional second line below the name (used for permanent-email).
   let make-entry = (l, val, sub: none) => stack(
     dir: ttb,
-    spacing: 4pt,
+    spacing: 12pt,
     text(size: 16pt, weight: "regular", fill: luma(120), l),
     if sub != none {
-      stack(dir: ttb, spacing: 3pt,
+      stack(dir: ttb, spacing: 8pt,
         val,
         text(size: 15pt, weight: "regular", fill: luma(160), sub))
     } else { val },
@@ -1033,13 +1035,13 @@
 
   // pad(bottom: …) reduces the natural gap placard inserts between the title
   // content and its accent rule — negative value pulls them closer together.
-  let full-title = pad(bottom: -20pt,
+  let full-title = pad(bottom: -25pt,
     if subtitle != none {
       stack(dir: ttb,
         tight-title,
-        18pt,
+        1cm,
         text(size: 28pt, weight: "regular", subtitle),
-        18pt,
+        8mm,
         affiliation,
       )
     } else {
@@ -1070,7 +1072,7 @@
     })
   )
   set page(background: place(bottom + right,
-    pad(right: 1.5cm, bottom: 1.5cm, _dot-grid)
+    pad(right: 2.5cm, bottom: 2.2cm, _dot-grid)
   ))
 
   // ── Page header: HEI logo left, ISC logo right ────────────────────────────
@@ -1089,65 +1091,71 @@
     )
   ))
 
-  // ── Footer ID text: thesis-id · academic-year, monospace, bottom-left ──────
-  // Passed to placard's footer.content (left column under the accent line).
-  let _footer-id-parts = (
-    (if thesis-id    != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), thesis-id),) }       else { () })
-    + (if academic-year != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), academic-year),) } else { () })
+  // ── QR helper ─────────────────────────────────────────────────────────────
+  let _make-qr(url) = box(fill: white, inset: 4pt, radius: 2pt,
+    tiaoma.barcode(url, "QRCode", options: (
+      scale: 1.6, fg-color: black, bg-color: white, dot-size: 1.0,
+      output-options: (barcode-dotty-mode: false),
+    ))
   )
-  let _footer-left = if _footer-id-parts.len() > 0 {
-    _footer-id-parts.join(text(fill: luma(100), [  ·  ]))
-  } else { [] }
 
-  // ── QR codes + pills — placed in page foreground, bottom-right ───────────
-  // Bypassing placard's footer grid entirely so we have full layout control.
-  // Each entry is a vertical stack: QR code → pill label.
-  // Foreground renders on top of the dot decoration (background) and the
-  // placard footer line, so QR codes are always legible.
-  // pad(bottom:) lifts the block above the footer accent line.
-  let _make-qr(url, label) = stack(
-    dir: ttb,
-    spacing: 4pt,
-    box(fill: white, inset: 4pt, radius: 2pt,
-      tiaoma.barcode(url, "QRCode", options: (
-        scale: 1.5,
-        fg-color: black,
-        bg-color: white,
-        dot-size: 1.0,
-        output-options: (barcode-dotty-mode: false),
+  // ── Institutional info block — bottom-left foreground overlay ─────────────
+  // Sits on top of the footer accent line (foreground layer).
+  // Layout: ISC TB QR on the left, programme · major · academic-year stacked on the right.
+  let _info-text-parts = (
+    (programme,)
+    + (if major         != none { (major,)         } else { () })
+    + (if academic-year != none { (academic-year,) } else { () })
+  )
+
+  let _info-block = grid(
+    columns: (auto, auto),
+    column-gutter: 5mm,
+    align: horizon,
+    _make-qr(_isc-tbs-website),
+    stack(dir: ttb, spacing: 8pt,
+      ..(_info-text-parts.enumerate().map(((i, part)) =>
+        text(
+          font: "Source Sans Pro",
+          size: if i == 0 { 18pt } else { 16pt },
+          weight: if i == 0 { "semibold" } else { "regular" },
+          fill: if i == 0 { luma(50) } else { luma(110) },
+          part,
+        )
       ))
     ),
-    align(center,
-      box(
-        fill: inc.hei-purple.lighten(85%),
-        radius: 100pt,
-        inset: (x: 10pt, y: 5pt),
-        text(font: "Source Sans Pro", size: 14pt, weight: "semibold",
-             fill: inc.hei-purple, label)
-      )
-    ),
   )
-  let _qr-entries = (
-    (_make-qr(_isc-tbs-website, "ISC TB"),)
-    + (if repo-url != none { (_make-qr(repo-url, "GitHub"),) } else { () })
-  )
-  set page(foreground:
-    place(bottom + right,
-      pad(right: 2cm, bottom: 2.5cm,
-        grid(
-          columns: _qr-entries.map(_ => auto),
-          column-gutter: 1.2em,
-          align: bottom,
-          .._qr-entries,
+
+  // ── GitHub repo QR — bottom-right foreground overlay (optional) ───────────
+  let _repo-block = if repo-url != none {
+    stack(dir: ttb, spacing: 4pt,
+      _make-qr(repo-url),
+      align(center,
+        box(
+          fill: inc.hei-purple.lighten(85%),
+          radius: 100pt,
+          inset: (x: 10pt, y: 5pt),
+          text(font: "Source Sans Pro", size: 14pt, weight: "semibold",
+               fill: inc.hei-purple, "GitHub")
         )
-      )
+      ),
     )
-  )
+  }
+
+  // Both overlays share one foreground so neither overrides the other.
+  set page(foreground: {
+    place(bottom + left,  pad(left:  2.5cm, bottom: 1.6cm, _info-block))
+    if _repo-block != none {
+      place(bottom + right, pad(right: 2cm, bottom: 1cm, _repo-block))
+    }
+  })
 
   // ── Initialise distribute-columns state before body renders ───────────────
   // State updates must appear before the content that reads them in document flow.
   _isc-poster-distribute.update(distribute-columns)
   _isc-first-card.update(true)
+  // Pull every column's first card up by this amount to close the gap below the authors.
+  _isc-col-start-offset.update(-0.6cm)
 
   // ── Hand off to placard ───────────────────────────────────────────────────
   // footer.content: thesis ID + academic year (simple text, left-aligned).
@@ -1158,7 +1166,10 @@
     paper: "a1",
     flipped: orientation == "landscape",
     num-columns: num-columns,
-    margin: (top: 6cm),
+    // top margin = space reserved for the title block (title+subtitle+affiliation+authors).
+    // Increase if the title block overflows into the cards; decrease to close the gap
+    // between the authors row and the first card column.
+    margin: (top: 6.3cm),
     colors: (
       accent:  inc.hei-purple,
       heading: inc.hei-purple,
@@ -1173,7 +1184,8 @@
     ),
     sizes: (authors: 22pt),
     footer: (
-      content: _footer-left,
+      // Institutional block (left) and repo QR (right) live in the page foreground.
+      content: [],
       logo: none,
       logo-placement: right,
       text-placement: left,
@@ -1195,9 +1207,14 @@
 //      length → explicit override, always applied.
 #let isc-card(title: "", fill: none, gap: auto, body) = {
   import "@preview/placard:0.1.0": card as _card
-  // Inject leading spacer for all but the first card in each column.
+  // First card in each column: apply the column-start offset (closes the gap below
+  // the authors block for every column equally). Subsequent cards get v(1fr) for
+  // space-between distribution.
   context {
-    if _isc-poster-distribute.get() and not _isc-first-card.get() { v(1fr) }
+    if _isc-poster-distribute.get() {
+      if _isc-first-card.get() { v(_isc-col-start-offset.get()) }
+      else { v(1fr) }
+    }
   }
   _isc-first-card.update(false)
   // Resolve effective gap: suppress trailing space when distributing so the
