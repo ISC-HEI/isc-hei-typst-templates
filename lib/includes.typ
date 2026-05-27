@@ -15,4 +15,4 @@
 #let show-toc-enabled = state("show-toc", true)
 
 // Brand color
-#let hei-purple = rgb("#E20571")
+#let hei-purple = rgb("#dc0068")

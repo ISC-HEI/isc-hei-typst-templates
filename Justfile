@@ -25,6 +25,7 @@ install-symblinks:
   ./scripts/dev_link "@preview" "document"
   ./scripts/dev_link "@preview" "exec-summary"
   ./scripts/dev_link "@preview" "tb-assignment"
+  ./scripts/dev_link "@preview" "poster"
 
 # compile all src/ documents in parallel
 compile-all:
@@ -33,6 +34,8 @@ compile-all:
   typst compile src/document.typ examples/document.pdf
   typst compile src/exec_summary.typ examples/exec_summary.pdf
   typst compile src/tb_assignment.typ examples/tb_assignment.pdf
+  typst compile src/poster.typ examples/poster.pdf
+  typst compile src/poster_srp.typ examples/poster_srp.pdf
 
 [private]
 remove target:
@@ -41,17 +44,19 @@ remove target:
   ./scripts/uninstall "{{target}}" "document"
   ./scripts/uninstall "{{target}}" "exec-summary"
   ./scripts/uninstall "{{target}}" "tb-assignment"
+  ./scripts/uninstall "{{target}}" "poster"
 
 # uninstalls the library from the "@local" prefix
 # uninstall: (remove "@local")
 
 # pack all templates to a target prefix
-pack_distro target:  
+pack_distro target:
   ./scripts/pack "{{target}}" "bachelor-thesis"
   ./scripts/pack "{{target}}" "report"
   ./scripts/pack "{{target}}" "document"
   ./scripts/pack "{{target}}" "exec-summary"
   ./scripts/pack "{{target}}" "tb-assignment"
+  ./scripts/pack "{{target}}" "poster"
 
 # pack all templates to @preview
 pack_distro_preview : (pack_distro "@preview")
@@ -66,6 +71,7 @@ test-all: pack_distro_preview
   ./scripts/test-document.sh
   ./scripts/test-execsummary.sh
   ./scripts/test-tb-assignment.sh
+  ./scripts/test-poster.sh
 
 # bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
 bump-version mode='patch':
@@ -78,4 +84,5 @@ generate-thumbs:
   convert -density 150 'examples/document.pdf[0]' -flatten document_thumb.png
   convert -density 150 'examples/exec_summary.pdf[0]' -flatten exec_summary.png
   convert -density 150 'examples/tb_assignment.pdf[0]' -flatten tb_assignment_thumb.png
+  convert -density 150 'examples/poster.pdf[0]' -flatten poster_thumb.png
   pngquant --quality 50-80 *.png --ext .png --force

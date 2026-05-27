@@ -23,7 +23,7 @@
 ) = {
 
   let i18n = isc.i18n.with(extra-i18n: none, language)
-  let hei_color = color.rgb("#d41367") // HEI color
+  let hei_color = inc.hei-purple
 
   if(bind == none){
     bind = left
