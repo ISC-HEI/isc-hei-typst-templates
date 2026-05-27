@@ -4,7 +4,7 @@
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-poster)
 ![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-poster?include_prereleases)
-![License](https://img.shields.io/badge/license-MIT-brightgreen")
+![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)
 
 # Poster Template for ISC Students
 

@@ -116,3 +116,16 @@ universe-check:
 [group('universe')]
 universe-push:
   ./scripts/universe-push
+
+# ──────────────────────────────────────────────────────────────────────────────
+# ACTIVE PR FLOW (Typst Universe) — update a PR that is already open (unmerged) when
+# you've fixed something at the SAME version. Re-stages the current version and
+# FORCE-pushes over the existing branch, so the open PR re-runs CI in place — no new
+# PR, no version bump. Use only while the PR is unmerged (published versions are
+# immutable — bump + universe-push for those instead).
+# ──────────────────────────────────────────────────────────────────────────────
+
+# re-stage the current version, then force-push it over the existing PR branch
+[group('active-pr-flow')]
+update-pr: universe-stage
+  ./scripts/universe-repush

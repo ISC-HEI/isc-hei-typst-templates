@@ -10,13 +10,14 @@ Official [Typst](https://typst.app/) templates for the ISC bachelor degree progr
 
 Requires: `typst` (≥ 0.14.2), `just`, `ImageMagick` + `pngquant` (used by `generate-thumbs`, which `pack` runs).
 
-The Justfile is split into two workflows — **local development** (work against
-your live source via symlinks) and **release** (build + check the Universe
-artifacts). Packing replaces the dev symlinks, so re-run `just install-symblinks`
-to return to local work afterwards.
+The Justfile is split into four recipe groups (`just --list`): **dev** (work against
+your live source via symlinks), **pre-release** (build + check the local @preview
+artifacts), **universe** (open a release PR against `typst/packages`), and
+**active-pr-flow** (refresh a PR that is already open). Packing replaces the dev
+symlinks, so re-run `just install-symblinks` to return to local work afterwards.
 
 ```sh
-# ── Local development ──
+# ── dev ──
 # Install dev symlinks so @preview points at this repo (run once)
 just install-symblinks
 
@@ -30,7 +31,7 @@ just test
 # …or only the poster layout checks
 just test-poster
 
-# ── Release (Typst Universe) ──
+# ── pre-release ──
 # Pack all six packages to @preview (the real artifact; replaces dev symlinks)
 just pack
 
@@ -45,7 +46,25 @@ just generate-thumbs
 
 # Remove all packed/symlinked templates from @preview
 just uninstall
+
+# ── universe (open a release PR) ──
+# Sparse-clone the fork, base isc-hei-<ver> on upstream/main, pack + validate all six, commit (no push)
+just universe-stage
+# Re-validate the already-packed packages in the fork clone
+just universe-check
+# Push the staged branch to the fork and print the PR compare URL (only networked-write step; you write the PR)
+just universe-push
+
+# ── active-pr-flow (update an unmerged PR at the SAME version) ──
+# Re-stage the current version, then force-push over the existing PR branch (CI re-runs in place; no new PR, no bump)
+just update-pr
 ```
+
+> Universe release flow: `universe-stage` → review → `universe-push`, then open the PR
+> from the printed compare URL. The fork clone lives at `~/git/typst-packages` (override
+> with `UNIVERSE_CLONE=/path`); the scripts are `scripts/universe-{common,stage,check,push,repush}`.
+> If CI flags something on an *unmerged* PR, fix the source and run `just update-pr` to
+> rebuild + force-push the same version. A *merged* version is immutable — bump instead.
 
 ## Architecture
 

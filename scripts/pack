@@ -99,10 +99,11 @@ if [[ "$TEMPLATE" == "bachelor-thesis" ]]; then
 	# other templates
 	vrm "$TMP/src/tb_assignment.typ"
 	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"	
+	vrm "$TMP/src/report.typ"
 	vrm "$TMP/src/exec_summary.typ"
-	
-	# thumbnails	
+	vrm "$TMP/src/poster.typ"
+
+	# thumbnails
 	vrm "$TMP/report_thumb.png"
 	vrm "$TMP/exec_summary.png"
 	vrm "$TMP/document_thumb.png"
@@ -119,11 +120,12 @@ if [[ "$TEMPLATE" == "document" ]]; then
 
 	# other templates
 	vrm "$TMP/src/acronyms.typ"
-	vrm "$TMP/src/bachelor_thesis.typ"	
+	vrm "$TMP/src/bachelor_thesis.typ"
 	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/report.typ"	
+	vrm "$TMP/src/report.typ"
 	vrm "$TMP/src/exec_summary.typ"
-	
+	vrm "$TMP/src/poster.typ"
+
 	# thumbnails
 	vrm "$TMP/bachelor_thesis_thumb.png"
 	vrm "$TMP/report_thumb.png"
@@ -144,10 +146,11 @@ if [[ "$TEMPLATE" == "exec-summary" ]]; then
 	vrm "$TMP/src/figs/cover_image_placeholder.png"	
 	
 	# other templates
-	vrm "$TMP/src/bachelor_thesis.typ"	
+	vrm "$TMP/src/bachelor_thesis.typ"
 	vrm "$TMP/src/tb_assignment.typ"
 	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"	
+	vrm "$TMP/src/report.typ"
+	vrm "$TMP/src/poster.typ"
 	vrm "$TMP/src/bibliography.bib"
 
 	# thumbnails
@@ -170,11 +173,12 @@ if [[ "$TEMPLATE" == "report" ]]; then
 	vrm "$TMP/src/pages"
 
 	# other templates
-	vrm "$TMP/src/bachelor_thesis.typ"	
+	vrm "$TMP/src/bachelor_thesis.typ"
 	vrm "$TMP/src/tb_assignment.typ"
 	vrm "$TMP/src/document.typ"
 	vrm "$TMP/src/exec_summary.typ"
-	
+	vrm "$TMP/src/poster.typ"
+
 	# thumbnails
 	vrm "$TMP/bachelor_thesis_thumb.png"
 	vrm "$TMP/exec_summary.png"
@@ -194,11 +198,12 @@ if [[ "$TEMPLATE" == "tb-assignment" ]]; then
 	vrm "$TMP/src/pages"
 
 	# other templates
-	vrm "$TMP/src/acronyms.typ"	
-	vrm "$TMP/src/bachelor_thesis.typ"	
+	vrm "$TMP/src/acronyms.typ"
+	vrm "$TMP/src/bachelor_thesis.typ"
 	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"	
+	vrm "$TMP/src/report.typ"
 	vrm "$TMP/src/exec_summary.typ"
+	vrm "$TMP/src/poster.typ"
 	vrm "$TMP/src/bibliography.bib"
 
 	# thumbnails

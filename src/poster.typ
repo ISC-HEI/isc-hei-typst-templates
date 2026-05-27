@@ -1,11 +1,11 @@
 #import "@preview/isc-hei-poster:0.7.9": isc-poster, isc-card, isc-colbreak
-#import "@preview/cetz:0.4.0": canvas, draw
+#import "@preview/cetz:0.5.2": canvas, draw
 
 // ─── Dodecahedron figure (reused from exec-summary) ──────────────────────────
 #let ex_fig = canvas(length: 2cm, {
   import draw: *
   let phi = (1 + calc.sqrt(5)) / 2
-  ortho({
+  ortho(flatten: true, {
     hide({
       line((-phi, -1, 0), (-phi, 1, 0), (phi, 1, 0), (phi, -1, 0), close: true, name: "xy")
       line((-1, 0, -phi), (1, 0, -phi), (1, 0, phi), (-1, 0, phi), close: true, name: "xz")

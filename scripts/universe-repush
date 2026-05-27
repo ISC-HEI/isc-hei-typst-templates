@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Update an ALREADY-OPEN Universe PR in place: force-push the staged release branch
+# over the existing one on your fork. GitHub re-runs CI on the same PR automatically,
+# so there is NO new PR and NO version bump. Run `just universe-stage` first (or use
+# `just update-pr`, which re-stages then calls this).
+#
+# This is a networked, history-REWRITING write. Use it only while the PR is unmerged —
+# a merged/published version is immutable, so bump the version and open a fresh PR
+# instead. The guard below refuses to run unless the branch already exists on the fork.
+. "$(dirname "${BASH_SOURCE[0]}")/universe-common"
+
+if [[ ! -d "$CLONE_DIR/.git" ]]; then
+  echo "No clone at $CLONE_DIR — run 'just universe-stage' first." >&2
+  exit 1
+fi
+
+if ! git -C "$CLONE_DIR" rev-parse --verify --quiet "$BRANCH" >/dev/null; then
+  echo "Branch '$BRANCH' not found in $CLONE_DIR — run 'just universe-stage' first." >&2
+  exit 1
+fi
+
+# Only update an existing PR branch — never silently create one here. If the branch
+# isn't on the fork yet there's no open PR to refresh; the first push is universe-push.
+echo "Checking '$BRANCH' exists on $FORK ..."
+if ! git -C "$CLONE_DIR" ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+  echo "Branch '$BRANCH' is not on $FORK yet — there is no open PR to update." >&2
+  echo "Use 'just universe-push' for the first push." >&2
+  exit 1
+fi
+
+echo "Force-pushing '$BRANCH' to $FORK (this rewrites the open PR) ..."
+git -C "$CLONE_DIR" push --force origin "$BRANCH"
+
+echo
+echo "Pushed. CI re-runs on the existing PR automatically — track it on the PR page,"
+echo "or compare here: https://github.com/$UPSTREAM/compare/main...${FORK/\//:}:${BRANCH}?expand=1"

@@ -126,9 +126,26 @@ just universe-push
 ```
 
 Then open the PR on GitHub via the printed compare URL and fill in the description (the
-repository's PR template prompts for new-package vs. update, etc.). If CI/CD asks for
-changes, fix them here, re-run `just universe-stage` + `just universe-push`, and the PR
-updates automatically.
+repository's PR template prompts for new-package vs. update, etc.).
+
+### Updating an already-open PR
+
+If CI flags something (or you spot a fix) while the PR is still **unmerged**, fix it in
+this repo and refresh the *same* PR at the *same* version with one recipe:
+
+```bash
+just update-pr
+```
+
+It re-stages the current version (rebuild + re-validate) and **force-pushes** over the
+existing `isc-hei-<version>` branch, so GitHub re-runs CI on the open PR in place — no new
+PR, no version bump. (This is why a plain `just universe-push` isn't enough on the second
+round: the rebuilt branch has different history and a non-force push is rejected.)
+`update-pr` refuses to run unless the branch is already on your fork — for the *first*
+push, use `just universe-push`.
+
+:warning: This only works while the PR is unmerged. Once a version is **merged/published**
+it's immutable — bump the version (`just bump-version`) and open a fresh PR instead.
 
 Notes:
 

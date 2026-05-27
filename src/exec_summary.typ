@@ -13,16 +13,15 @@ The primary objective of DataFlowX is to provide organizations with a robust and
 
 The platform leverages distributed processing and intelligent scheduling to optimize performance and resource utilization. Additionally, DataFlowX is designed to seamlessly integrate with modern business intelligence tools, enabling faster and more accurate insights. Ultimately, the project seeks to empower businesses to make data-driven decisions efficiently and confidently in dynamic environments.
 
-// An example a figure using the `cetz` package to draw a
-#import "@preview/cetz:0.4.0": canvas, draw
-#import "@preview/cetz-plot:0.1.2": plot
+// An example figure using the `cetz` package to draw something
+#import "@preview/cetz:0.5.2": canvas, draw
 #import draw: line, content, circle, rect
 
 #let ex_fig = canvas(length: 2cm, {
   import draw: *
   let phi = (1 + calc.sqrt(5)) / 2
 
-  ortho({
+  ortho(flatten: true, {
     hide({
       line(
         (-phi, -1, 0), (-phi, 1, 0), (phi, 1, 0), (phi, -1, 0), close: true, name: "xy",

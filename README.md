@@ -5,7 +5,7 @@
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-report)
 ![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-report?include_prereleases)
-![License](https://img.shields.io/badge/license-MIT-brightgreen")
+![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)
 
 # Document templates for the ISC curricula
 
