@@ -11,7 +11,7 @@
 This is the official template for bachelor theses for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. It is part of the official templates repository, which also include templates for reports (`isc-hei-report`) and executive summaries (`isc-hei-exec-summary`).
 
 <p align="center">
-   <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/cf3c46b8f4dad96d6c023110f7fa7dd4ea90da13/examples/bachelor_thesis.pdf?raw=true"><img src="bachelor_thesis_thumb.png" alt="Bachelor Thesis" height="300"></a>  
+   <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/cf3c46b8f4dad96d6c023110f7fa7dd4ea90da13/examples/bachelor_thesis.pdf?raw=true"><img src="bachelor_thesis_thumb.png" alt="Preview of the ISC bachelor thesis template title page" height="300"></a>  
 </p>
 
 ## Using the Template on the Web

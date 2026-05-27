@@ -11,7 +11,7 @@
 This is the official template for small documents for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. It is part of the official templates repository, which also include templates for bachelor thesis (`isc-hei-bthesis`) and executive summaries (`isc-hei-exec-summary`).
 
 <p align="center">
-  <a href="https://github.com/ISC-HEI/isc-hei-student-templates/blob/b9c87c26cf53548c2a6a7a1656751b3546ca3db7/examples/document.pdf?raw=true"><img src="document_thumb.png" alt="Document" height="300"></a>
+  <a href="https://github.com/ISC-HEI/isc-hei-student-templates/blob/b9c87c26cf53548c2a6a7a1656751b3546ca3db7/examples/document.pdf?raw=true"><img src="document_thumb.png" alt="Preview of the ISC document template title page" height="300"></a>
 </p>
 
 ## Using the Template on the Web

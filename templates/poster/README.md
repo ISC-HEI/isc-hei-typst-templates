@@ -11,7 +11,7 @@
 This is the official A1 poster template for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. It is part of the official templates repository, which also includes templates for the bachelor thesis (`isc-hei-bthesis`), reports (`isc-hei-report`) and executive summaries (`isc-hei-exec-summary`).
 
 <p align="center">
-  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/main/examples/poster.pdf?raw=true"><img src="poster_thumb.png" alt="Poster" height="300"></a>
+  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/3a5fed8681e524916f5e6d980620781bf1ff4fcd/examples/poster.pdf?raw=true"><img src="poster_thumb.png" alt="Preview of the ISC poster template layout" height="300"></a>
 </p>
 
 ## Using the Template on the Web
