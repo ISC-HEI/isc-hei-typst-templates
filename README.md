@@ -9,13 +9,14 @@
 
 # Document templates for the ISC curricula
 
-These are the official templates for reports, bachelor theses, and project executive summaries for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. They are designed to help students focus on content by using `Typst` as the typesetting software.
+These are the official templates for reports, bachelor theses, project executive summaries, and posters for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. They are designed to help students focus on content by using `Typst` as the typesetting software.
 
 <p align="center">
   <a href="examples/bachelor_thesis.pdf?raw=true"><img src="bachelor_thesis_thumb.png" alt="Bachelor Thesis" height="300"></a>
   <a href="examples/exec_summary.pdf?raw=true"><img src="exec_summary.png" alt="Executive Summary" height="300"></a>
   <a href="examples/report.pdf?raw=true"><img src="report_thumb.png" alt="Report" height="300"></a>
   <a href="examples/document.pdf?raw=true"><img src="document_thumb.png" alt="Report" height="300"></a>
+  <a href="examples/poster.pdf?raw=true"><img src="poster_thumb.png" alt="Poster" height="300"></a>
   <a href="examples/tb_assignment.pdf?raw=true"><img src="tb_assignment_thumb.png" alt="Report" height="300"></a>
 </p>
 
@@ -33,6 +34,7 @@ The package provides the following templates :
 @preview/isc-hei-bthesis
 @preview/isc-hei-exec-summary
 @preview/isc-hei-tb-assignment
+@preview/isc-hei-poster
 ```
 
 First start by installing `Typst` on your machine. You can then initialize the project with the command :

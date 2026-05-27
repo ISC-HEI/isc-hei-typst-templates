@@ -45,23 +45,23 @@ When sufficiently confident that it seems to work, it's time to test a `preview`
 To deploy locally for `typst` command-line
 
 ```bash
-just pack_distro_preview
+just pack
 ```
 
-This creates all the packages for testing conveniently from the preview directory. The templates can be tested as needed by creating a local sample using:
+This packs all the packages to `@preview` for testing (note: it replaces the dev symlinks, so re-run `just install-symblinks` afterwards to return to local development). The templates can be tested as needed by creating a local sample using:
 
 ```bash
-typst init @preview/isc-hei-report:0.7.0
+typst init @preview/isc-hei-report:0.7.2
 ```
 
 Then go the directory, try to compile with `typst watch report.typ`.
 
-For convenience, `just test_all` tries to compile every package using the local preview. It allows a quick check for errors before deploying to the universe.
+For convenience, `just test-all` packs the release and then runs the full test suite against it. It allows a quick check for errors before deploying to the universe.
 
 ## Deploying to Typst universe
 
 - Fork the [Typst universe repos](https://github.com/typst/packages/tree/main)
-- Clone the fork it into `DEST_TO_REPOS`, and then `just pack_distro DEST_TO_REPOS/packages/preview`.
+- Clone the fork it into `DEST_TO_REPOS`, and then pack each template into it with `./scripts/pack DEST_TO_REPOS/packages/preview <template>`, where `<template>` is each of `bachelor-thesis`, `report`, `document`, `exec-summary`, `tb-assignment`, and `poster`.
 - Lint for kebab-case only (at least publicly accessible functions)
 - Test using `typst-package-check` from <https://github.com/typst/package-check>, using `typst-package-check check @preview/isc-hei-bthesis:0.5.0` from the `packages` directory *inside* of the cloned Typst universe repos.
 - From github, create PR as usual. A template creates automatically the PR text with update etc... If changes are required by CI/CD, push to local repository. It updates the PR automatically.
