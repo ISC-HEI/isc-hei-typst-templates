@@ -905,93 +905,246 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Poster functions  (@preview/isc-hei-poster)
+//
+// Public API:
+//   isc-poster()    — top-level show rule; sets up the A1 page, header, footer
+//   isc-card()      — section content box; wraps placard's card() with ISC styling
+//   isc-colbreak()  — column break that also resets the distribute-columns state
+//
+// Internals (not exported):
+//   _isc-poster-distribute  — state: whether distribute-columns is active
+//   _isc-first-card         — state: true at the start of each column (no leading spacer)
 // ─────────────────────────────────────────────────────────────────────────────
 
 // A1 poster layout powered by @preview/placard.
-// Usage: #show: isc-poster.with(title: ..., student: ..., supervisor: ..., ...)
-// Content is arranged in `num-columns` columns; use isc-card() for section boxes.
+//
+// Parameters:
+//   title              — main poster title (content; multi-line is fine)
+//   subtitle           — optional subtitle rendered below the title in lighter weight
+//   student            — student full name
+//   permanent-email    — student permanent e-mail shown below the name (optional)
+//   supervisor         — supervising professor
+//   co-supervisor      — optional second supervisor
+//   expert             — optional thesis expert / jury member
+//   thesis-id          — optional thesis ID shown in the footer left in monospace
+//   academic-year      — optional academic year shown in the footer left, e.g. "2025-2026"
+//   school             — institution name (shown in affiliation line)
+//   programme          — degree programme (shown in affiliation line)
+//   major              — optional specialization appended to the affiliation line
+//   orientation        — "portrait" (default) or "landscape" for A1 paper
+//   language           — "fr" | "en" | "de" — controls label strings
+//   logo               — right-side logo: auto → ISC logo PDF; none → suppress; or custom content
+//   logo-height        — height of the right logo when logo: auto (default: 2.5cm)
+//   hei-logo           — left-side logo:  auto → HEI logo PDF; none → suppress; or custom content
+//   hei-logo-height    — height of the left logo when hei-logo: auto (default: 3.6cm)
+//   num-columns        — number of card columns (default: 2)
+//   distribute-columns — true → vertically space cards so columns fill top-to-bottom
+//   repo-url           — optional repo / GitHub URL; generates a QR code + pill in the footer
+//
+// Usage:  #show: isc-poster.with(title: ..., student: ..., supervisor: ..., ...)
+//         Then place content with #isc-card(title: "...")[...] blocks.
 #let isc-poster(
   title: [Poster Title],
   subtitle: none,
   student: [Prénom Nom],
+  permanent-email: none,
   supervisor: [Prof. Prénom Nom],
   co-supervisor: none,
+  expert: none,
   thesis-id: none,
+  academic-year: none,
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et Systèmes de communication (ISC)",
+  major: none,
   orientation: "portrait",
   language: "fr",
-  logo: auto,
+  logo: auto,             // right-side logo: auto = ISC logo, none = suppress, or custom content
+  logo-height: 2.5cm,     // height applied when logo: auto; ignored for custom content
+  hei-logo: auto,         // left-side logo:  auto = HEI logo, none = suppress, or custom content
+  hei-logo-height: 3.6cm, // height applied when hei-logo: auto; ignored for custom content
   num-columns: 2,
   distribute-columns: true,
+  repo-url: none,         // optional repo / GitHub URL → QR code + pill in footer
   body,
 ) = {
   import "@preview/placard:0.1.0": placard as _placard
+  // Import at function scope so tiaoma is always available for QR generation
+  // regardless of which if/else branch runs (Typst imports are block-scoped).
+  import "@preview/tiaoma:0.3.0"
 
+  // ISC TB aggregator — not user-facing; update here when the URL moves.
+  // TODO: update when the ISC TB website moves to its permanent address
+  let _isc-tbs-website = "https://isc-hei.github.io/isc-tbs/"
+
+  // ── Logo resolution ───────────────────────────────────────────────────────
+  // auto → default logo at the given height; none → suppress; custom → pass through as-is.
   let isc-logo = if logo == auto {
-    image("lib/assets/ISC Logo inline black v3.pdf", height: 2cm)
-  } else if logo == none {
-    none
-  } else {
-    logo
-  }
-  let hei-logo = image("lib/assets/hei_logo.pdf", height: 2cm)
-  let footer-logos = if isc-logo != none {
-    grid(columns: (auto, auto), column-gutter: 1.5em, align: horizon, hei-logo, isc-logo)
-  } else {
-    hei-logo
-  }
+    image("lib/assets/ISC Logo inline black v3.pdf", height: logo-height)
+  } else if logo == none { none } else { logo }
 
+  let resolved-hei-logo = if hei-logo == auto {
+    image("lib/assets/hei_logo.pdf", height: hei-logo-height)
+  } else if hei-logo == none { none } else { hei-logo }
+
+  // ── Localised label strings for the author block ──────────────────────────
   let lbl = if language == "de" {
-    (student: [Student·in], supervisor: [Betreuer·in], co-supervisor: [Co-Betreuer·in])
+    (student: [Student·in], supervisor: [Betreuer·in],
+     co-supervisor: [Co-Betreuer·in], expert: [Expert·in])
   } else if language == "fr" {
-    (student: [Étudiant·e], supervisor: [Superviseur·e], co-supervisor: [Co-superviseur·e])
+    (student: [Étudiant·e], supervisor: [Superviseur·e],
+     co-supervisor: [Co-superviseur·e], expert: [Expert·e])
   } else {
-    (student: [Student], supervisor: [Supervisor], co-supervisor: [Co-supervisor])
+    (student: [Student], supervisor: [Supervisor],
+     co-supervisor: [Co-supervisor], expert: [Expert])
   }
 
-  // Each entry: small muted label above the name (placard wraps every entry in bold,
-  // so the explicit text() overrides apply only for the label line).
-  let make-entry = (l, val) => stack(
+  // ── Author entries: muted role label above the name ───────────────────────
+  // placard renders each author entry in bold by default; explicit text() calls
+  // override that so only the name uses the bold weight placard would apply.
+  // sub: optional second line below the name (used for permanent-email).
+  let make-entry = (l, val, sub: none) => stack(
     dir: ttb,
     spacing: 7pt,
     text(size: 20pt, weight: "regular", fill: luma(120), l),
-    val,
+    if sub != none {
+      stack(dir: ttb, spacing: 4pt,
+        val,
+        text(size: 18pt, weight: "regular", fill: luma(160), sub))
+    } else { val },
   )
 
   let authors-list = (
-    (make-entry(lbl.student, student), make-entry(lbl.supervisor, supervisor))
+    (make-entry(lbl.student, student, sub: permanent-email),
+     make-entry(lbl.supervisor, supervisor))
     + (if co-supervisor != none { (make-entry(lbl.co-supervisor, co-supervisor),) } else { () })
+    + (if expert != none { (make-entry(lbl.expert, expert),) } else { () })
   )
 
-  let footer-parts = (school, programme) + (if thesis-id != none { ([*#thesis-id*],) } else { () })
-  let footer-text = footer-parts.join([  ·  ])
+  // ── Title block: title → subtitle → affiliation → accent line (placard) ──
+  // Affiliation (school · programme · major?) sits between the subtitle and
+  // placard's accent rule so the institutional context is visible without
+  // crowding the heading.
+  // set par() scoped to tight-title only via code block; stack() uses absolute
+  // pt spacers to avoid implicit paragraph spacing artefacts.
+  let tight-title = { set par(leading: 0.5em); title }
+  let _affil-parts = (school, programme) + (if major != none { (major,) } else { () })
+  let affiliation  = text(size: 22pt, weight: "regular", fill: luma(140),
+    _affil-parts.join([  ·  ]))
 
-  // Subtitle sits inside the title block (title → subtitle → accent rule → authors).
-  // stack() with absolute spacers avoids implicit paragraph spacing.
-  let tight-title = {
-    set par(leading: 0.5em)
-    title
-  }
-  let full-title = if subtitle != none {
-    stack(dir: ttb, tight-title, 24pt, text(size: 28pt, weight: "regular", subtitle))
-  } else {
-    tight-title
-  }
+  // pad(bottom: …) reduces the natural gap placard inserts between the title
+  // content and its accent rule — negative value pulls them closer together.
+  let full-title = pad(bottom: -8pt,
+    if subtitle != none {
+      stack(dir: ttb,
+        tight-title,
+        24pt,
+        text(size: 28pt, weight: "regular", subtitle),
+        32pt,
+        affiliation,
+      )
+    } else {
+      stack(dir: ttb, tight-title, 28pt, affiliation)
+    }
+  )
 
-  // Logos in page header: HEI left, ISC right.
-  // Top padding adds space from page edge; bottom padding gives breathing room before title.
-  set page(header: pad(top: 1.2cm, bottom: 0.8cm,
+  // ── Dot decoration: brand dots fading left → right, bottom-right corner ──
+  // 20 columns × 3 rows of circles; opacity increases toward the right edge.
+  // Placed in the page background so poster content and footer sit on top.
+  let _dot-d    = 5pt
+  let _dot-gap  = 4pt
+  let _n-cols   = 20
+  let _n-rows   = 3
+  // Pre-computed transparency steps: index 0 = leftmost (nearly invisible),
+  // index 19 = rightmost (fully opaque). Hard-coded to avoid float→ratio arithmetic.
+  let _t-steps  = (95%, 90%, 85%, 80%, 75%, 70%, 65%, 60%, 55%, 50%,
+                    45%, 40%, 35%, 30%, 25%, 20%, 15%, 10%,  5%,  0%)
+  let _dot-grid = grid(
+    columns: range(_n-cols).map(_ => _dot-d + _dot-gap),
+    rows:    range(_n-rows).map(_ => _dot-d + _dot-gap),
+    align:   center + horizon,
+    ..range(_n-cols * _n-rows).map(idx => {
+      let col = calc.rem(idx, _n-cols)
+      circle(radius: _dot-d / 2,
+             fill: inc.hei-purple.transparentize(_t-steps.at(col)),
+             stroke: none)
+    })
+  )
+  set page(background: place(bottom + right,
+    pad(right: 1.5cm, bottom: 1.5cm, _dot-grid)
+  ))
+
+  // ── Page header: HEI logo left, ISC logo right ────────────────────────────
+  // set page(header:) merges with the background set above and with placard's
+  // set page(paper:, margin:, footer:) since neither touches the other's keys.
+  // top padding: distance from paper edge to logo top.
+  // bottom padding: breathing room between logo bottom and the title block.
+  // The top margin passed to _placard (6cm) must clear logo height + padding.
+  set page(header: pad(top: 2.5cm, bottom: 0.8cm,
     grid(
       columns: (auto, 1fr, auto),
       align: horizon,
-      image("lib/assets/hei_logo.pdf", height: 3.5cm),
+      if resolved-hei-logo != none { resolved-hei-logo },
       [],
-      if isc-logo != none { image("lib/assets/ISC Logo inline black v3.pdf", height: 2.5cm) },
+      if isc-logo != none { isc-logo },
     )
   ))
+
+  // ── Footer left: thesis ID + academic year in monospace ──────────────────
+  let _footer-id-parts = (
+    (if thesis-id    != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), thesis-id),) }    else { () })
+    + (if academic-year != none { (text(font: "Fira Code", size: 16pt, fill: luma(100), academic-year),) } else { () })
+  )
+  let _footer-left = if _footer-id-parts.len() > 0 {
+    _footer-id-parts.join([  #text(fill: luma(100))[·]  ])
+  } else { [] }
+
+  // ── QR codes + pills for the footer right slot ───────────────────────────
+  // Each URL: QR code (machine-readable) above a brand pill (human-readable label).
+  // tiaoma is already imported at function scope above.
+  // scale: 1.5 ≈ 2–3 cm on A1 — scannable but fits the footer height.
+  let _make-qr(url, label) = stack(
+    dir: ttb,
+    spacing: 3pt,
+    align(center,
+      box(fill: white, inset: 4pt, radius: 2pt,
+        tiaoma.barcode(url, "QRCode", options: (
+          scale: 1.5,
+          fg-color: black,
+          bg-color: white,
+          dot-size: 1.0,
+          output-options: (barcode-dotty-mode: false),
+        ))
+      )
+    ),
+    align(center,
+      box(
+        fill: inc.hei-purple.lighten(85%),
+        radius: 100pt,
+        inset: (x: 10pt, y: 5pt),
+        text(font: "Source Sans Pro", size: 14pt, weight: "semibold",
+             fill: inc.hei-purple, label)
+      )
+    ),
+  )
+  let _qr-entries = (
+    (_make-qr(_isc-tbs-website, "ISC TB"),)
+    + (if repo-url != none { (_make-qr(repo-url, "GitHub"),) } else { () })
+  )
+  let _qr-block = grid(
+    columns: _qr-entries.map(_ => auto),
+    column-gutter: 1em,
+    align: top,
+    .._qr-entries,
+  )
+
+  // ── Initialise distribute-columns state before body renders ───────────────
+  // State updates must appear before the content that reads them in document flow.
   _isc-poster-distribute.update(distribute-columns)
   _isc-first-card.update(true)
+
+  // ── Hand off to placard ───────────────────────────────────────────────────
+  // footer.content: thesis ID + academic year bottom-left in monospace.
+  // footer.logo:    ISC TB QR code (always) + GitHub QR code (when repo-url set).
   _placard(
     title: full-title,
     authors: authors-list,
@@ -1004,19 +1157,17 @@
       heading: inc.hei-purple,
     ),
     fonts: (
-      title: "Source Sans Pro",
-      authors: "Source Sans Pro",
-      body: "Source Sans Pro",
+      title:    "Source Sans Pro",
+      authors:  "Source Sans Pro",
+      body:     "Source Sans Pro",
       headings: "Source Sans Pro",
-      card: "Source Sans Pro",
-      footer: "Source Sans Pro",
+      card:     "Source Sans Pro",
+      footer:   "Source Sans Pro",
     ),
     sizes: (authors: 26pt),
     footer: (
-      content: if thesis-id != none {
-        text(font: "Fira Code", size: 16pt, fill: luma(100), thesis-id)
-      } else { [] },
-      logo: none,
+      content: _footer-left,
+      logo: _qr-block,
       logo-placement: right,
       text-placement: left,
     ),
@@ -1024,18 +1175,26 @@
   )
 }
 
-// Styled content box for use inside isc-poster().
-// Wraps @preview/placard's card() with ISC theme colours already applied.
-// When distribute-columns is active: injects v(1fr) BEFORE each non-first card
-// (space-between semantics — first card at top, last card at bottom).
+// Section content box for use inside isc-poster().
+//
+// Wraps @preview/placard's card() with ISC colours and optional vertical
+// distribution.  When distribute-columns is active (the default), a leading
+// v(1fr) is injected before every card except the first in each column, giving
+// space-between semantics: first card at the top, last card at the bottom,
+// equal space distributed between them.
+//
+// gap: auto  → 0pt when distributing (no trailing gap after last card);
+//              placard default otherwise.
+//      length → explicit override, always applied.
 #let isc-card(title: "", fill: none, gap: auto, body) = {
   import "@preview/placard:0.1.0": card as _card
-  // Leading spacer for all but the first card in each column
+  // Inject leading spacer for all but the first card in each column.
   context {
     if _isc-poster-distribute.get() and not _isc-first-card.get() { v(1fr) }
   }
   _isc-first-card.update(false)
-  // Suppress trailing gap when distributing so nothing follows the last card
+  // Resolve effective gap: suppress trailing space when distributing so the
+  // last card sits flush with the column bottom.
   context {
     let effective-gap = if gap != auto { gap }
                         else if _isc-poster-distribute.get() { 0pt }
@@ -1044,130 +1203,10 @@
   }
 }
 
-// Column break that resets the first-card flag for the next column.
-// Use #isc-colbreak() instead of #colbreak() when distribute-columns: true.
+// Column break that resets the first-card flag for the new column.
+// Always use #isc-colbreak() instead of #colbreak() when distribute-columns is
+// active, otherwise the leading spacer logic mis-fires in the next column.
 #let isc-colbreak() = {
   _isc-first-card.update(true)
   colbreak()
-}
-
-// A1 poster layout powered by @preview/simple-research-poster.
-// Usage: #show: isc-poster-srp.with(title: ..., student: ..., supervisor: ..., ...)
-// Content goes inside a grid of isc-section() calls.
-// Note: the header is built manually (not via poster()) so that rows: (100%,) gives
-// align(center + horizon) a container taller than the content, enabling true vertical centering.
-#let isc-poster-srp(
-  title: [Poster Title],
-  subtitle: none,
-  student: [Prénom Nom],
-  supervisor: [Prof. Prénom Nom],
-  co-supervisor: none,
-  thesis-id: none,
-  orientation: "portrait",
-  language: "fr",
-  logo: auto,
-  body,
-) = {
-  let resolved-logo = if logo == auto {
-    image("lib/assets/ISC Logo inline black v3.pdf", width: 100%)
-  } else if logo == none {
-    none
-  } else {
-    logo
-  }
-
-  set page(paper: "a1", flipped: orientation == "landscape", margin: 0%)
-  set text(font: "Source Sans Pro", size: 17pt)
-  set par(justify: true)
-
-  let lbl = if language == "de" {
-    (supervisor: "Betreuer·in", co-supervisor: "Co-Betreuer·in")
-  } else if language == "fr" {
-    (supervisor: "Superviseur·e", co-supervisor: "Co-superviseur·e")
-  } else {
-    (supervisor: "Supervisor", co-supervisor: "Co-supervisor")
-  }
-
-  let info-parts = (
-    ([#lbl.supervisor : #supervisor],)
-    + (if co-supervisor != none { ([#lbl.co-supervisor : #co-supervisor],) } else { () })
-    + (if thesis-id != none { (emph(thesis-id),) } else { () })
-  )
-
-  let title-block = if subtitle != none {
-    stack(
-      dir: ttb,
-      text(size: 58pt, weight: "extrabold", title),
-      16pt,
-      text(size: 36pt, weight: "regular", subtitle),
-      12pt,
-      align(center, line(length: 40%, stroke: (paint: white.transparentize(40%), thickness: 1pt))),
-    )
-  } else {
-    text(size: 58pt, weight: "extrabold", title)
-  }
-
-  let author-block = stack(
-    dir: ttb,
-    spacing: 4pt,
-    text(size: 28pt, weight: "bold", student),
-    text(size: 22pt, weight: "regular", info-parts.join([  ·  ])),
-  )
-
-  // Build the page layout manually so that rows: (100%,) on the inner header grid
-  // gives the align(center + horizon) a full-height container to centre within.
-  grid(
-    columns: 1,
-    rows: (13%, 83%, 4%),
-    // ── Header ──────────────────────────────────────────────────────────────
-    {
-      set text(fill: white)
-      block(
-        fill: inc.hei-purple,
-        width: 100%,
-        height: 100%,
-        grid(
-          columns: (1fr, 4fr, 1fr),
-          rows: (100%,),
-          [],
-          align(center + horizon,
-            stack(
-              dir: ttb,
-              spacing: 28pt,
-              title-block,
-              author-block,
-            )
-          ),
-          align(right + horizon,
-            pad(right: 1em, if resolved-logo != none { resolved-logo } else { [] })
-          ),
-        )
-      )
-    },
-    // ── Body ────────────────────────────────────────────────────────────────
-    body,
-    // ── Footer ──────────────────────────────────────────────────────────────
-    block(fill: inc.hei-purple, width: 100%, height: 100%),
-  )
-}
-
-// Content section for use inside isc-poster-srp().
-// Wraps @preview/simple-research-poster's poster-section() with ISC branding.
-#let isc-section(title, fill: false, body) = {
-  import "@preview/simple-research-poster:0.2.0": poster-section as _section
-
-  let bc = (
-    bgcolor1: white,
-    bgcolor2: inc.hei-purple,
-    textcolor1: rgb("#1a1a1a"),
-    textcolor2: white,
-  )
-
-  _section(
-    title,
-    body,
-    base-colors: bc,
-    title-style: it => align(left, text(size: 30pt, weight: "bold", fill: inc.hei-purple, smallcaps(it))),
-    fill: fill,
-  )
 }

@@ -35,7 +35,6 @@ compile-all:
   typst compile src/exec_summary.typ examples/exec_summary.pdf
   typst compile src/tb_assignment.typ examples/tb_assignment.pdf
   typst compile src/poster.typ examples/poster.pdf
-  typst compile src/poster_srp.typ examples/poster_srp.pdf
 
 [private]
 remove target:

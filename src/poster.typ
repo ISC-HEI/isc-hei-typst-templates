@@ -39,15 +39,20 @@
   title: [Apprentissage fédéré pour la protection de la vie privée dans l'analyse de données médicales],
   subtitle: [Confidentialité différentielle et agrégation distribuée des gradients],
   student: "Barbara Liskov",
+  permanent-email: "barbara.liskov@hevs.ch",
   supervisor: "Prof. Dr John von Neumann",
   // co-supervisor: "Lady Ada Lovelace",  // optional
+  expert: "Prof. Dr Grace Hopper",
   thesis-id: "ISC-ID-26-1",
+  academic-year: "2025-2026",
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et Systèmes de communication (ISC)",
+  major: "Data Engineering",
   orientation: poster-orientation,
   language: "fr",
   num-columns: 2,
   distribute-columns: true,  // evenly distributes cards vertically; set false to disable
+  // repo-url: "https://github.com/username/repo",  // optional: adds GitHub QR code in footer
 )
 
 // ─── Column 1 ────────────────────────────────────────────────────────────────
