@@ -941,7 +941,6 @@
 //   hei-logo-height    — height of the left logo when hei-logo: auto (default: 3.6cm)
 //   num-columns        — number of card columns (default: 2)
 //   distribute-columns — true → vertically space cards so columns fill top-to-bottom
-//   repo-url           — optional repo / GitHub URL; generates a QR code + pill in the footer
 //
 // Usage:  #show: isc-poster.with(title: ..., student: ..., supervisor: ..., ...)
 //         Then place content with #isc-card(title: "...")[...] blocks.
@@ -966,7 +965,6 @@
   hei-logo-height: 3.6cm, // height applied when hei-logo: auto; ignored for custom content
   num-columns: 2,
   distribute-columns: true,
-  repo-url: none,         // optional repo / GitHub URL → QR code + pill in footer
   body,
 ) = {
   import "@preview/placard:0.1.0": placard as _placard
@@ -1102,53 +1100,47 @@
   // ── Institutional info block — bottom-left foreground overlay ─────────────
   // Sits on top of the footer accent line (foreground layer).
   // Layout: ISC TB QR on the left, programme · major · academic-year stacked on the right.
-  let _info-text-parts = (
-    (programme,)
-    + (if major         != none { (major,)         } else { () })
-    + (if academic-year != none { (academic-year,) } else { () })
+  let _label-orientation   = if language == "fr" { "Orientation" }    else { "Orientation" }
+  let _label-academic-year = if language == "fr" { "Année académique" } else { "Academic year" }
+
+  let _info-label(t) = text(font: "Source Sans Pro", size: 10pt, weight: "regular", fill: luma(160), t)
+  let _info-value(t, first: false) = text(
+    font: "Source Sans Pro",
+    size: if first { 18pt } else { 16pt },
+    weight: if first { "semibold" } else { "regular" },
+    fill: if first { luma(50) } else { luma(110) },
+    t,
+  )
+
+  let _tous-les-travaux-pill = rotate(-90deg, reflow: true,
+    text(font: "Source Sans Pro", size: 11pt, weight: "semibold",
+         fill: inc.hei-purple, [Tous les\ travaux])
   )
 
   let _info-block = grid(
-    columns: (auto, auto),
+    columns: (auto, auto, auto),
     column-gutter: 5mm,
     align: horizon,
+    _tous-les-travaux-pill,
     _make-qr(_isc-tbs-website),
-    stack(dir: ttb, spacing: 8pt,
-      ..(_info-text-parts.enumerate().map(((i, part)) =>
-        text(
-          font: "Source Sans Pro",
-          size: if i == 0 { 18pt } else { 16pt },
-          weight: if i == 0 { "semibold" } else { "regular" },
-          fill: if i == 0 { luma(50) } else { luma(110) },
-          part,
-        )
-      ))
+    stack(dir: ttb, spacing: 10pt,
+      _info-value(programme, first: true),
+      ..(if major != none {
+        (stack(dir: ttb, spacing: 3pt,
+          _info-label(_label-orientation),
+          _info-value(major),
+        ),)
+      } else { () }),
+      ..(if academic-year != none {
+        (stack(dir: ttb, spacing: 3pt,
+          _info-label(_label-academic-year),
+          _info-value(academic-year),
+        ),)
+      } else { () }),
     ),
   )
 
-  // ── GitHub repo QR — bottom-right foreground overlay (optional) ───────────
-  let _repo-block = if repo-url != none {
-    stack(dir: ttb, spacing: 4pt,
-      _make-qr(repo-url),
-      align(center,
-        box(
-          fill: inc.hei-purple.lighten(85%),
-          radius: 100pt,
-          inset: (x: 10pt, y: 5pt),
-          text(font: "Source Sans Pro", size: 14pt, weight: "semibold",
-               fill: inc.hei-purple, "GitHub")
-        )
-      ),
-    )
-  }
-
-  // Both overlays share one foreground so neither overrides the other.
-  set page(foreground: {
-    place(bottom + left,  pad(left:  2.5cm, bottom: 1.6cm, _info-block))
-    if _repo-block != none {
-      place(bottom + right, pad(right: 2cm, bottom: 1cm, _repo-block))
-    }
-  })
+  set page(foreground: place(bottom + left, pad(left: 2.5cm, bottom: 1.6cm, _info-block)))
 
   // ── Initialise distribute-columns state before body renders ───────────────
   // State updates must appear before the content that reads them in document flow.
@@ -1169,7 +1161,7 @@
     // top margin = space reserved for the title block (title+subtitle+affiliation+authors).
     // Increase if the title block overflows into the cards; decrease to close the gap
     // between the authors row and the first card column.
-    margin: (top: 6.3cm),
+    margin: (top: 6.3cm, bottom: 6.5cm),
     colors: (
       accent:  inc.hei-purple,
       heading: inc.hei-purple,
@@ -1184,7 +1176,7 @@
     ),
     sizes: (authors: 22pt),
     footer: (
-      // Institutional block (left) and repo QR (right) live in the page foreground.
+      // Institutional block lives in the page foreground overlay.
       content: [],
       logo: none,
       logo-placement: right,

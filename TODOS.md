@@ -3,14 +3,15 @@
 
 ## Poster
 
-- add some decorations using the brand color, like a banner made of three dots vertically that are replicated on the side and slowly disappear (like 20 columns). Put that bottom right
-- add affilation between the subtitle and the line, with some space in between.
-- add the executive summary inputs as well (academic year, github link, qr-code if available), add a pill to the repository + qr code to the github link
-- control 3 columns as well
+Generate all variations of the poster to test the layout, and check if the content fits well in all of them. In particular:
+- control 2 and 3 columns as well
+- long and short titles
+- with and without subtitles
+- with and without supervisor
 - check landscape mode
+- english, french and german variants
+
 - print one to see how it looks like, and adjust the font size if needed
-- check if cosupervisor is working
-- add acknowledgements section
 
 ## Global
 

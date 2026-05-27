@@ -52,7 +52,6 @@
   language: "fr",
   num-columns: 2,
   distribute-columns: true,  // evenly distributes cards vertically; set false to disable
-  // repo-url: "https://github.com/username/repo",  // optional: adds GitHub QR code in footer
 )
 
 // ─── Column 1 ────────────────────────────────────────────────────────────────
