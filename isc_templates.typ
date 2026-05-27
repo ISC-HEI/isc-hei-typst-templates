@@ -449,6 +449,11 @@
   video-url: none,
   bind: none,
   footer: none,
+  // Your picture and email will be used in the printed brochure.
+  // By default they will also appear on the ISC web page. Set either
+  // flag to true to opt out of web publication for that item.
+  picture-web-opt-out: false,
+  email-web-opt-out: false,
   
   // Course report specific
   course-name: none,

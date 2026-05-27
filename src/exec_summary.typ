@@ -101,6 +101,12 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
   permanent-email: "stormy.peters@example.com", // [Optional], put none if not used. Prefer a long term viable address!
   video-url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // A link to the video of you project, or none
 
+  // DISCLAIMER: Your picture and email address will be used in the printed
+  // ISC bachelor thesis brochure. Unless you opt out below, they will also
+  // appear on the ISC web page. Set the relevant flag to true to opt out.
+  picture-web-opt-out: false, // set to true to keep your picture off the web
+  email-web-opt-out: false,   // set to true to keep your email off the web
+
   summary: summary, // Not to be changed
   content: content, // Not to be changed
 
