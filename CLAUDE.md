@@ -136,6 +136,39 @@ When verifying a refactor that should not change output, render the six examples
 to PNG before and after and diff `md5sum`s — PDFs embed timestamps so compare
 rasterised pages, not the PDFs themselves.
 
+### Declaration of honour (thesis only)
+
+`src/pages/honneur.typ` is a bilingual (FR/EN, driven by the document language)
+declaration-of-honour page, `#include`d in `src/bachelor_thesis.typ` between the
+résumé and the acknowledgements. It auto-fills author / title / academic-year /
+date from `inc.global-thesis-meta` (populated by `project()`), so the only fields
+the student must set are `date:` and `signature:` (an `image(...)`) on `project()`
+— they never edit `honneur.typ`. A missing signature renders a red placeholder
+(not a panic) and is flagged by the completeness check below.
+
+### Completeness check (thesis cover, drafting aid)
+
+`lib/pages/cover_bachelor.typ` renders a red "DOCUMENT INCOMPLET / INCOMPLETE
+DOCUMENT" warning box on the title page listing unfilled fields: `thesis-id`
+(empty/placeholder, or not matching `ISC-XX-YY-N` via regex), `signature`
+(missing or still the shipped `signature_placeholder.svg`), `project-repos`, and
+`keywords`. It stays silent while the document is still pristine — detected by the
+author still equalling the sample `"James Gosling"`. **Sentinels in that file
+(`sample-author`, `sample-thesis-id`, `sample-repo`, `sample-keywords`) mirror the
+placeholders shipped in `src/bachelor_thesis.typ`; update both together.**
+
+### Fonts-not-installed guard
+
+`isc-fonts-available()` (lib/fonts.typ) is a Source-Sans-only proxy: it compares
+the rendered width of `"MMMMMMMMMM"` in Source Sans vs. the always-bundled
+Libertinus Serif; equal widths ⇒ fonts absent. Fira Code / Inria Sans are *not*
+tested. When it fails, `_missing-fonts-page(paper:)` renders instead of the
+document. It is wired into **both** entry points: `project()` (lib/project.typ,
+covers thesis/report/document/exec-summary/tb-assignment) and `isc-poster()`
+(lib/poster.typ, `paper: "a1"`). Both place the guard as the `else` of a
+`context if not isc-fonts-available() { … } else { … }` so the document's own
+`set page` rules only run in the else branch.
+
 ### State variables (lib/includes.typ)
 
 Typst `state` objects thread document-wide settings without argument passing:
