@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Official [Typst](https://typst.app/) templates for the ISC bachelor degree programme at HEI Sion (HES-SO Valais), Switzerland. One shared codebase is distributed as **five separate packages** on the Typst Universe registry under `@preview/isc-hei-*`.
+Official [Typst](https://typst.app/) templates for the ISC bachelor degree programme at HEI Sion (HES-SO Valais), Switzerland. One shared codebase is distributed as **six separate packages** on the Typst Universe registry under `@preview/isc-hei-*`.
 
 ## Build commands
 
@@ -42,6 +42,9 @@ just bump-version
 
 # Regenerate thumbnails from examples/*.pdf (needs ImageMagick + pngquant)
 just generate-thumbs
+
+# Remove all packed/symlinked templates from @preview
+just uninstall
 ```
 
 ## Architecture
@@ -140,6 +143,7 @@ Versions must be consistent across:
 - `templates/document/typst.toml`
 - `templates/exec-summary/typst.toml`
 - `templates/tb-assignment/typst.toml`
+- `templates/poster/typst.toml`
 
 Note: the root `typst.toml` and the template `typst.toml` files may legitimately differ by one patch version (root tracks the last published release; templates track the next).
 
