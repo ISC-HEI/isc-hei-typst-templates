@@ -8,26 +8,40 @@ Official [Typst](https://typst.app/) templates for the ISC bachelor degree progr
 
 ## Build commands
 
-Requires: `typst` (≥ 0.14.2), `just`, `ImageMagick` + `pngquant` (thumbnails only).
+Requires: `typst` (≥ 0.14.2), `just`, `ImageMagick` + `pngquant` (used by `generate-thumbs`, which `pack` runs).
+
+The Justfile is split into two workflows — **local development** (work against
+your live source via symlinks) and **release** (build + check the Universe
+artifacts). Packing replaces the dev symlinks, so re-run `just install-symblinks`
+to return to local work afterwards.
 
 ```sh
-# Compile all five templates to examples/*.pdf
-just compile_all
-
-# Compile a single template
-typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
-
-# Pack all five packages to @preview (needed before running tests)
-just pack_distro_preview
-
-# Full test suite (packs first, then runs scripts/test-*.sh)
-just test_all
-
-# Install dev symlinks so local edits are visible without re-packing
+# ── Local development ──
+# Install dev symlinks so @preview points at this repo (run once)
 just install-symblinks
 
-# Regenerate thumbnails from compiled PDFs (needs ImageMagick + pngquant)
-just generate_thumbs
+# Compile all six examples to examples/*.pdf
+just compile-all
+# …or a single template
+typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
+
+# Run the full test suite against your live source (no packing)
+just test
+# …or only the poster layout checks
+just test-poster
+
+# ── Release (Typst Universe) ──
+# Pack all six packages to @preview (the real artifact; replaces dev symlinks)
+just pack
+
+# Pre-publish check: pack the release, then test it
+just test-all
+
+# Bump the version across all typst.toml + src/ imports (patch | minor | X.Y.Z)
+just bump-version
+
+# Regenerate thumbnails from examples/*.pdf (needs ImageMagick + pngquant)
+just generate-thumbs
 ```
 
 ## Architecture

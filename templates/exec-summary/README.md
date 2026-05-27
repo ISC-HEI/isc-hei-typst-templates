@@ -48,10 +48,6 @@ If you need a specific template version, use:
 typst init @preview/isc-hei-exec-summary:0.5.0
 ```
 
-## Including PDF Images
-
-Unfortunately, `typst` does not support PDF file inclusion at the time of writing this documentation. As a temporary workaround, PDF files can be converted to SVG using `pdf2svg`.
-
 # Usage
 
 When used locally, creating a PDF is straightforward with the command:

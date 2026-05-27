@@ -63,70 +63,10 @@
       
       v(35mm),
       
-      // Decorative line: hei-purple square on the left, line with hei-purple circles
-      {
-        let line-thickness = 2pt
-        let square-size = 8pt
-        let circle-r = 2.5pt
-        let line-length = 8cm
-
-        let n-bits = 16
-
-        // move(dy:-5mm, line(start: (0pt, 0pt), length: solid-length, stroke: (thickness: line-thickness, dash: "solid", paint: black)))
-
-        place(line(start: (0pt, 0pt), length: line-length, stroke: (thickness: line-thickness, dash: "solid", paint: hei-purple)))
-
-        //place(dx: solid-length, dy: -circle-r, circle(radius: circle-r, fill: hei-purple, stroke: none))
-
-        // hei-purple square at the far left
-        place(dx: 0cm, dy: -square-size / 2, rect(width: square-size, height: square-size, fill: hei-purple, stroke: none))
-        
-        // Pseudo-random bit pattern based on author name and thesis ID
-        // Guarantee at least n-bits/4 ones via bit-folding
-        let bit-set(n, i) = calc.rem(int(n / calc.pow(2, i)), 2) == 1
-
-        // Polynomial rolling hash (base 31) on thesis ID + authors
-        let hash = (thesis-id + authors).clusters().fold(0, (acc, ch) => {
-          calc.rem(acc * 31 + str.to-unicode(ch), 2147483647)
-        })
-
-        // Take lower n-bits
-        let pattern = calc.rem(hash, calc.pow(2, n-bits))
-
-        // Ensure at least n-bits/4 bits are set: force-set bits at hashed positions
-        let min-ones = calc.quo(n-bits, 4)
-        let ones = range(n-bits).filter(i => bit-set(pattern, i)).len()
-        if ones < min-ones {
-          // Use upper bits of hash as seed to pick which bits to set
-          let seed = calc.quo(hash, calc.pow(2, n-bits))
-          let i = 0
-          while ones < min-ones {
-            let pos = calc.rem(seed + i * 7, n-bits)  // stride of 7 to spread out
-            if not bit-set(pattern, pos) {
-              pattern = pattern + calc.pow(2, pos)
-              ones = ones + 1
-            }
-            i = i + 1
-          }
-        }
-
-        // hei-purple circles as bits: hei-purple = 0, white = 1
-        // Equal visual gaps between square edges and circle edges
-        let usable = line-length - 2 * square-size  // space between square edges
-        let gap = (usable - n-bits * 2 * circle-r) / (n-bits + 1)
-        let stride = 2 * circle-r + gap  // center-to-center distance
-        for i in range(n-bits) {
-          let dx-val = square-size + gap + circle-r + i * stride
-          let fill-color = if bit-set(pattern, i) { white } else { hei-purple }
-          place(dx: dx-val, dy: -circle-r, circle(radius: circle-r, fill: fill-color, stroke: 0.5pt + hei-purple))
-        }
-
-         place(
-          dx: line-length - square-size,
-          dy: -square-size / 2,
-          rect(width: square-size, height: square-size, fill: hei-purple, stroke: hei-purple),
-        )
-      },
+      // Decorative line: hash-encoded bit pattern (square ends + circle bits).
+      // dy pulls the box up by half its height so the rule sits on the baseline,
+      // matching the original zero-height placement.
+      place(dy: -4pt, isc.hash-rule(thesis-id + authors)),
       v(5mm),
       text(programme, size: 14pt, weight: 650),
       v(3mm),

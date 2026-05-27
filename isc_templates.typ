@@ -78,6 +78,71 @@
   if ang != 0 { rotate(ang * 1deg, origin: center + horizon, body) } else { body }
 }
 
+// Decorative "hash rule": a brand-colored square at each end joined by a line
+// whose circles encode a deterministic hash of `seed` (hollow = 1 bit, filled
+// = 0 bit). Each document therefore gets a stable, unique pattern. Shared by
+// the bachelor-thesis cover and the poster title separator.
+#let hash-rule(
+  seed,
+  length: 8cm,
+  thickness: 2pt,
+  square-size: 8pt,
+  circle-r: 2.5pt,
+  n-bits: 16,
+  bits-length: auto,
+  color: inc.hei-purple,
+) = {
+  // bits-length: span the circle bits are packed into (left-aligned). When
+  // auto it equals `length` (bits fill the whole rule); set it shorter to
+  // cluster the bits on the left and let the line run on to the right square.
+  let bspan = if bits-length == auto { length } else { bits-length }
+  let bit-set(n, i) = calc.rem(int(n / calc.pow(2, i)), 2) == 1
+
+  // Polynomial rolling hash (base 31) over the seed string.
+  let hash = seed.clusters().fold(0, (acc, ch) =>
+    calc.rem(acc * 31 + str.to-unicode(ch), 2147483647))
+
+  let pattern = calc.rem(hash, calc.pow(2, n-bits))
+
+  // Guarantee at least n-bits/4 set bits so the pattern never looks empty.
+  let min-ones = calc.quo(n-bits, 4)
+  let ones = range(n-bits).filter(i => bit-set(pattern, i)).len()
+  if ones < min-ones {
+    let s = calc.quo(hash, calc.pow(2, n-bits))
+    let i = 0
+    while ones < min-ones {
+      let pos = calc.rem(s + i * 7, n-bits)
+      if not bit-set(pattern, pos) {
+        pattern = pattern + calc.pow(2, pos)
+        ones = ones + 1
+      }
+      i = i + 1
+    }
+  }
+
+  box(width: length, height: square-size, {
+    let mid = square-size / 2
+    // Main line, vertically centered in the box.
+    place(dy: mid, line(length: length, stroke: (thickness: thickness, paint: color)))
+    // End squares.
+    place(rect(width: square-size, height: square-size, fill: color, stroke: none))
+    place(dx: length - square-size, rect(width: square-size, height: square-size, fill: color, stroke: color))
+    // Bit circles, evenly spaced across the (possibly shorter) bits span,
+    // with the whole cluster centered in `length` (leading + trailing line).
+    let usable = bspan - 2 * square-size
+    let gap    = (usable - n-bits * 2 * circle-r) / (n-bits + 1)
+    let stride = 2 * circle-r + gap
+    let bits-offset = (length - bspan) / 2
+    for i in range(n-bits) {
+      let dx-val = bits-offset + square-size + gap + circle-r + i * stride
+      place(dx: dx-val, dy: mid - circle-r,
+        circle(radius: circle-r,
+               fill: if bit-set(pattern, i) { white } else { color },
+               stroke: 0.5pt + color))
+    }
+  })
+}
+
 #let chapter-rule(
   decorations: (
     // — single shapes —
@@ -1006,8 +1071,8 @@
   )
 
   let authors-list = (
-    (make-entry(lbl.student, student, sub: permanent-email),
-     make-entry(lbl.supervisor, supervisor))
+    (make-entry(lbl.student, student, sub: permanent-email),)
+    + (if supervisor != none { (make-entry(lbl.supervisor, supervisor),) } else { () })
     + (if co-supervisor != none { (make-entry(lbl.co-supervisor, co-supervisor),) } else { () })
     + (if expert != none { (make-entry(lbl.expert, expert),) } else { () })
   )
@@ -1018,31 +1083,16 @@
   // crowding the heading.
   // set par() scoped to tight-title only via code block; stack() uses absolute
   // pt spacers to avoid implicit paragraph spacing artefacts.
-  let tight-title = { set par(leading: 0.5em); title }
+  // hyphenate: false keeps long words whole — placard justifies the title, which
+  // would otherwise split words mid-line (e.g. "hospitalières" → "hospital-ières").
+  let tight-title = { set par(leading: 0.5em); set text(hyphenate: false); title }
   let _affil-parts = (school, programme) + (if major != none { (major,) } else { () })
-  let affiliation  = text(size: 18pt, weight: "regular", fill: luma(140),
-    _affil-parts.join([  ·  ]))
-
-  // Ornaments placed on placard's accent separator (zero-height overlay).
-  // Gap from natural stack end to separator = placard block inset (65pt) − pad (25pt) = 40pt.
-  // +1pt centres on the 2pt line; −e/2 centres the ornament shape vertically.
-  let _sep-sz      = 10pt
-  let _sep-gap     = 12pt
-  let _sep-pattern = (
-    (shape: "square", filled: false, scale: 0.4, angle: 45),
-    (shape: "circle", filled: true),
-  )
-  let _sep-ornaments = layout(size => {
-    let n = _sep-pattern.len()
-    for (i, spec) in _sep-pattern.enumerate() {
-      let s_val  = if "scale" in spec { spec.scale } else { 1.0 }
-      let e_eff  = _sep-sz * s_val
-      let slot-x = size.width - _sep-sz - (_sep-sz + _sep-gap) * (n - 1 - i)
-      let x      = slot-x + (_sep-sz - e_eff) / 2
-      let dy     = 40pt + 1pt - e_eff / 2
-      place(dx: x, dy: dy, _draw-ornament(spec, e_eff, inc.hei-purple))
+  let affiliation = layout(size => block(width: size.width, {
+    align(center, text(size: 18pt, weight: "regular", fill: luma(140), _affil-parts.join([  ·  ])))
+    if thesis-id != none {
+      place(right + horizon, text(font: "Source Sans Pro", size: 15pt, weight: "regular", fill: luma(160), thesis-id))
     }
-  })
+  }))
 
   // pad(bottom: …) reduces the natural gap placard inserts between the title
   // content and its accent rule — negative value pulls them closer together.
@@ -1054,10 +1104,9 @@
         text(size: 28pt, weight: "regular", subtitle),
         8mm,
         affiliation,
-        _sep-ornaments,
       )
     } else {
-      stack(dir: ttb, tight-title, 16pt, affiliation, _sep-ornaments)
+      stack(dir: ttb, tight-title, 16pt, affiliation)
     }
   )
 
@@ -1114,8 +1163,8 @@
   // ── Institutional info block — bottom-left foreground overlay ─────────────
   // Sits on top of the footer accent line (foreground layer).
   // Layout: ISC TB QR on the left, programme · major · academic-year stacked on the right.
-  let _label-orientation   = if language == "fr" { "Orientation" }    else { "Orientation" }
-  let _label-academic-year = if language == "fr" { "Année académique" } else { "Academic year" }
+  let _label-orientation   = i18n(language, "poster-orientation")
+  let _label-academic-year = i18n(language, "poster-academic-year")
 
   let _info-value(t, first: false) = text(
     font: "Source Sans Pro",
@@ -1129,7 +1178,7 @@
   let _tous-les-travaux-pill = rotate(-90deg, reflow: true,
     par(leading: 2pt,
       text(font: "Source Sans Pro", size: 10pt, weight: "semibold",
-           fill: inc.hei-purple, [Découvrez tous\ nos bachelors])
+           fill: inc.hei-purple, i18n(language, "poster-discover").split("\n").join(linebreak()))
     )
   )
 
@@ -1158,6 +1207,34 @@
   _isc-first-card.update(true)
   // Pull every column's first card up by this amount to close the gap below the authors.
   _isc-col-start-offset.update(-0.6cm)
+
+  // ── Branded title separator ───────────────────────────────────────────────
+  // placard draws two full-width accent lines: the title separator first, then
+  // the footer rule. Swap only the first for the hashed bit-rule (the same one
+  // on the bachelor-thesis cover); the footer rule stays a plain line. The
+  // state is keyed on document position, so the title line — which precedes the
+  // footer — is the one replaced regardless of layout order.
+  //
+  // Seed must match the bachelor cover (thesis-id + author, raw strings) so the
+  // same document yields the same bit pattern across both templates.
+  let _as-str = v => if v == none { "" } else if type(v) == str { v } else { repr(v) }
+  let _seed = _as-str(thesis-id) + _as-str(student)
+  let _title-rule-seen = state("_isc-poster-title-rule", false)
+  show line: it => {
+    if it.length != 100% { return it }
+    context {
+      if _title-rule-seen.get() { it } else {
+        _title-rule-seen.update(true)
+        // Bits clustered on the left (matching the bachelor pattern), then a
+        // plain line runs on to the right square. Overlaid in a zero-height box
+        // so the title block keeps the original line's vertical footprint and
+        // the cards still fit on a single page.
+        box(width: 100%, height: 0pt, place(top, dy: -6pt,
+          layout(size => hash-rule(_seed, length: size.width, bits-length: 24cm,
+            n-bits: 16, thickness: 2pt, square-size: 12pt, circle-r: 5pt))))
+      }
+    }
+  }
 
   // ── Hand off to placard ───────────────────────────────────────────────────
   // footer.content: thesis ID + academic year (simple text, left-aligned).

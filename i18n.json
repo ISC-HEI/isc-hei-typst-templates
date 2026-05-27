@@ -29,8 +29,11 @@
         "supervising-expert": "Expert·e",
         "keywords": "Mots-clés",
         "submitted-on": "Travail soumis le",
-        "revision": "Révision"
-    },    
+        "revision": "Révision",
+        "poster-discover": "Découvrez tous\nnos bachelors",
+        "poster-orientation": "Orientation",
+        "poster-academic-year": "Année académique"
+    },
     "en": {
         "toc-title": "Table of Contents",
         "bib-title": "Bibliography",
@@ -61,7 +64,10 @@
         "supervising-second-examiner": "Co-supervisor",
         "supervising-expert": "Expert",
         "submitted-on": "Submitted on",
-        "revision": "Revision"
+        "revision": "Revision",
+        "poster-discover": "Discover all\nour theses",
+        "poster-orientation": "Major",
+        "poster-academic-year": "Academic year"
     },
     "de": {
         "toc-title": "Inhaltsverzeichnis",
@@ -77,6 +83,9 @@
         "listing-table-title": "Quelltexte",
         "table-table-title": "Tabellen",
         "equation-table-title": "Gleichungen",
-        "date-format": "dd. MMMM yyyy"
+        "date-format": "dd. MMMM yyyy",
+        "poster-discover": "Alle Bachelor-\nArbeiten entdecken",
+        "poster-orientation": "Vertiefung",
+        "poster-academic-year": "Akademisches Jahr"
     }
 }
