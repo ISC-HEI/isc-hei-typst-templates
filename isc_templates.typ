@@ -49,6 +49,35 @@
 //   context chapter-rule(chapter: counter(heading).get().first(), decorations: (
 //     ((shape: "cross", filled: false, scale: 0.6, angle: 45), (shape: "square", filled: true)),
 //   ))
+// Shared ornament renderer — used by chapter-rule and the poster separator.
+// color is passed explicitly so the caller can use any brand color.
+#let _draw-ornament(spec, e, color) = {
+  let fc  = if spec.filled { color } else { white }
+  let ang = if "angle" in spec { spec.angle } else { 0 }
+  let body = if spec.shape == "square" {
+    rect(width: e, height: e, fill: fc, stroke: color)
+  } else if spec.shape == "circle" {
+    ellipse(width: e, height: e, fill: fc, stroke: color)
+  } else if spec.shape == "diamond" {
+    polygon(fill: fc, stroke: color,
+      (e / 2, 0pt), (e, e / 2), (e / 2, e), (0pt, e / 2))
+  } else if spec.shape == "cross" {
+    let bar = e / 3
+    box(width: e, height: e, {
+      place(dy: (e - bar) / 2, rect(width: e,   height: bar, fill: fc, stroke: color))
+      place(dx: (e - bar) / 2, rect(width: bar, height: e,   fill: fc, stroke: color))
+    })
+  } else if spec.shape == "pentagon" {
+    let r   = e / 2
+    let pts = range(5).map(k => {
+      let a = (270 + 72 * k) * calc.pi / 180
+      (r + r * calc.cos(a), r + r * calc.sin(a))
+    })
+    polygon(fill: fc, stroke: color, ..pts)
+  }
+  if ang != 0 { rotate(ang * 1deg, origin: center + horizon, body) } else { body }
+}
+
 #let chapter-rule(
   decorations: (
     // — single shapes —
@@ -76,46 +105,9 @@
   chapter: 1,
 ) = {
   let color = inc.hei-purple
-  let sz    = 10pt   // base slot size; shapes may be smaller via `scale`
-  let gap   = 12pt    // gap between adjacent ornament slots
+  let sz    = 10pt
+  let gap   = 12pt
   let thick = 1pt
-
-  // Build a single ornament of effective size `e` as renderable content.
-  // Rotation (if any) is applied around the shape's centre before returning.
-  let draw-ornament(spec, e) = {
-    let fc  = if spec.filled { color } else { white }
-    let ang = if "angle" in spec { spec.angle } else { 0 }
-
-    let body = if spec.shape == "square" {
-      rect(width: e, height: e, fill: fc, stroke: color)
-
-    } else if spec.shape == "circle" {
-      ellipse(width: e, height: e, fill: fc, stroke: color)
-
-    } else if spec.shape == "diamond" {
-      polygon(fill: fc, stroke: color,
-        (e / 2, 0pt), (e, e / 2), (e / 2, e), (0pt, e / 2))
-
-    } else if spec.shape == "cross" {
-      // Two overlapping bars inside a bounding box; rotating 45° gives an ×
-      let bar = e / 3
-      box(width: e, height: e, {
-        place(dy: (e - bar) / 2, rect(width: e,   height: bar, fill: fc, stroke: color))
-        place(dx: (e - bar) / 2, rect(width: bar, height: e,   fill: fc, stroke: color))
-      })
-
-    } else if spec.shape == "pentagon" {
-      let r   = e / 2
-      let pts = range(5).map(k => {
-        let a = (270 + 72 * k) * calc.pi / 180
-        (r + r * calc.cos(a), r + r * calc.sin(a))
-      })
-      polygon(fill: fc, stroke: color, ..pts)
-    }
-
-    // Rotate around the ornament's centre (preserves bounding box for layout)
-    if ang != 0 { rotate(ang * 1deg, origin: center + horizon, body) } else { body }
-  }
 
   // Distance between heading text and line
   v(-0.2em)
@@ -135,7 +127,7 @@
         let e      = sz * s                           // effective size
         let slot-x = size.width - sz - (sz + gap) * (n - 1 - i)
         let x      = slot-x + (sz - e) / 2           // center in slot
-        place(dx: x, dy: -e / 2, draw-ornament(spec, e))
+        place(dx: x, dy: -e / 2, _draw-ornament(spec, e, color))
       }
     }
 
@@ -1031,6 +1023,27 @@
   let affiliation  = text(size: 18pt, weight: "regular", fill: luma(140),
     _affil-parts.join([  ·  ]))
 
+  // Ornaments placed on placard's accent separator (zero-height overlay).
+  // Gap from natural stack end to separator = placard block inset (65pt) − pad (25pt) = 40pt.
+  // +1pt centres on the 2pt line; −e/2 centres the ornament shape vertically.
+  let _sep-sz      = 10pt
+  let _sep-gap     = 12pt
+  let _sep-pattern = (
+    (shape: "square", filled: false, scale: 0.4, angle: 45),
+    (shape: "circle", filled: true),
+  )
+  let _sep-ornaments = layout(size => {
+    let n = _sep-pattern.len()
+    for (i, spec) in _sep-pattern.enumerate() {
+      let s_val  = if "scale" in spec { spec.scale } else { 1.0 }
+      let e_eff  = _sep-sz * s_val
+      let slot-x = size.width - _sep-sz - (_sep-sz + _sep-gap) * (n - 1 - i)
+      let x      = slot-x + (_sep-sz - e_eff) / 2
+      let dy     = 40pt + 1pt - e_eff / 2
+      place(dx: x, dy: dy, _draw-ornament(spec, e_eff, inc.hei-purple))
+    }
+  })
+
   // pad(bottom: …) reduces the natural gap placard inserts between the title
   // content and its accent rule — negative value pulls them closer together.
   let full-title = pad(bottom: -25pt,
@@ -1041,9 +1054,10 @@
         text(size: 28pt, weight: "regular", subtitle),
         8mm,
         affiliation,
+        _sep-ornaments,
       )
     } else {
-      stack(dir: ttb, tight-title, 16pt, affiliation)
+      stack(dir: ttb, tight-title, 16pt, affiliation, _sep-ornaments)
     }
   )
 
@@ -1103,18 +1117,20 @@
   let _label-orientation   = if language == "fr" { "Orientation" }    else { "Orientation" }
   let _label-academic-year = if language == "fr" { "Année académique" } else { "Academic year" }
 
-  let _info-label(t) = text(font: "Source Sans Pro", size: 10pt, weight: "regular", fill: luma(160), t)
   let _info-value(t, first: false) = text(
     font: "Source Sans Pro",
-    size: if first { 18pt } else { 16pt },
+    size: if first { 18pt } else { 14pt },
     weight: if first { "semibold" } else { "regular" },
     fill: if first { luma(50) } else { luma(110) },
     t,
   )
+  let _info-row(label, value) = text(font: "Source Sans Pro", size: 14pt)[#text(fill: luma(110))[#label · ]#text(fill: luma(50))[#value]]
 
   let _tous-les-travaux-pill = rotate(-90deg, reflow: true,
-    text(font: "Source Sans Pro", size: 11pt, weight: "semibold",
-         fill: inc.hei-purple, [Tous les\ travaux])
+    par(leading: 2pt,
+      text(font: "Source Sans Pro", size: 10pt, weight: "semibold",
+           fill: inc.hei-purple, [Découvrez tous\ nos bachelors])
+    )
   )
 
   let _info-block = grid(
@@ -1126,16 +1142,10 @@
     stack(dir: ttb, spacing: 10pt,
       _info-value(programme, first: true),
       ..(if major != none {
-        (stack(dir: ttb, spacing: 3pt,
-          _info-label(_label-orientation),
-          _info-value(major),
-        ),)
+        (_info-row(_label-orientation, major),)
       } else { () }),
       ..(if academic-year != none {
-        (stack(dir: ttb, spacing: 3pt,
-          _info-label(_label-academic-year),
-          _info-value(academic-year),
-        ),)
+        (_info-row(_label-academic-year, academic-year),)
       } else { () }),
     ),
   )
