@@ -14,14 +14,17 @@
   thesis-id: "ISC-ID-26-1", // Your thesis ID (from the official project description)
   project-repos: "https://isc.hevs.ch", // Your project git repository.
 
-  school: "Haute École d'Ingénierie de Sion", 
+  school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et Systèmes de communication (ISC)",
 
   // Some keywords related to your thesis
   keywords: ("engineering", "data", "machine learning", "meteorology"),
   major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "something else"
 
-  date: datetime(year: 2026, month: 6, day: 30), // or datetime.today() 
+  // Declaration of honour — the only two fields the student must provide for it
+  // (everything else on that page is auto-filled). No need to edit pages/honneur.typ.
+  date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
+  signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
   doc-type: "thesis",
   fancy-chapter-rule: true,
@@ -48,6 +51,9 @@
 
 #cleardoublepage()
 #include "pages/résumé.typ"
+
+#cleardoublepage()
+#include "pages/honneur.typ"
 
 #cleardoublepage()
 #include "pages/acknowledgements.typ"

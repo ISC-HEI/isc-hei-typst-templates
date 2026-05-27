@@ -14,6 +14,7 @@
 #import "includes.typ" as inc
 #import "decorations.typ": hash-rule
 #import "i18n.typ": i18n
+#import "fonts.typ": isc-fonts-available, _missing-fonts-page
 
 // State for isc-poster's distribute-columns feature (read by isc-card)
 #let _isc-poster-distribute = state("_isc-poster-distribute", false)
@@ -75,6 +76,10 @@
   // Import at function scope so tiaoma is always available for QR generation
   // regardless of which if/else branch runs (Typst imports are block-scoped).
   import "@preview/tiaoma:0.3.0"
+
+  // Render the "fonts not installed" page instead of the poster when the ISC
+  // fonts are missing (same guard as project(), sized for the poster's A1 paper).
+  context if not isc-fonts-available() { _missing-fonts-page(paper: "a1") } else {
 
   // ISC TB aggregator — not user-facing; update here when the URL moves.
   // TODO: update when the ISC TB website moves to its permanent address
@@ -318,6 +323,7 @@
     ),
     body,
   )
+  } // else (fonts available)
 }
 
 // Section content box for use inside isc-poster().

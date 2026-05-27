@@ -24,8 +24,10 @@
 // Warning page rendered instead of the full document when ISC fonts are absent.
 // Deliberately uses only Libertinus Serif (always bundled in Typst) so the page
 // itself renders correctly even without the custom fonts.
-#let _missing-fonts-page() = {
-  set page(paper: "a4", margin: (x: 3cm, y: 3cm), header: none, footer: none, numbering: none)
+#let _missing-fonts-page(paper: "a4") = {
+  // Wider margins on the large poster paper keep the warning box a sensible width.
+  let margin = if paper == "a4" { (x: 3cm, y: 3cm) } else { (x: 18cm, y: 18cm) }
+  set page(paper: paper, margin: margin, header: none, footer: none, numbering: none)
   set text(font: ("Libertinus Serif",), size: 11pt, fill: black)
 
   let accent = rgb("#E20571")

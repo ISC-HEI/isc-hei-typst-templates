@@ -21,9 +21,9 @@
   logo: none,
   language: "",
 ) = {
-  if (thesis-id == none) {
-    panic("You must provide a thesis ID (thesis-id) for the cover page.")
-  }
+  // A missing thesis ID is no longer fatal: it is surfaced by the completeness
+  // warning block below instead of aborting the compile.
+  let thesis-id = if thesis-id == none { "" } else { thesis-id }
 
   let i18n = isc.i18n.with(extra-i18n: none, language)
 
@@ -33,6 +33,68 @@
 
   // Set the document's basic properties.
   set page(margin: (left: 0mm, right: right-margin, top: 0mm, bottom: 0mm), numbering: none, number-align: center)
+
+  // ── Completeness check (drafting aid) ───────────────────────────────────────
+  // The sentinels mirror the placeholder values shipped in src/bachelor_thesis.typ.
+  // While the document still carries the template's sample author we assume the
+  // student hasn't started and stay silent; once they set their own name we flag
+  // every required field still left empty or at its shipped placeholder value.
+  let sample-author    = "James Gosling"
+  let sample-thesis-id = "ISC-ID-26-1"
+  let sample-repo      = "https://isc.hevs.ch"
+  let sample-keywords  = ("engineering", "data", "machine learning", "meteorology")
+  // Expected reference format: ISC-XX-YY-N (XX = two letters, YY = two-digit
+  // year, N = one or more digits), e.g. ISC-SE-26-3.
+  let id-pattern       = regex("^ISC-[A-Za-z]{2}-[0-9]{2}-[0-9]+$")
+  let fr = language == "fr"
+
+  context {
+    let repo      = inc.global-project-repos.get()
+    let keywords  = inc.global-keywords.get()
+    let signature = inc.global-thesis-meta.get().at("signature", default: none)
+    // An image element exposes its path via `.source`; we use it to tell whether
+    // the student is still pointing at the shipped placeholder signature file.
+    let sig-src   = if signature != none and "source" in signature.fields() { signature.fields().at("source") } else { none }
+
+    let issues = ()
+    if str(authors) != sample-author {
+      if thesis-id in (none, "", sample-thesis-id) {
+        issues.push(if fr [La référence du travail (`thesis-id`) n'a pas été mise à jour.] else [The thesis reference (`thesis-id`) has not been updated.])
+      } else if str(thesis-id).match(id-pattern) == none {
+        issues.push(if fr [Le format de la référence (`thesis-id`) est invalide — attendu p. ex. `ISC-SE-26-3`.] else [The thesis reference (`thesis-id`) format is invalid — expected e.g. `ISC-SE-26-3`.])
+      }
+      if signature == none {
+        issues.push(if fr [L'image de la signature (`signature`) est manquante.] else [The signature image (`signature`) is missing.])
+      } else if type(sig-src) == str and sig-src.contains("signature_placeholder") {
+        issues.push(if fr [L'image de la signature (`signature`) doit être remplacée par la vôtre.] else [The signature image (`signature`) must be replaced with your own.])
+      }
+      if repo in (none, "", sample-repo) {
+        issues.push(if fr [Le lien du dépôt Git (`project-repos`) n'a pas été mis à jour.] else [The Git repository link (project-repos) has not been updated.])
+      }
+      if keywords == () or keywords == sample-keywords {
+        issues.push(if fr [Les mots-clés (keywords) n'ont pas été modifiés.] else [The keywords (keywords) have not been changed.])
+      }
+    }
+
+    if issues.len() > 0 {
+      place(top + left, dx: left-margin, dy: 14mm, box(
+        width: 210mm - left-margin - right-margin,
+        fill: rgb("#ffe3e3"),
+        stroke: 2.5pt + rgb("#c1121f"),
+        radius: 4pt,
+        inset: 10pt,
+        {
+          set text(font: font, fill: rgb("#9d0208"))
+          text(weight: 900, size: 13pt, if fr [⚠ DOCUMENT INCOMPLET — à compléter avant le rendu] else [⚠ INCOMPLETE DOCUMENT — complete before submission])
+          v(4pt)
+          set text(size: 10pt, weight: 500)
+          for it in issues {
+            block(below: 5pt, [— #it])
+          }
+        },
+      ))
+    }
+  }
 
   let title_block = if subtitle == none {
     stack(par(leading: 11pt, text(title, size: 24pt, weight: 660)), v(5mm))

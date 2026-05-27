@@ -87,7 +87,7 @@ lib/
   assets/                ← SVG logos
 src/
   *.typ                  ← runnable demo/example documents (one per template)
-  pages/                 ← shared content blocks (abstract, acknowledgements, résumé)
+  pages/                 ← shared content blocks (abstract, acknowledgements, résumé, honneur = bilingual declaration of honour)
   themes/                ← .tmTheme files for code highlighting
 templates/*/typst.toml   ← per-package metadata (name, version, thumbnail)
 typst.toml               ← root package version (must stay in sync with templates/)
@@ -148,6 +148,7 @@ Typst `state` objects thread document-wide settings without argument passing:
 | `global-project-repos` | Repository URL shown on abstract page |
 | `blank-page` | Suppress decorations on intentionally blank pages |
 | `show-toc-enabled` | Whether `table-of-contents()` renders |
+| `global-thesis-meta` | Dict (`title`, `author`, `academic-year`, `date`, `signature`) forwarded to the declaration-of-honour page (`src/pages/honneur.typ`) |
 
 ### Internationalisation
 

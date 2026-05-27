@@ -35,6 +35,9 @@
   thesis-expert: "[Thesis expert]",
   thesis-id: none,
   project-repos: none,
+  // Signature image for the declaration of honour, e.g. image("signature.png").
+  // Mandatory when the declaration page (pages/honneur.typ) is included.
+  signature: none,
   keywords: (),
   major: (),
   school: [School name],
@@ -213,6 +216,15 @@
   } else {
     panic("No authors provided for the report")
   }
+
+  // Forward the metadata the declaration-of-honour page auto-fills with.
+  inc.global-thesis-meta.update((
+    title: title,
+    author: authors-str,
+    academic-year: academic-year,
+    date: date,
+    signature: signature,
+  ))
 
   let footer-title = if type(title) == str { title.replace("\n", " – ") } else { title }
 

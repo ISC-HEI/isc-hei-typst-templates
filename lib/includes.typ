@@ -14,5 +14,9 @@
 #let blank-page = state("blank-page", false)
 #let show-toc-enabled = state("show-toc", true)
 
+// Metadata forwarded from project() to the declaration-of-honour page so it
+// can auto-fill its identity fields and render the (mandatory) signature image.
+#let global-thesis-meta = state("thesis-meta", (:))
+
 // Brand color
 #let hei-purple = rgb("#dc0068")
