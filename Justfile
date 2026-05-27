@@ -11,6 +11,7 @@ default:
 # ──────────────────────────────────────────────────────────────────────────────
 
 # install dev symlinks so the @preview packages point at this repo (run once)
+[group('dev')]
 install-symblinks:
   ./scripts/dev_link "@preview" "bachelor-thesis"
   ./scripts/dev_link "@preview" "report"
@@ -20,6 +21,7 @@ install-symblinks:
   ./scripts/dev_link "@preview" "poster"
 
 # compile every src/ example to examples/*.pdf
+[group('dev')]
 compile-all:
   typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
   typst compile src/report.typ examples/report.pdf
@@ -29,6 +31,7 @@ compile-all:
   typst compile src/poster.typ examples/poster.pdf
 
 # run the full test suite against installed packages (your live source after install-symblinks; no packing)
+[group('dev')]
 test:
   ./scripts/test-thesis.sh
   ./scripts/test-report.sh
@@ -39,6 +42,7 @@ test:
   ./scripts/test-poster-variants.sh
 
 # run only the poster layout checks (every variant must fit one A1 page)
+[group('dev')]
 test-poster:
   ./scripts/test-poster-variants.sh
 
@@ -47,25 +51,14 @@ test-poster:
 # symlinks; run `install-symblinks` afterwards to return to local development.
 # ──────────────────────────────────────────────────────────────────────────────
 
-# bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
 # re-installs dev symlinks afterwards so @preview resolves the new version (returns the workspace to dev mode)
+# bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
+[group('release')]
 bump-version mode='patch': && install-symblinks
   ./scripts/bump-version "{{mode}}"
 
-# pack all templates to @preview as the Universe artifact (replaces dev symlinks)
-# depends on compile-all + generate-thumbs so packed examples and thumbnails are fresh
-pack: compile-all generate-thumbs
-  ./scripts/pack "@preview" "bachelor-thesis"
-  ./scripts/pack "@preview" "report"
-  ./scripts/pack "@preview" "document"
-  ./scripts/pack "@preview" "exec-summary"
-  ./scripts/pack "@preview" "tb-assignment"
-  ./scripts/pack "@preview" "poster"
-
-# pack the release, then test it — run before publishing to Typst Universe
-test-all: pack test
-
 # regenerate template thumbnails from examples/*.pdf (needs ImageMagick + pngquant)
+[group('release')]
 generate-thumbs:
   convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png
   convert -density 150 'examples/report.pdf[0]' -flatten report_thumb.png
@@ -75,7 +68,23 @@ generate-thumbs:
   convert -density 150 'examples/poster.pdf[0]' -flatten poster_thumb.png
   pngquant --quality 50-80 *.png --ext .png --force
 
+# depends on compile-all + generate-thumbs so packed examples and thumbnails are fresh
+# pack all templates to @preview as the Universe artifact (replaces dev symlinks)
+[group('release')]
+pack: compile-all generate-thumbs
+  ./scripts/pack "@preview" "bachelor-thesis"
+  ./scripts/pack "@preview" "report"
+  ./scripts/pack "@preview" "document"
+  ./scripts/pack "@preview" "exec-summary"
+  ./scripts/pack "@preview" "tb-assignment"
+  ./scripts/pack "@preview" "poster"
+
+# pack the release, then test it — run before publishing to Typst Universe
+[group('release')]
+test-all: pack test
+
 # remove all packed/symlinked templates from @preview
+[group('release')]
 uninstall:
   ./scripts/uninstall "@preview" "bachelor-thesis"
   ./scripts/uninstall "@preview" "report"

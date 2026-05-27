@@ -9,10 +9,11 @@ set -eu
 if (( $# < 1 )) || [[ "${1:-}" == "help" ]]; then
   echo "uninstall TARGET"
   echo ""
-  echo "Removes the package installed into a directory named '<name>/<version>'"
+  echo "Removes ALL installed versions of the package (the whole '<name>/' dir)"
   echo "at TARGET. If TARGET is set to @local or @preview, the local Typst package"
   echo "directory will be used so that the package gets installed for local use."
-  echo "The name and version are read from 'typst.toml' in the project root."
+  echo "The name is read from 'typst.toml' in the project root; the version is not"
+  echo "used, so stale older versions are cleaned up too."
   echo ""
   echo "Local package prefix: $DATA_DIR/typst/package/local"
   echo "Local preview package prefix: $DATA_DIR/typst/package/preview"
@@ -23,8 +24,12 @@ TARGET="$(resolve-target "${1:?Missing target path, @local or @preview}")"
 
 echo "Install dir: $TARGET"
 
-TARGET="${TARGET:?}/${PKG_PREFIX:?}/${VERSION:?}"
-echo "Package to uninstall: $TARGET"
+# Remove every installed version, not just the one named in typst.toml — the
+# source version drifts ahead of what's installed locally (dev symlinks, older
+# packs), so pinning to ${VERSION} would leave stale copies behind that shadow
+# the published package.
+TARGET="${TARGET:?}/${PKG_PREFIX:?}"
+echo "Package to uninstall (all versions): $TARGET"
 if [[ ! -e "${TARGET:?}" ]]; then
   echo "Package was not found."
 elif rm -r "${TARGET:?}" 2>/dev/null; then

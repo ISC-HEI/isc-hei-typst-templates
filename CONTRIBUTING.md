@@ -6,15 +6,27 @@ Since v0.2.0, the build process is based on [`just`](https://github.com/casey/ju
 
 ## Toolchain & dependencies
 
-To build, test and deploy new releases I'm using [just](https://github.com/casey/just), which is really nice! On Ubuntu, I'm using the the app version of `just`.
+To build, test and deploy new releases I'm using [just](https://github.com/casey/just), which is really nice!
 
-`ImageMagick` is used for creating the thumbnails.
-
-Both can be installed with:
+`ImageMagick` (with `pngquant`) is used for creating the thumbnails:
 
 ```bash
-sudo apt install just imagemagick pngquant
+sudo apt install imagemagick pngquant
 ```
+
+#### Installing a recent `just`
+
+The `just` shipped by `apt` is too old (Ubuntu ships 1.21.0). Install the latest
+prebuilt binary into `~/.local/bin` (which must be ahead of `/usr/bin` on your
+`PATH`, so it shadows any apt-installed version):
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to ~/.local/bin
+```
+
+Verify with `just --version` (should report ≥ 1.51.0). Re-run the same one-liner
+to upgrade later. If you previously installed it via apt, you can optionally
+remove the stale copy with `sudo apt remove just`.
 
 ## Development process
 
