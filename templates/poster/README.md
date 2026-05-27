@@ -60,8 +60,7 @@ The poster is configured through the `isc-poster` show rule. The most commonly a
 
 Content is placed with `#isc-card(title: "...")[...]` blocks, and `#isc-colbreak()` starts a new column.
 
-> [!TIP]
-> A poster lives on a single A1 page. Portrait comfortably holds nine or more cards; landscape is much tighter (around six cards) because the sheet is shorter. If your content spills onto a second page, reduce the amount of text per card or the number of cards.
+**Tip:** A poster lives on a single A1 page. Portrait comfortably holds nine or more cards; landscape is much tighter (around six cards) because the sheet is shorter. If your content spills onto a second page, reduce the amount of text per card or the number of cards.
 
 ## Including PDF Images
 

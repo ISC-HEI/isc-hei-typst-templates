@@ -83,6 +83,29 @@ pack: compile-all generate-thumbs
 [group('release')]
 test-all: pack test
 
+# ──────────────────────────────────────────────────────────────────────────────
+# PUBLISH (Typst Universe) — automate the messy boilerplate of opening a release PR.
+# `universe-stage` does everything up to a committed, validated branch; `universe-push`
+# is the only step that touches the network for writing. Neither creates the PR — you
+# write that yourself via the compare URL printed by `universe-push`.
+# Override the fork clone location with: UNIVERSE_CLONE=/path just universe-stage
+# ──────────────────────────────────────────────────────────────────────────────
+
+# sparse-clone the fork, base a fresh isc-hei-<ver> branch on upstream/main, pack + validate all six, commit (no push)
+[group('release')]
+universe-stage: compile-all generate-thumbs
+  ./scripts/universe-stage
+
+# validate the already-packed packages in the fork clone with typst-package-check
+[group('release')]
+universe-check:
+  ./scripts/universe-check
+
+# push the staged release branch to your fork and print the PR compare URL (only networked-write step)
+[group('release')]
+universe-push:
+  ./scripts/universe-push
+
 # remove all packed/symlinked templates from @preview
 [group('release')]
 uninstall:

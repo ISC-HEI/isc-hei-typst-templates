@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Do all the messy boilerplate for a Typst Universe release, stopping just short of
+# pushing. Idempotent: re-running re-bases a fresh branch on current upstream/main.
+#
+#   1. sparse-clone the fork (or reuse + refresh an existing clone)
+#   2. base a fresh release branch `isc-hei-<version>` on current upstream/main
+#   3. pack all six templates straight into the clone (registry layout)
+#   4. validate every package with typst-package-check
+#   5. commit the additions
+#
+# Nothing is pushed. Run `just universe-push` afterwards to send the branch to the fork.
+. "$(dirname "${BASH_SOURCE[0]}")/universe-common"
+
+# Build the list of sparse paths (one per package).
+SPARSE=()
+for t in "${TEMPLATES[@]}"; do
+  SPARSE+=("packages/preview/$(pkg-name "$t")")
+done
+
+# ── 1. ensure the sparse clone exists ──────────────────────────────────────
+if [[ ! -d "$CLONE_DIR/.git" ]]; then
+  echo "Sparse-cloning fork $FORK into $CLONE_DIR ..."
+  git clone --depth 1 --no-checkout --filter=tree:0 "https://github.com/$FORK.git" "$CLONE_DIR"
+  git -C "$CLONE_DIR" sparse-checkout init
+  git -C "$CLONE_DIR" sparse-checkout set "${SPARSE[@]}"
+  git -C "$CLONE_DIR" remote add upstream "https://github.com/$UPSTREAM.git"
+  git -C "$CLONE_DIR" config remote.upstream.partialclonefilter tree:0
+  git -C "$CLONE_DIR" checkout main
+else
+  echo "Reusing existing clone at $CLONE_DIR"
+  git -C "$CLONE_DIR" sparse-checkout set "${SPARSE[@]}"
+fi
+
+# ── 2. fresh release branch based on current upstream/main ─────────────────
+echo "Fetching upstream/main and basing $BRANCH on it ..."
+git -C "$CLONE_DIR" fetch upstream main
+git -C "$CLONE_DIR" switch -C "$BRANCH" upstream/main
+
+# ── 3. pack each template straight into the clone ──────────────────────────
+cd "$ROOT"
+for t in "${TEMPLATES[@]}"; do
+  ./scripts/pack "$CLONE_DIR/packages/preview" "$t"
+done
+
+# ── 4. validate ────────────────────────────────────────────────────────────
+echo
+"$ROOT/scripts/universe-check"
+
+# ── 5. commit (no push) ──────────────────────────────────────────────────--
+cd "$CLONE_DIR"
+git add packages/preview
+if git diff --cached --quiet; then
+  echo "Nothing changed — branch $BRANCH already matches the packed output."
+else
+  git commit -q -m "isc-hei-* : publish $VERSION"
+fi
+
+echo
+echo "Staged + validated branch '$BRANCH' in $CLONE_DIR:"
+git -C "$CLONE_DIR" diff --stat upstream/main.."$BRANCH" | tail -1
+echo "Review it, then run 'just universe-push' to push it to your fork."

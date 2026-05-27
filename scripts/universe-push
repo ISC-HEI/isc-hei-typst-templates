@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Push the staged release branch to your fork and print the PR compare URL.
+# This is the ONLY networked-write step. It does NOT create the PR — you write that
+# yourself on GitHub via the printed link.
+. "$(dirname "${BASH_SOURCE[0]}")/universe-common"
+
+if [[ ! -d "$CLONE_DIR/.git" ]]; then
+  echo "No clone at $CLONE_DIR — run 'just universe-stage' first." >&2
+  exit 1
+fi
+
+if ! git -C "$CLONE_DIR" rev-parse --verify --quiet "$BRANCH" >/dev/null; then
+  echo "Branch '$BRANCH' not found in $CLONE_DIR — run 'just universe-stage' first." >&2
+  exit 1
+fi
+
+echo "Pushing $BRANCH to $FORK ..."
+git -C "$CLONE_DIR" push -u origin "$BRANCH"
+
+echo
+echo "Branch pushed. Open the PR against $UPSTREAM here (write the description yourself):"
+echo "  https://github.com/$UPSTREAM/compare/main...${FORK/\//:}:${BRANCH}?expand=1"

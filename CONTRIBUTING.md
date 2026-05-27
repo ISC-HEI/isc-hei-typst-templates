@@ -95,15 +95,61 @@ It re-installs the dev symlinks afterwards so `@preview` resolves the new versio
 
 ## Deploying to Typst universe
 
-- Fork the [Typst universe repos](https://github.com/typst/packages/tree/main)
-- Clone the fork it into `DEST_TO_REPOS`, and then pack each template into it with `./scripts/pack DEST_TO_REPOS/packages/preview <template>`, where `<template>` is each of `bachelor-thesis`, `report`, `document`, `exec-summary`, `tb-assignment`, and `poster`.
-- Lint for kebab-case only (at least publicly accessible functions)
-- Test using `typst-package-check` from <https://github.com/typst/package-check>, using `typst-package-check check @preview/isc-hei-bthesis:0.5.0` from the `packages` directory *inside* of the cloned Typst universe repos.
-- From github, create PR as usual. A template creates automatically the PR text with update etc... If changes are required by CI/CD, push to local repository. It updates the PR automatically.
+The messy boilerplate (sparse-clone the fork, sync to upstream, pack all six packages,
+validate them, commit) is automated by two `just` recipes. **Neither creates the PR** —
+you write that yourself on GitHub from the compare URL that's printed for you.
+
+### Prerequisites (one-time)
+
+- Fork [`typst/packages`](https://github.com/typst/packages) to your account (the recipes
+  assume `pmudry/packages`; change `FORK`/`UPSTREAM` in `scripts/universe-common` if yours
+  differs).
+- Install [`typst-package-check`](https://github.com/typst/package-check) (the validator);
+  it must be on your `PATH`.
+- Make sure the version is what you want to publish (`just bump-version` if not). All six
+  packages co-release at the same version; gaps are fine (e.g. 0.7.1 → 0.7.9).
+
+### Releasing
+
+```bash
+# 1. Sparse-clone the fork (or reuse it), base a fresh `isc-hei-<version>` branch on
+#    upstream/main, pack all six packages into it, validate with typst-package-check,
+#    and commit. Nothing is pushed.
+just universe-stage
+
+# 2. (optional) Re-run only the validation against the already-packed clone.
+just universe-check
+
+# 3. Push the release branch to your fork and print the PR compare URL. This is the
+#    ONLY step that writes to the network. It does NOT open the PR.
+just universe-push
+```
+
+Then open the PR on GitHub via the printed compare URL and fill in the description (the
+repository's PR template prompts for new-package vs. update, etc.). If CI/CD asks for
+changes, fix them here, re-run `just universe-stage` + `just universe-push`, and the PR
+updates automatically.
+
+Notes:
+
+- The fork clone lives at `~/git/typst-packages` by default. Override with
+  `UNIVERSE_CLONE=/some/path just universe-stage`.
+- `universe-stage` rebases the release branch on `upstream/main` every time, so the PR
+  diff is always *only* your `isc-hei-*` additions — you no longer need to manually sync a
+  stale fork.
+- Validation is **kebab-case-aware**: `typst-package-check` flags non-kebab public names,
+  manifest problems, broken imports and unsupported README features. `universe-check`
+  fails only on **errors**; warnings (e.g. the benign `authors/changed`) are printed but
+  don't block.
+- To do it by hand instead, `scripts/pack` accepts an explicit target:
+  `./scripts/pack <clone>/packages/preview <template>` for each of `bachelor-thesis`,
+  `report`, `document`, `exec-summary`, `tb-assignment`, `poster`.
 
 ### Forking issues
 
-If the forked repository is still "ahead" of the forked branch, make this:
+`universe-stage` sidesteps the classic "fork is behind/ahead of upstream" problem by
+rebasing the release branch directly on `upstream/main`. If you still want to realign your
+fork's `main` itself:
 
 ```bash
 git fetch upstream

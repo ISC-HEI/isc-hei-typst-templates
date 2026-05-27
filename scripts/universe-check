@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Validate every packed isc-hei-* package in the fork clone with typst-package-check
+# (github.com/typst/package-check). Run after the packages have been packed into the
+# clone (see universe-stage).
+#
+# typst-package-check exits non-zero even for warning-only runs, so we parse its
+# --json output and only FAIL the release on `kind == "error"`. Warnings are printed
+# for your attention but do not block (e.g. the benign `authors/changed` warning).
+. "$(dirname "${BASH_SOURCE[0]}")/universe-common"
+
+if ! command -v typst-package-check >/dev/null; then
+  echo "typst-package-check not found. Install it from https://github.com/typst/package-check" >&2
+  exit 1
+fi
+if [[ ! -d "$CLONE_DIR/packages" ]]; then
+  echo "No clone at $CLONE_DIR — run 'just universe-stage' first." >&2
+  exit 1
+fi
+
+# Reads package-check ndjson on stdin; prints each diagnostic; exits 1 if any error.
+classify() {
+  python3 - <<'PY'
+import sys, json
+errors = 0
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    try:
+        d = json.loads(line)
+    except json.JSONDecodeError:
+        print("  ?? " + line); continue
+    kind = d.get("kind", "?")
+    print(f"  [{kind}] {d.get('message','')}  ({d.get('file','')}: {d.get('code','')})")
+    if kind == "error":
+        errors += 1
+if errors:
+    sys.exit(1)
+PY
+}
+
+errors=0
+warnings=0
+cd "$CLONE_DIR/packages"
+for t in "${TEMPLATES[@]}"; do
+  name="$(pkg-name "$t")"
+  echo "──────── ${name}:${VERSION} ────────"
+  # package-check resolves @preview specs against the cwd (the registry's packages/ dir).
+  out="$(typst-package-check check --json "@preview/${name}:${VERSION}" 2>/dev/null || true)"
+  if [[ -z "$out" ]]; then
+    echo "  clean"
+  else
+    if ! printf '%s\n' "$out" | classify; then errors=$((errors+1)); fi
+    warnings=$((warnings + $(printf '%s\n' "$out" | grep -c '"kind":"warning"')))
+  fi
+  echo
+done
+
+echo "Summary: ${#TEMPLATES[@]} packages checked, ${warnings} warning(s), ${errors} package(s) with errors."
+if [[ "$errors" != 0 ]]; then
+  echo "Errors must be fixed before pushing." >&2
+  exit 1
+fi

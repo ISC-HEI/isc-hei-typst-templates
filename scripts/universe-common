@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Shared settings + helpers for the Typst Universe release scripts
+# (universe-stage / universe-check / universe-push). Sourced, not run.
+
+set -eu
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.."
+
+# Where the sparse clone of the typst/packages fork lives. Override with UNIVERSE_CLONE.
+CLONE_DIR="${UNIVERSE_CLONE:-$HOME/git/typst-packages}"
+
+# GitHub repos (HTTPS to match the user's gh protocol).
+FORK="pmudry/packages"
+UPSTREAM="typst/packages"
+
+# Template dir name → its templates/<dir>/typst.toml carries the package name + version.
+TEMPLATES=(bachelor-thesis report document exec-summary tb-assignment poster)
+
+# read a `key = "value"` pair from a typst.toml, stripping the quotes.
+read-toml() { perl -lne "print \"\$1\" if /^$2\\s*=\\s*\"(.*)\"/" < "$1"; }
+
+VERSION="$(read-toml "$ROOT/templates/bachelor-thesis/typst.toml" version)"
+BRANCH="isc-hei-$VERSION"
+
+# echo the package name for a template dir.
+pkg-name() { read-toml "$ROOT/templates/$1/typst.toml" name; }
