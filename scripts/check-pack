@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# check-pack — verify each template packs EXACTLY the required files.
+#
+# The pack script (scripts/pack) removes unwanted files with per-template
+# deny-lists, which silently ship anything nobody remembered to delete. This
+# check is the safety net: it performs a real pack of every template into a
+# throwaway directory and diffs the result against an explicit per-template
+# allow-list (the "required files"), reporting:
+#
+#   • EXTRA   — a file shipped but not required (a dangling file / leak)
+#   • MISSING — a required file that did not get packed (would break the build)
+#
+# Exits non-zero if any template has an EXTRA or MISSING file. Run it after
+# editing scripts/pack, .typstignore, or adding/removing example assets.
+#
+# The always-included shared trees (lib/, src/fonts, src/code, src/pages,
+# src/themes) are derived from the repo so they stay correct as files are
+# added; only the per-template example entry point and its figs are pinned.
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.."
+cd "$ROOT"
+
+# expected_for(): the required-file allow-list, shared with scripts/pack.
+. "$(dirname "${BASH_SOURCE[0]}")/template-files"
+
+TEMPLATES=(bachelor-thesis report document exec-summary tb-assignment poster)
+
+read-toml() { perl -lne "print \"\$1\" if /^$2\\s*=\\s*\"(.*)\"/" < "$1"; }
+
+TMP="$(mktemp -d)"
+trap 'rm -rf "$TMP"' EXIT
+
+fails=0
+echo "── checking packed file sets for ${#TEMPLATES[@]} templates ──────────────────"
+for t in "${TEMPLATES[@]}"; do
+  ./scripts/pack "$TMP" "$t" >/dev/null 2>&1 || { echo "✗ $t: pack failed"; fails=$((fails+1)); continue; }
+
+  prefix="$(read-toml "templates/$t/typst.toml" name)"
+  version="$(read-toml "templates/$t/typst.toml" version)"
+  pkg="$TMP/$prefix/$version"
+
+  actual="$(cd "$pkg" && find . -type f | sed 's|^\./||' | LC_ALL=C sort)"
+  expect="$(expected_for "$t" | LC_ALL=C sort -u)"
+
+  extra="$(LC_ALL=C comm -13 <(printf '%s\n' "$expect") <(printf '%s\n' "$actual"))"
+  missing="$(LC_ALL=C comm -23 <(printf '%s\n' "$expect") <(printf '%s\n' "$actual"))"
+
+  if [[ -z "$extra" && -z "$missing" ]]; then
+    echo "✓ $t"
+  else
+    echo "✗ $t ($prefix)"
+    [[ -n "$extra" ]]   && printf '    EXTRA   (dangling): %s\n' $extra
+    [[ -n "$missing" ]] && printf '    MISSING (required): %s\n' $missing
+    fails=$((fails+1))
+  fi
+done
+
+echo "──────────────────────────────────────────────────────────────────────"
+if [[ "$fails" -ne 0 ]]; then
+  echo "FAILED: $fails template(s) ship the wrong file set."
+  exit 1
+fi
+echo "OK: every template packs exactly its required files."

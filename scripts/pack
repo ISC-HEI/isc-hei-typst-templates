@@ -6,7 +6,7 @@ set -eu
 # Adapted from https://github.com/johannes-wolf/cetz/blob/35c0868378cea5ad323cc0d9c2f76de8ed9ba5bd/scripts/package
 # licensed under Apache License 2.0
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.." # macOS 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.." # macOS
 
 TEMPLATE="$2"
 
@@ -19,10 +19,11 @@ if [[ ! -d "$ROOT/templates/$TEMPLATE" ]]; then
   exit 1
 fi
 
-echo 
+echo
 echo "Processing template $TEMPLATE"
 
 . "$(dirname "${BASH_SOURCE[0]}")/setup" ${2}
+. "$(dirname "${BASH_SOURCE[0]}")/template-files"   # expected_for(): the required-file allow-list
 
 TARGET="$(resolve-target "${1:?Missing target path, @local or @preview}")"
 echo "Install dir: $TARGET"
@@ -76,7 +77,7 @@ TMP="$(mktemp -d)"
 
 for f in "${files[@]}"; do
   mkdir -p "$TMP/$(dirname "$f")" 2>/dev/null
-  cp -r "$ROOT/$f" "$TMP/$f"  
+  cp -r "$ROOT/$f" "$TMP/$f"
 done
 
 # Copy the specific files in templates to the root directory
@@ -85,164 +86,23 @@ cp -a "$ROOT/templates/$TEMPLATE/typst.toml" "$TMP"
 
 cp $ROOT/src/*.pdf "$ROOT/examples/" 2>/dev/null || true
 
-# Verbose rm: print each file/dir actually removed
-vrm() { for f in "$@"; do [[ -e "$f" ]] && echo "  Removing ${f#$TMP/}"; done; rm -rf "$@"; }
+# ── Keep ONLY the files this template requires ──────────────────────────────
+# The allow-list comes from scripts/template-files (shared with check-pack), so
+# packing and the check cannot disagree. Everything copied above that is not on
+# the list — other templates' examples, unused figs, sibling thumbnails — is a
+# leak and gets pruned here.
+echo "Pruning to the required-file set for template $TEMPLATE"
+declare -A allow_set
+while IFS= read -r rel; do allow_set["$rel"]=1; done < <(expected_for "$TEMPLATE" | LC_ALL=C sort -u)
 
-if [[ "$TEMPLATE" == "bachelor-thesis" ]]; then
-	echo "Removing useless files from template $TEMPLATE"	
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/figs/random_image.png"	
-	vrm "$TMP/src/figs/cover_image_placeholder.png"
-
-	# other templates
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/poster.typ"
-
-	# thumbnails
-	vrm "$TMP/report_thumb.png"
-	vrm "$TMP/exec_summary.png"
-	vrm "$TMP/document_thumb.png"
-	vrm "$TMP/tb_assignment_thumb.png"
-	vrm "$TMP/poster_thumb.png"
-fi
-
-if [[ "$TEMPLATE" == "document" ]]; then
-	echo "Removing useless files from template $TEMPLATE"
-	vrm "$TMP/src/pages"
-	vrm "$TMP/src/code"
-	vrm "$TMP/src/check_result_file.sh"
-	vrm "$TMP/src/figs/cover_image_placeholder.png"	
-
-	# other templates
-	vrm "$TMP/src/acronyms.typ"
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/poster.typ"
-
-	# thumbnails
-	vrm "$TMP/bachelor_thesis_thumb.png"
-	vrm "$TMP/report_thumb.png"
-	vrm "$TMP/exec_summary.png"
-	vrm "$TMP/tb_assignment_thumb.png"
-	vrm "$TMP/poster_thumb.png"
-fi
-
-if [[ "$TEMPLATE" == "exec-summary" ]]; then
-	echo "Removing useless files from template $TEMPLATE"
-	vrm "$TMP/src/pages"
-	vrm "$TMP/src/code"
-	vrm "$TMP/src/check_result_file.sh"
-	vrm "$TMP/src/report.typ"	
-	vrm "$TMP/src/acronyms.typ"	
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/figs/cover_image_placeholder.png"	
-	
-	# other templates
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/poster.typ"
-	vrm "$TMP/src/bibliography.bib"
-
-	# thumbnails
-	vrm "$TMP/bachelor_thesis_thumb.png"
-	vrm "$TMP/report_thumb.png"
-	vrm "$TMP/document_thumb.png"
-	vrm "$TMP/tb_assignment_thumb.png"
-	vrm "$TMP/poster_thumb.png"
-fi
-
-if [[ "$TEMPLATE" == "report" ]]; then
-	# remove the typst.toml in the template directory
-	echo "Removing useless files from template $TEMPLATE"	
-	vrm "$TMP/src/check_result_file.sh"
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/figs/random_image.png"
-	vrm "$TMP/src/figs/made.svg"
-	vrm "$TMP/src/pages"
-
-	# other templates
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/poster.typ"
-
-	# thumbnails
-	vrm "$TMP/bachelor_thesis_thumb.png"
-	vrm "$TMP/exec_summary.png"
-	vrm "$TMP/document_thumb.png"
-	vrm "$TMP/tb_assignment_thumb.png"
-	vrm "$TMP/poster_thumb.png"
-fi
-
-if [[ "$TEMPLATE" == "tb-assignment" ]]; then
-	# remove the typst.toml in the template directory
-	echo "Removing useless files from template $TEMPLATE"	
-	vrm "$TMP/src/check_result_file.sh"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/figs"
-	vrm "$TMP/src/code"
-	vrm "$TMP/src/themes"
-	vrm "$TMP/src/pages"
-
-	# other templates
-	vrm "$TMP/src/acronyms.typ"
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/exec_summary.typ"
-	vrm "$TMP/src/poster.typ"
-	vrm "$TMP/src/bibliography.bib"
-
-	# thumbnails
-	vrm "$TMP/bachelor_thesis_thumb.png"
-	vrm "$TMP/report_thumb.png"
-	vrm "$TMP/exec_summary.png"
-	vrm "$TMP/document_thumb.png"
-	vrm "$TMP/poster_thumb.png"
-fi
-
-if [[ "$TEMPLATE" == "poster" ]]; then
-	# the poster example (src/poster.typ) only needs figs/made.svg
-	echo "Removing useless files from template $TEMPLATE"
-	vrm "$TMP/src/check_result_file.sh"
-	vrm "$TMP/src/acronyms.typ"
-	vrm "$TMP/src/bibliography.bib"
-	vrm "$TMP/src/code"
-	vrm "$TMP/src/themes"
-	vrm "$TMP/src/pages"
-	vrm "$TMP/src/figs/cover_image_placeholder.png"
-	vrm "$TMP/src/figs/isc_logo.svg"
-	vrm "$TMP/src/figs/isc_logo_raw.svg"
-	vrm "$TMP/src/figs/pixelize.png"
-	vrm "$TMP/src/figs/random_image.png"
-
-	# other templates
-	vrm "$TMP/src/bachelor_thesis.typ"
-	vrm "$TMP/src/tb_assignment.typ"
-	vrm "$TMP/src/document.typ"
-	vrm "$TMP/src/report.typ"
-	vrm "$TMP/src/exec_summary.typ"
-
-	# thumbnails
-	vrm "$TMP/bachelor_thesis_thumb.png"
-	vrm "$TMP/report_thumb.png"
-	vrm "$TMP/exec_summary.png"
-	vrm "$TMP/document_thumb.png"
-	vrm "$TMP/tb_assignment_thumb.png"
-fi
+while IFS= read -r f; do
+	rel="${f#$TMP/}"
+	if [[ -z "${allow_set[$rel]:-}" ]]; then
+		echo "  Pruning $rel"
+		rm -f "$f"
+	fi
+done < <(find "$TMP" -type f)
+find "$TMP" -type d -empty -delete
 
 TARGET="${TARGET:?}/${PKG_PREFIX:?}/${VERSION:?}"
 echo "Packaged to: $TARGET"

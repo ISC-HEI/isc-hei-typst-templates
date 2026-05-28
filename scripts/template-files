@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+#
+# template-files — SINGLE SOURCE OF TRUTH for which files each template ships.
+#
+# Sourced by both scripts/pack (which keeps ONLY these files) and
+# scripts/check-pack (which verifies the packed set matches). Editing the
+# allow-list here updates packing and the check at once — they cannot drift.
+#
+# `expected_for <template>` prints, one per line, every package-relative path
+# the given template must contain. The shared trees that every (applicable)
+# template includes wholesale — lib/, src/fonts, src/code, src/pages,
+# src/themes — are derived from the repo with `find`, so adding a file to one
+# of them needs no edit here. Only the per-template example entry point, its
+# figures, and the thumbnail are pinned explicitly.
+
+# Repo root, regardless of caller's cwd. Finds run in subshells so they emit
+# repo-relative paths without disturbing the caller.
+TEMPLATE_FILES_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+_tf_find() { ( cd "$TEMPLATE_FILES_ROOT" && find "$@" -type f ); }
+
+# Files included in every package (entry point, metadata, shared lib, fonts).
+_common_files() {
+  printf '%s\n' isc_templates.typ i18n.json README.md LICENSE CHANGELOG.md CONTRIBUTING.md typst.toml
+  _tf_find lib
+  _tf_find src/fonts
+}
+
+# Complete required-file allow-list for one template.
+expected_for() {
+  local t="$1"
+  _common_files
+  case "$t" in
+    bachelor-thesis)
+      echo bachelor_thesis_thumb.png
+      printf '%s\n' src/bachelor_thesis.typ src/acronyms.typ src/bibliography.bib
+      _tf_find src/code src/pages src/themes
+      printf '%s\n' src/figs/pixelize.png src/figs/signature_placeholder.svg
+      ;;
+    report)
+      echo report_thumb.png
+      printf '%s\n' src/report.typ src/acronyms.typ src/bibliography.bib
+      _tf_find src/code src/themes
+      printf '%s\n' src/figs/cover_image_placeholder.png src/figs/isc_logo.svg src/figs/pixelize.png
+      ;;
+    document)
+      echo document_thumb.png
+      printf '%s\n' src/document.typ src/bibliography.bib
+      _tf_find src/themes
+      echo src/figs/random_image.png
+      ;;
+    exec-summary)
+      echo exec_summary.png
+      echo src/exec_summary.typ
+      _tf_find src/themes
+      printf '%s\n' src/figs/made.svg src/figs/random_image.png
+      ;;
+    tb-assignment)
+      echo tb_assignment_thumb.png
+      echo src/tb_assignment.typ
+      ;;
+    poster)
+      echo poster_thumb.png
+      printf '%s\n' src/poster.typ src/figs/made.svg
+      ;;
+    *) echo "template-files: unknown template '$t'" >&2; return 1 ;;
+  esac
+}

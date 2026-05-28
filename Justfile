@@ -2,15 +2,23 @@ root := justfile_directory()
 
 export TYPST_ROOT := root
 
+# `just` (no args) prints this menu, grouped by workflow, in definition order.
+# Legend for the descriptions below:
+#   ▶            a primary command you run directly (the entry point of a workflow)
+#   auto-runs:   recipes this one cascades into first (you don't run those yourself)
+#   [run once]   one-time setup
+# Building-block helpers that are only ever auto-run are marked [private] and hidden
+# here, but stay runnable by name (e.g. `just generate-thumbs`).
 [private]
 default:
 	@just --list --unsorted
 
 # ──────────────────────────────────────────────────────────────────────────────
 # LOCAL DEVELOPMENT — work against your live source, nothing gets packed.
+# Day-to-day loop: `install-symblinks` once, then edit source and `test`.
 # ──────────────────────────────────────────────────────────────────────────────
 
-# install dev symlinks so the @preview packages point at this repo (run once)
+# ▶ [run once] dev mode: make @preview resolve to this repo so source edits are live
 [group('dev')]
 install-symblinks:
   ./scripts/dev_link "@preview" "bachelor-thesis"
@@ -20,7 +28,7 @@ install-symblinks:
   ./scripts/dev_link "@preview" "tb-assignment"
   ./scripts/dev_link "@preview" "poster"
 
-# compile every src/ example to examples/*.pdf
+# ▶ compile all six src/ examples → examples/*.pdf (also auto-run by pack)
 [group('dev')]
 compile-all:
   #!/usr/bin/env bash
@@ -43,7 +51,7 @@ compile-all:
   [ "$failed" -eq 0 ] && echo "── all done ──────────────────────────────────────────────────────────"
   exit $failed
 
-# run the full test suite against installed packages (your live source after install-symblinks; no packing)
+# ▶ compile all six packaged examples against the current @preview (dev source or packed)
 [group('dev')]
 test:
   #!/usr/bin/env bash
@@ -57,7 +65,7 @@ test:
   ./scripts/test-poster.sh
   ./scripts/test-poster-variants.sh
 
-# run only the poster layout checks (every variant must fit one A1 page)
+# ▶ poster-only: check every variant fits a single A1 page
 [group('dev')]
 test-poster:
   #!/usr/bin/env bash
@@ -66,18 +74,18 @@ test-poster:
   ./scripts/test-poster-variants.sh
 
 # ──────────────────────────────────────────────────────────────────────────────
-# PRE-RELEASE (Typst Universe) — bump, build, validate and tear down the local
-# @preview artifacts. `pack` builds the real artifacts and REPLACES the dev
-# symlinks; run `install-symblinks` afterwards to return to local development.
+# PRE-RELEASE (Typst Universe) — build + validate the local @preview artifacts.
+# `pack` builds the real packages and REPLACES the dev symlinks; run
+# `install-symblinks` afterwards to return to local development.
 # ──────────────────────────────────────────────────────────────────────────────
 
-# re-installs dev symlinks afterwards so @preview resolves the new version (returns the workspace to dev mode)
-# bump version in all typst.toml and src/ imports: 'patch' (0.7.2→0.7.3, default), 'minor' (0.7.2→0.8.0), or explicit 'X.Y.Z'
+# ▶ bump version across typst.toml + src/ imports: patch (default) | minor | X.Y.Z  (then restores dev symlinks)
 [group('pre-release')]
 bump-version mode='patch': && install-symblinks
   ./scripts/bump-version "{{mode}}"
 
-# regenerate template thumbnails from examples/*.pdf (needs ImageMagick + pngquant)
+# (helper) regenerate template thumbnails from examples/*.pdf — needs ImageMagick + pngquant; auto-run by pack
+[private]
 [group('pre-release')]
 generate-thumbs:
   #!/usr/bin/env bash
@@ -101,8 +109,7 @@ generate-thumbs:
   pngquant --quality 50-80 *.png --ext .png --force
   echo "── all done ──────────────────────────────────────────────────────────"
 
-# depends on compile-all + generate-thumbs so packed examples and thumbnails are fresh
-# pack all templates to @preview as the Universe artifact (replaces dev symlinks)
+# ▶ build all six @preview packages — the real artifact (auto-runs: compile-all, generate-thumbs; replaces dev symlinks)
 [group('pre-release')]
 pack: compile-all generate-thumbs
   #!/usr/bin/env bash
@@ -124,11 +131,16 @@ pack: compile-all generate-thumbs
   [ "$failed" -eq 0 ] && echo "── all done ──────────────────────────────────────────────────────────"
   exit $failed
 
-# pack the release, then test it — run before publishing to Typst Universe
+# ▶ verify each template packs ONLY its required files — catches leaks (throwaway pack; dev symlinks untouched)
 [group('pre-release')]
-test-all: pack test
+check-pack:
+  ./scripts/check-pack
 
-# remove all packed/symlinked templates from @preview
+# ▶ full pre-publish gate — auto-runs: pack → check-pack → test
+[group('pre-release')]
+test-all: pack check-pack test
+
+# ▶ remove all isc-hei-* packages/symlinks from @preview
 [group('pre-release')]
 uninstall:
   ./scripts/uninstall "@preview" "bachelor-thesis"
@@ -139,37 +151,35 @@ uninstall:
   ./scripts/uninstall "@preview" "poster"
 
 # ──────────────────────────────────────────────────────────────────────────────
-# UNIVERSE (Typst Universe) — automate the messy boilerplate of opening a release PR.
-# `universe-stage` does everything up to a committed, validated branch; `universe-push`
-# is the only step that touches the network for writing. Neither creates the PR — you
-# write that yourself via the compare URL printed by `universe-push`.
-# Override the fork clone location with: UNIVERSE_CLONE=/path just universe-stage
+# UNIVERSE (Typst Universe) — automate the boilerplate of opening a release PR.
+# Order: universe-stage → (review) → universe-push, then open the PR from the
+# printed compare URL. universe-push is the only step that writes to the network;
+# neither creates the PR. Override the fork clone with: UNIVERSE_CLONE=/path just universe-stage
 # ──────────────────────────────────────────────────────────────────────────────
 
-# sparse-clone the fork, base a fresh isc-hei-<ver> branch on upstream/main, pack + validate all six, commit (no push)
+# ▶ stage a release: clone fork, base isc-hei-<ver> on upstream/main, pack+validate all six, commit — no push  (auto-runs: compile-all, generate-thumbs)
 [group('universe')]
 universe-stage: compile-all generate-thumbs
   ./scripts/universe-stage
 
-# validate the already-packed packages in the fork clone with typst-package-check
+# (auto-run during staging — by universe-stage, and update-pr through it) re-validate the staged packages with typst-package-check
 [group('universe')]
 universe-check:
   ./scripts/universe-check
 
-# push the staged release branch to your fork and print the PR compare URL (only networked-write step)
+# ▶ push the staged branch to your fork + print the PR compare URL (only step that writes to the network)
 [group('universe')]
 universe-push:
   ./scripts/universe-push
 
 # ──────────────────────────────────────────────────────────────────────────────
-# ACTIVE PR FLOW (Typst Universe) — update a PR that is already open (unmerged) when
-# you've fixed something at the SAME version. Re-stages the current version and
-# FORCE-pushes over the existing branch, so the open PR re-runs CI in place — no new
-# PR, no version bump. Use only while the PR is unmerged (published versions are
-# immutable — bump + universe-push for those instead).
+# ACTIVE PR FLOW (Typst Universe) — update an already-open (unmerged) PR after
+# fixing something at the SAME version: re-stages and FORCE-pushes over the branch,
+# so the PR re-runs CI in place — no new PR, no bump. Published versions are
+# immutable: for those, bump-version + universe-push instead.
 # ──────────────────────────────────────────────────────────────────────────────
 
-# re-stage the current version, then force-push it over the existing PR branch
+# ▶ refresh an OPEN PR at the same version: re-stage + force-push over its branch  (auto-runs: universe-stage)
 [group('active-pr-flow')]
 update-pr: universe-stage
   ./scripts/universe-repush

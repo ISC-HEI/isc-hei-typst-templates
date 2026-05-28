@@ -35,7 +35,10 @@ just test-poster
 # Pack all six packages to @preview (the real artifact; replaces dev symlinks)
 just pack
 
-# Pre-publish check: pack the release, then test it
+# Verify each template packs EXACTLY its required files (no dangling leaks)
+just check-pack
+
+# Pre-publish check: pack the release, run check-pack, then test it
 just test-all
 
 # Bump the version across all typst.toml + src/ imports (patch | minor | X.Y.Z)
@@ -74,7 +77,7 @@ just update-pr
 isc_templates.typ        ← public API: a thin façade that re-exports the lib/ modules
 lib/
   includes.typ           ← shared state, brand color (hei-purple = #E20571), dep imports
-  settings.typ           ← shared metrics (heading sizes, spacing), version, keywords
+  settings.typ           ← shared metrics (heading sizes, spacing), version, keywords, programme-name
   fonts.typ              ← font stacks, ISC-font detection, "fonts not installed" page
   i18n.typ               ← i18n() string resolution + langs (reads ../i18n.json)
   decorations.typ        ← chapter-rule reading-position hairline + the hashed bit-rule (hash-rule)
@@ -92,10 +95,22 @@ src/
 templates/*/typst.toml   ← per-package metadata (name, version, thumbnail)
 typst.toml               ← root package version (must stay in sync with templates/)
 i18n.json                ← all translated UI strings (fr / en / de)
-scripts/                 ← pack, dev_link, uninstall, test-*.sh helpers
+scripts/                 ← pack, check-pack, template-files (pack allow-list SSOT), dev_link, uninstall, test-*.sh
 ```
 
 The `scripts/pack` script copies the shared source into each package slot and sets `entrypoint = "isc_templates.typ"`. Each `templates/*/typst.toml` pins the compiler version and declares the template thumbnail.
+
+> Packing is **allow-list driven from a single source of truth**: `scripts/template-files`
+> defines `expected_for <template>` — the exact set of files each package must contain.
+> `pack` copies the whole tree (minus `.typstignore`), then **prunes** everything not on
+> that list, so a template can only ship its required files (the thesis-only
+> `signature_placeholder.svg` can no longer leak into the other packages). `scripts/check-pack`
+> (`just check-pack`) reads the *same* list, does a real pack into a throwaway dir, and
+> reports EXTRA (dangling) / MISSING files — so pack and check cannot drift. It is wired
+> into `just test-all`. The shared `lib/`, `src/{fonts,code,pages,themes}` trees are derived
+> from the repo with `find`, so adding a file there needs no edit; only per-template figs
+> and the example entry point are pinned. **When you add/remove/rename an example asset,
+> edit `scripts/template-files` (one place) and run `just check-pack`.**
 
 ### How the public API is assembled
 
@@ -145,6 +160,18 @@ date from `inc.global-thesis-meta` (populated by `project()`), so the only field
 the student must set are `date:` and `signature:` (an `image(...)`) on `project()`
 — they never edit `honneur.typ`. A missing signature renders a red placeholder
 (not a panic) and is flagged by the completeness check below.
+
+### Programme name (default `programme:`)
+
+The degree programme is **"Informatique et systèmes de communication"** — note the
+lowercase `s` in "systèmes". `lib/settings.typ` factors it into two constants:
+`programme-name` (bare) and `programme-name-isc` (`+ " (ISC)"`). Defaults differ by
+document type on purpose: `lib/project.typ` (thesis/report/document/tb-assignment)
+uses `programme-name` (no suffix); `lib/poster.typ` and
+`lib/pages/cover_exec_summary.typ` use `programme-name-isc`. The `src/*.typ` demo
+documents pass `programme:` explicitly as a literal string (they're detached from
+the package by students), so the spelling must be fixed **in place** there — the
+constant can't reach them. Keep the lowercase `s` consistent everywhere.
 
 ### Completeness check (thesis cover, drafting aid)
 

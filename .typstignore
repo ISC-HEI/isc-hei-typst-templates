@@ -20,6 +20,8 @@ Justfile
 # editor / agent tooling — not part of the published package
 .claude
 .vscode
+.gitignore
+.gitattributes
 CLAUDE.md
 TODOS.md
 *.ttf
