@@ -2,6 +2,8 @@
 
 #let doc_language = "fr" // Valid values are en, fr
 
+// 52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
+
 #show: project.with(
   title: "Rapport de projet pour la filière ISC",
   subtitle: [Avec une mise en page `Typst`],
@@ -177,6 +179,8 @@ Des tables plus compliquées sont également possible. La page https://typst.app
 Il est important de citer les sources que l'on utilise. Par exemple, les deux travaux @mui_nasa_dod09, @mui_hybrid_06 et @mudry:133438 sont deux papiers très intéressants à lire et dont les références complètes se trouvent dans la bibliographie à la fin de ce document. Il est également d'utiliser des acronymes comme par exemple #acr("USB"). Si on l'utilise une deuxième fois, seul l'acronyme apparaît, ainsi #acr("USB") est suffisant.
 
 Si l'on souhaite citer des références issues d'une page ou d'un site web et que cette référence est importante, on utilisera la syntaxe @WinNT qui cite une référence de la bibliographie. Pour les autres cas, il est possible de référer au site uniquement avec son URL.
+
+Et lorsque le serveur refuse poliment de vous préparer un café parce qu'il s'agit en réalité d'une théière, la norme à invoquer est bien entendu @rfc2324 (oui, le code HTTP 418 existe vraiment).
 
 == Un exemple de texte : le filtre de Sobel
 Une autre méthode pour extraire les contours à l'intérieur d'une image est d'utiliser #link("https://fr.wikipedia.org/wiki/Détection_de_contours")[l'algorithme de Sobel] Cette méthode est très similaire à celle de la dérivée, mais un peu plus compliquée et donne de meilleurs résultats.

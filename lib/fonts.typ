@@ -48,6 +48,11 @@
 
         [The fonts required by this template are *not installed* on this system.
         This document cannot be rendered with the correct typography.]
+        v(0.6em)
+        text(style: "italic", size: 0.9em, fill: luma(100))[
+          (Yes — we appreciate the irony of a carefully typeset page telling you
+          that typesetting is broken.)
+        ]
         v(1.2em)
 
         [*Install the fonts by running this command once from the repository root:*]
@@ -68,7 +73,7 @@
 
         text(style: "italic", size: 0.9em, fill: luma(100))[
           After installing the fonts, recompile the document.
-          See #raw("README.md") or #raw("CLAUDE.md") for detailed instructions.
+          See #raw("README.md") for detailed instructions.
         ]
       }
     )

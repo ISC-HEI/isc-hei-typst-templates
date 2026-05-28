@@ -30,7 +30,7 @@
   split-chapters: true,
   revision: "1.0", // Or for instance "1.0", for the version of your thesis
   code-theme: "bluloco-light", // See directory themes/ for available themes
-                               // 
+                               
   // The cover shows a red "DOCUMENT INCOMPLET" box listing required fields still
   // left at their placeholder values. Uncomment to hide it (a tiny mark is then
   // left on the second cover page). Only do this if you know what you are doing.
@@ -42,13 +42,7 @@
 #include "acronyms.typ"
 
 // Let's get started folks!
-
-// The TB assignment sheet is a separate document filled in by the professor.
-// Once compiled to PDF, include it here by uncommenting the lines below and
-// placing the compiled PDF at pages/tb_assignment.pdf.
-//
-// #cleardoublepage()
-// #image("pages/tb_assignment.pdf")
+// 52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 
 #cleardoublepage()
 #include "pages/abstract.typ"
@@ -106,7 +100,7 @@ If you compile your thesis using the `typst` command line tool, or by using the 
 ```
 
 = Introduction
-Have fun #todo[writing your thesis!] and good luck with it !
+Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should your build server ever refuse to brew coffee, remember it may simply be a teapot @rfc2324.]
 
 #figure(
   image("figs/pixelize.png", height: 4cm),

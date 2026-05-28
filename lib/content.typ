@@ -2,7 +2,7 @@
 // bibliography, appendix pages, the abstract footer and small utilities.
 
 #import "includes.typ" as inc
-#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight
+#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight, version, programme-name
 #import "i18n.typ": i18n
 #import "@preview/gentle-clues:1.3.1": clue
 #import "@preview/tiaoma:0.3.0"
@@ -216,6 +216,39 @@
 
   stack(dir: ltr, spacing: 0pt, text-pane, qr-pane)
   }
+}
+
+// A discreet end-of-document colophon. project() auto-appends it to the
+// bachelor thesis; it is also callable on its own. Renders on its own
+// page with the running header/footer suppressed — a small, centred credit to
+// the toolchain pushed to the bottom of the page. Tasteful enough to ship in a
+// graded document; the last line is the only wink. Real flow content (the 1fr
+// struts) is used rather than place() so the page is actually emitted.
+//
+// The header/footer are cleared with a local `set page(...)` rather than the
+// blank-page/header-footer state: page headers are evaluated at the *top* of the
+// page, before any in-flow state update on that page runs, so a mid-page state
+// flip suppresses only the footer. `set page` placed right after the break
+// applies to the colophon page itself and reliably drops both.
+#let colophon() = {
+  pagebreak(weak: true)
+  set page(header: none, footer: none)
+  v(1fr)
+  align(center, block(width: 75%, {
+    set align(center)
+    set text(size: 9pt, fill: luma(45%))
+    line(length: 26%, stroke: 0.5pt + luma(70%))
+    v(0.9em)
+    text(weight: "bold", "Typeset with Typst")
+    linebreak()
+    [ISC-HEI template by P.-A. Mudry · v#version]
+    linebreak()
+    text(size: 8.5pt)[#programme-name — Sion, HES-SO Valais]
+    v(0.9em)
+    text(size: 8pt, style: "italic", fill: luma(60%),
+      "No LaTeX was harmed in the making of this document.")
+  }))
+  v(2.5cm)
 }
 
 #let abstract-footer(lang) = {

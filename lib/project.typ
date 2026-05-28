@@ -7,7 +7,7 @@
 #import "fonts.typ": body-font, sans-font, raw-font, isc-fonts-available, _missing-fonts-page
 #import "i18n.typ": i18n
 #import "decorations.typ": chapter-rule
-#import "content.typ": set-header-footer, table-of-contents
+#import "content.typ": set-header-footer, table-of-contents, colophon
 #import "covers.typ": front-matter
 #import "pages/cover_assignment.typ": get-document-title
 
@@ -111,7 +111,10 @@
   let i18n = i18n.with(extra-i18n: extra-i18n, language)
 
   // Set the document's basic properties.
-  set document(author: authors, title: title, date: date, keywords: keywords, description: "Using ISC template ver. " + version)
+  // The description doubles as a hidden colophon in the PDF metadata (visible via
+  // `pdfinfo`/`exiftool`, never on the page). The leading "Using ISC template
+  // ver. <version>" stays first so it remains machine-parseable.
+  set document(author: authors, title: title, date: date, keywords: keywords, description: "Using ISC templates v. " + version + " | No LaTeX was harmed")
 
   set par(justify: true)
 
@@ -424,6 +427,11 @@
   // Exec-summary is self-contained (single page); skip body to avoid a blank second page
   if doc-type != "exec-summary" {
     body
+  }
+
+  // Auto-append the end-of-document colophon for the bachelor thesis only.
+  if doc-type == "thesis" {
+    colophon()
   }
   } // else (fonts available)
   } // context font check
