@@ -38,8 +38,8 @@
 #show: isc-poster.with(
   title: [Apprentissage fédéré pour la protection de la vie privée dans l'analyse de données médicales],
   subtitle: [Confidentialité différentielle et agrégation distribuée des gradients],
-  student: "James Gosling",
-  permanent-email: "james.gosling@hevs.ch",
+  student: "Margaret Hamilton",
+  permanent-email: "margaret.hamilton@hevs.ch",
   supervisor: "Prof. Dr John von Neumann",
   // co-supervisor: "Lady Ada Lovelace",  // optional
   expert: "Prof. Dr Grace Hopper",

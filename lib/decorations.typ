@@ -1,36 +1,7 @@
-// Decorative ornaments and rules: the chapter-rule ornament system and the
-// hashed bit-rule shared by the bachelor-thesis cover and the poster separator.
+// Decorative rules: the chapter-rule reading-position hairline and the hashed
+// bit-rule shared by the bachelor-thesis cover and the poster separator.
 
 #import "includes.typ" as inc
-
-// Shared ornament renderer — used by chapter-rule and the poster separator.
-// color is passed explicitly so the caller can use any brand color.
-#let _draw-ornament(spec, e, color) = {
-  let fc  = if spec.filled { color } else { white }
-  let ang = if "angle" in spec { spec.angle } else { 0 }
-  let body = if spec.shape == "square" {
-    rect(width: e, height: e, fill: fc, stroke: color)
-  } else if spec.shape == "circle" {
-    ellipse(width: e, height: e, fill: fc, stroke: color)
-  } else if spec.shape == "diamond" {
-    polygon(fill: fc, stroke: color,
-      (e / 2, 0pt), (e, e / 2), (e / 2, e), (0pt, e / 2))
-  } else if spec.shape == "cross" {
-    let bar = e / 3
-    box(width: e, height: e, {
-      place(dy: (e - bar) / 2, rect(width: e,   height: bar, fill: fc, stroke: color))
-      place(dx: (e - bar) / 2, rect(width: bar, height: e,   fill: fc, stroke: color))
-    })
-  } else if spec.shape == "pentagon" {
-    let r   = e / 2
-    let pts = range(5).map(k => {
-      let a = (270 + 72 * k) * calc.pi / 180
-      (r + r * calc.cos(a), r + r * calc.sin(a))
-    })
-    polygon(fill: fc, stroke: color, ..pts)
-  }
-  if ang != 0 { rotate(ang * 1deg, origin: center + horizon, body) } else { body }
-}
 
 // Decorative "hash rule": a brand-colored square at each end joined by a line
 // whose circles encode a deterministic hash of `seed` (hollow = 1 bit, filled
@@ -97,37 +68,26 @@
   })
 }
 
-// Draws a decorative horizontal rule below a chapter heading with a single
-// ornament anchored at the right end. The same ornament is used for every
-// chapter (no per-chapter cycling) — the student picks once via project()'s
-// `chapter-ornament:` parameter.
-//
-// `ornament` is a dict with keys:
-//   shape:  "square"|"circle"|"diamond"|"cross"|"pentagon"
-//   filled: true → hei-purple fill / false → white fill, hei-purple border
-//   scale:  (optional) size multiplier, e.g. 0.5 for a smaller ornament
-//   angle:  (optional) clockwise rotation in degrees
-//
-// Pass `ornament: none` to draw only the plain line.
-#let chapter-rule(
-  ornament: (shape: "circle", filled: true, scale: 0.5),
-) = {
-  let color = inc.hei-purple
-  let sz    = 4pt
-  let thick = 0.0pt
+// Draws the reading-position hairline below a numbered chapter heading: a faint
+// full-width track with the leading `progress` fraction (0–1) in brand color and
+// a dot at the head, indicating chapter n of the total. With `progress: none`
+// nothing visible is drawn.
+#let chapter-rule(progress: none) = {
+  let color      = inc.hei-purple
+  let track-w    = 1.0pt   // faint background track
+  let fill-w     = 1.0pt   // filled (read-so-far) portion
+  let dot-r      = 4.0pt   // head marker radius
 
   // Distance between heading text and line
   v(-0.2em)
 
   layout(size => {
-    // Full-width horizontal rule
-    place(line(length: size.width, stroke: (thickness: thick, paint: black)))
-
-    if ornament != none {
-      let s = if "scale" in ornament { ornament.scale } else { 1.0 }
-      let e = sz * s
-      // Right edge of the ornament flush with the right end of the rule.
-      place(dx: size.width - e, dy: -e / 2, _draw-ornament(ornament, e, color))
+    if progress != none {
+      place(line(length: size.width, stroke: (paint: luma(60%), thickness: track-w)))
+      place(line(length: progress * size.width, stroke: (paint: color, thickness: fill-w)))
+      // Head marker at the current reading position.
+      place(dx: progress * size.width, move(dx: -dot-r, dy: -dot-r,
+        circle(radius: dot-r, fill: color, stroke: none)))
     }
 
     // Space below the line

@@ -3,9 +3,9 @@
 #let doc_language = "fr" // Valid values are en, fr
 
 #show: project.with( 
-  title: "Life, the Universe, and Everything", // Your thesis title
+  title: "Life, the Universe and Everything", // Your thesis title
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
-  authors: "James Goslinga", 
+  authors: "Margaret Hamilton", // Your name
   language: doc_language, // must be defined globally, see above
   
   thesis-supervisor: "Prof. Dr John von Neumann", 
@@ -27,10 +27,6 @@
   signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
   doc-type: "thesis",
-  // Ornament at the right end of every chapter rule. Defaults to a small filled
-  // dot. Other options: (shape: "diamond"|"square"|"pentagon"|"cross", filled:
-  // true|false, scale: 0.5, angle: 45). Set to `none` for a plain rule.
-  chapter-ornament: (shape: "circle", filled: true, scale: 0.5),
   split-chapters: true,
   revision: "1.0", // Or for instance "1.0", for the version of your thesis
   code-theme: "bluloco-light", // See directory themes/ for available themes
@@ -38,7 +34,7 @@
   // The cover shows a red "DOCUMENT INCOMPLET" box listing required fields still
   // left at their placeholder values. Uncomment to hide it (a tiny mark is then
   // left on the second cover page). Only do this if you know what you are doing.
-  hide-completeness-warning: true,
+  // hide-completeness-warning: true,
 )
 
 // // If using acronyms 

@@ -77,7 +77,7 @@ lib/
   settings.typ           ← shared metrics (heading sizes, spacing), version, keywords
   fonts.typ              ← font stacks, ISC-font detection, "fonts not installed" page
   i18n.typ               ← i18n() string resolution + langs (reads ../i18n.json)
-  decorations.typ        ← chapter-rule ornaments + the hashed bit-rule (hash-rule)
+  decorations.typ        ← chapter-rule reading-position hairline + the hashed bit-rule (hash-rule)
   content.typ            ← page-title, TOC/figures, bibliography, appendix, abstract-footer, utilities
   code.typ              ← code() source-listing block
   covers.typ             ← front-matter(): per-document-type front matter dispatcher

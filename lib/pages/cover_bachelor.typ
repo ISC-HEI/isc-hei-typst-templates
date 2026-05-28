@@ -37,7 +37,7 @@
   // hasn't started and stay silent; as soon as ANY field is touched (differs from
   // its shipped placeholder — including being emptied) we flag every required
   // field still left empty or at its shipped placeholder value.
-  let sample-author    = "James Gosling"
+  let sample-author    = "Margaret Hamilton"
   let sample-thesis-id = "ISC-ID-26-1"
   let sample-repo      = "https://github.com/ISC-HEI/isc-hei-typst-templates"
   let sample-keywords  = ("engineering", "data", "machine learning", "meteorology")
@@ -98,7 +98,7 @@
     let issues = compute-issues()
     if not hide-completeness-warning and issues.len() > 0 {
       place(top + left, dx: left-margin, dy: 64mm, box(
-        width: 210mm - left-margin - right-margin,
+        width: 210mm - left-margin - right-margin - 10mm,
         fill: rgb("#ffe3e3"),
         stroke: 2.5pt + rgb("#c1121f"),
         radius: 4pt,
@@ -267,7 +267,7 @@
     },
     if submission-date != none {
       stack(v(6mm), line(start: (0pt, 0pt), length: 25pt, stroke: 1mm), v(6mm), text(
-        i18n("submitted-on") + " " + inc.custom-date-format(submission-date, pattern: i18n("date-format") + " - " + i18n("revision") + " - " + revision, lang: language),
+        i18n("submitted-on") + " " + inc.custom-date-format(submission-date, pattern: i18n("date-format") + ". " + i18n("revision") + " " + revision, lang: language),
         size: 10pt,
       ))
     }

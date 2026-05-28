@@ -9,7 +9,7 @@
 //   lib/settings.typ     — shared metrics, version, keywords
 //   lib/fonts.typ        — font stacks + the "fonts not installed" fallback page
 //   lib/i18n.typ         — i18n() string resolution
-//   lib/decorations.typ  — chapter-rule ornaments and the hashed bit-rule
+//   lib/decorations.typ  — chapter-rule reading-position hairline + hashed bit-rule
 //   lib/content.typ      — titles, TOC/figures, bibliography, appendix, utilities
 //   lib/code.typ         — code() source-listing block
 //   lib/covers.typ       — per-document-type front matter (used by project)

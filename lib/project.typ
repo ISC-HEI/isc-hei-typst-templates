@@ -27,9 +27,6 @@
   show-cover: true,
   show-toc: 2, // false = no TOC, true = TOC with depth 2, integer = TOC with given depth
   fancy-line: false, // Use decorative line with squares (false = simple line)
-  // Ornament drawn at the right end of every chapter rule. Dict with shape /
-  // filled / scale / angle (see lib/decorations.typ). `none` = plain line.
-  chapter-ornament: (shape: "circle", filled: true, scale: 0.5),
 
   // Bachelor thesis specific
   thesis-supervisor: [Thesis supervisor],
@@ -149,7 +146,7 @@
 
   // Thesis specific settings
   set page(
-    margin: (inside: 2.5cm, outside: 1.5cm, bottom: 2.1cm, top: 2cm), // Binding inside
+    margin: (inside: 2.5cm, outside: 1.8cm, bottom: 2.5cm, top: 2.5cm), // Binding inside
     paper: "a4",
   ) if(doc-type == "thesis")
 
@@ -213,8 +210,11 @@
         }
         // Decorative rule — only for numbered (chapter) headings
         if it.numbering != none {
-          chapter-rule(ornament: chapter-ornament)
-          v(1.5cm)          
+          // Reading-position hairline: filled to chapter n of the total.
+          let n     = counter(heading).get().first()
+          let total = counter(heading).final().first()
+          chapter-rule(progress: n / total)
+          v(1.5cm)
         }
       })
     } else {
@@ -247,11 +247,11 @@
     #{
       emph(footer-title)
       if revision != none {
-          text(", rev " + revision, style: "italic")
+          text(" · " + revision, style: "italic")
       }
 
       h(1fr)
-      counter(page).display("1/1", both: true)
+      counter(page).display("1 | 1", both: true)
     }
   ]
 
@@ -284,11 +284,10 @@
             }
           }
           h(1fr)
-          counter(page).display("1/1", both: true)
+          counter(page).display("1 | 1", both: true)
         })
       } else if counter(page).get().first() > 1 {
         if inc.header-footers-enabled.get() and not inc.blank-page.get() {
-          move(dy: 5pt, line(length: 100%, stroke: 0.5pt))
           footer-content
         } else {
           none
