@@ -20,13 +20,10 @@
   revision: none,
   logo: none,
   language: "",
+  hide-completeness-warning: false,
 ) = {
-  // A missing thesis ID is no longer fatal: it is surfaced by the completeness
-  // warning block below instead of aborting the compile.
   let thesis-id = if thesis-id == none { "" } else { thesis-id }
-
   let i18n = isc.i18n.with(extra-i18n: none, language)
-
   let hei-purple = inc.hei-purple
   let right-margin = 12mm
   let left-margin = 35mm
@@ -36,19 +33,23 @@
 
   // ── Completeness check (drafting aid) ───────────────────────────────────────
   // The sentinels mirror the placeholder values shipped in src/bachelor_thesis.typ.
-  // While the document still carries the template's sample author we assume the
-  // student hasn't started and stay silent; once they set their own name we flag
-  // every required field still left empty or at its shipped placeholder value.
+  // While EVERY field still carries its shipped placeholder we assume the student
+  // hasn't started and stay silent; as soon as ANY field is touched (differs from
+  // its shipped placeholder — including being emptied) we flag every required
+  // field still left empty or at its shipped placeholder value.
   let sample-author    = "James Gosling"
   let sample-thesis-id = "ISC-ID-26-1"
-  let sample-repo      = "https://isc.hevs.ch"
+  let sample-repo      = "https://github.com/ISC-HEI/isc-hei-typst-templates"
   let sample-keywords  = ("engineering", "data", "machine learning", "meteorology")
   // Expected reference format: ISC-XX-YY-N (XX = two letters, YY = two-digit
   // year, N = one or more digits), e.g. ISC-SE-26-3.
   let id-pattern       = regex("^ISC-[A-Za-z]{2}-[0-9]{2}-[0-9]+$")
   let fr = language == "fr"
 
-  context {
+  // Returns the list of still-incomplete required fields. Must be called from a
+  // context block (it reads document state). Returns () while the document is
+  // still fully pristine (every field at its shipped placeholder).
+  let compute-issues() = {
     let repo      = inc.global-project-repos.get()
     let keywords  = inc.global-keywords.get()
     let signature = inc.global-thesis-meta.get().at("signature", default: none)
@@ -56,8 +57,20 @@
     // the student is still pointing at the shipped placeholder signature file.
     let sig-src   = if signature != none and "source" in signature.fields() { signature.fields().at("source") } else { none }
 
+    // "started" = at least one field diverges from its exact shipped placeholder.
+    // Note this is stricter than the per-field "incomplete" tests below: emptying
+    // the repo to "" differs from the shipped URL, so it counts as touched even
+    // though "" is also an incomplete value.
+    let at-default = (
+      str(authors) == sample-author
+        and thesis-id == sample-thesis-id
+        and repo == sample-repo
+        and keywords == sample-keywords
+        and (signature != none and type(sig-src) == str and sig-src.contains("signature_placeholder"))
+    )
+
     let issues = ()
-    if str(authors) != sample-author {
+    if not at-default {
       if thesis-id in (none, "", sample-thesis-id) {
         issues.push(if fr [La référence du travail (`thesis-id`) n'a pas été mise à jour.] else [The thesis reference (`thesis-id`) has not been updated.])
       } else if str(thesis-id).match(id-pattern) == none {
@@ -75,9 +88,16 @@
         issues.push(if fr [Les mots-clés (keywords) n'ont pas été modifiés.] else [The keywords (keywords) have not been changed.])
       }
     }
+    issues
+  }
 
-    if issues.len() > 0 {
-      place(top + left, dx: left-margin, dy: 14mm, box(
+  // Drafting warning box. Sits in the empty band below the author block so it
+  // never overlaps the title header. Suppressed when the author opts out via
+  // `hide-completeness-warning` (a discreet marker then goes on the 2nd page).
+  context {
+    let issues = compute-issues()
+    if not hide-completeness-warning and issues.len() > 0 {
+      place(top + left, dx: left-margin, dy: 64mm, box(
         width: 210mm - left-margin - right-margin,
         fill: rgb("#ffe3e3"),
         stroke: 2.5pt + rgb("#c1121f"),
@@ -110,7 +130,7 @@
   // Title etc.
   pad(
     left: left-margin,
-    top: 60mm,
+    top: 42mm,
     right: right-margin,
     stack(
       // Type
@@ -119,16 +139,21 @@
       v(4mm),
       // Author
       text(authors, size: 18pt),
-      v(50mm),
+      v(70mm),
       // Title
       title_block,
       
-      v(35mm),
+      v(5mm),
       
       // Decorative line: hash-encoded bit pattern (square ends + circle bits).
+      // Its width matches the programme text rendered just below it, so measure
+      // that line and feed the result to hash-rule as its length.
       // dy pulls the box up by half its height so the rule sits on the baseline,
       // matching the original zero-height placement.
-      place(dy: -4pt, isc.hash-rule(thesis-id + authors)),
+      context {
+        let prog-width = measure(text(programme, size: 14pt, weight: 650)).width
+        place(dy: -4pt, isc.hash-rule(thesis-id + authors, length: prog-width))
+      },
       v(5mm),
       text(programme, size: 14pt, weight: 650),
       v(3mm),
@@ -140,7 +165,7 @@
   place(
     right + bottom,
     dx: -right-margin,
-    dy: -20mm,
+    dy: -24mm,
     box(
       align(
         right,
@@ -201,6 +226,15 @@
   // Repo block sits at the bottom-right, aligned with the last line of the
   // bottom stack ("Travail soumis le …"). place() floats outside the flow.
   place(bottom + right, isc.repo-block(language))
+
+  // Discreet tell: when the author hid the completeness warning while fields
+  // were still incomplete, record it with a tiny coloured dot in the bottom-left
+  // corner of this second cover page.
+  context {
+    if hide-completeness-warning and compute-issues().len() > 0 {
+      place(bottom + left, dx: -5mm, dy: -0.4mm, circle(radius: 2.5pt, fill: rgb("#c1121f"), stroke: none))
+    }
+  }
 
   v(1fr)
 

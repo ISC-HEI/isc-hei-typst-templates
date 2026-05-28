@@ -31,6 +31,7 @@
     (
       subtitle: [Travail de Bachelor],
       labels: ("Auteur·e", "Titre du travail", "Année académique"),
+      intro-prefix: [Moi,],
       intro: [déclare sur l'honneur :],
       items: (
         [avoir pris connaissance des règles relatives à la prévention du plagiat dans le cadre du travail de Bachelor de la filière ISC, et m'engager à les respecter ;],
@@ -49,7 +50,8 @@
     (
       subtitle: [Bachelor Thesis],
       labels: ("Author", "Thesis title", "Academic year"),
-      intro: [hereby declares on my honour:],
+      intro-prefix: [I,],
+      intro: [hereby declare on my honour:],
       items: (
         [that I have read the rules on the prevention of plagiarism applicable to the ISC Bachelor thesis, and undertake to comply with them;],
         [that the submitted work is the result of my own reflection and was carried out independently;],
@@ -70,7 +72,7 @@
   // Sub-title block under the page title.
   text(size: 10pt, style: "italic")[
     #t.subtitle \
-    Filière Informatique et systèmes de communication (ISC) — Haute École d'Ingénierie, HES-SO Valais-Wallis
+    Filière Informatique et systèmes de communication (ISC) · Haute École d'Ingénierie, HES-SO Valais-Wallis
   ]
 
   v(1.5em)
@@ -90,7 +92,7 @@
 
   v(1.2em)
 
-  [#author #t.intro]
+  [#t.intro-prefix #author, #t.intro]
 
   v(0.6em)
 

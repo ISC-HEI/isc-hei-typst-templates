@@ -1,4 +1,5 @@
 #import "../includes.typ" as inc
+#import "../settings.typ": programme-name-isc
 #import "/isc_templates.typ" as isc
 
 #let cover_page(
@@ -14,7 +15,7 @@
   expert: "Dr Grace Hopper", // Optional, use none if not needed
   academic-year: "2025-2026", // Optional, use none if not needed
   school: "Haute École d'Ingénierie de Sion",
-  programme: "Informatique et systèmes de communication (ISC)",
+  programme: programme-name-isc,
   keywords: ("engineering", "data", "machine learning", "meteorology"), // Some keywords related to your thesis
   major: "Data engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering""
   bind: none, // Bind the left side of the page

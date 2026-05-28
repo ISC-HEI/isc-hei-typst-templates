@@ -165,17 +165,36 @@
 // The entire text pane is wrapped in link(repo, …) so click-readers can hit it
 // anywhere; print readers use the QR.
 #let repo-block(lang, accent: inc.hei-purple) = context {
-  let repo       = str(inc.global-project-repos.get())
+  let repo-val   = inc.global-project-repos.get()
+  // No repository set yet (unset -> none, or emptied -> ""). Rendering a link()/QR
+  // with an empty URL would panic, so we draw nothing — the thesis completeness
+  // box already flags the missing `project-repos`. Test none before str(), since
+  // str(none) itself errors.
+  if repo-val == none or str(repo-val) == "" {
+    none
+  } else {
+  let repo       = str(repo-val)
   let repo-title = i18n(lang, "repository")
   let brand      = _repo-host-brand(repo)
   let on-prep    = i18n(lang, "repo-on")
+
+  // Right-pointing chevron drawn as a vector (not a font glyph): a "›" relies on
+  // whatever font happens to cover U+203A and sits oddly on the baseline, so we
+  // stroke our own. `cw`/`ch` size it; the box baseline shift centers it on the
+  // text x-height instead of resting the box bottom on the baseline.
+  let chevron(cw: 0.3em, ch: 0.48em, color: black) = box(baseline: -0.07em, curve(
+    stroke: (paint: color, thickness: 1.1pt, cap: "round", join: "round"),
+    curve.move((0em, 0em)),
+    curve.line((cw, ch / 2)),
+    curve.line((0em, ch)),
+  ))
 
   let text-pane = block(
     stroke: (left: 3.5pt + accent),
     inset: (left: 0.8em, right: 0.9em, top: 0.45em, bottom: 0.45em),
     link(repo, stack(spacing: 0.55em,
       text(0.9em, fill: black, weight: "bold", tracking: 0.06em, upper(repo-title)),
-      text(0.82em, fill: black, [❯ #on-prep #text(fill: accent, weight: "bold", brand)]),
+      text(0.82em, fill: black, [#chevron()#h(0.35em)#on-prep #text(fill: accent, weight: "bold", brand)]),
     )),
   )
   let pane-h = measure(text-pane).height
@@ -196,6 +215,7 @@
   )
 
   stack(dir: ltr, spacing: 0pt, text-pane, qr-pane)
+  }
 }
 
 #let abstract-footer(lang) = {

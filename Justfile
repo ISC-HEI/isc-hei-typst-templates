@@ -23,16 +23,32 @@ install-symblinks:
 # compile every src/ example to examples/*.pdf
 [group('dev')]
 compile-all:
-  typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
-  typst compile src/report.typ examples/report.pdf
-  typst compile src/document.typ examples/document.pdf
-  typst compile src/exec_summary.typ examples/exec_summary.pdf
-  typst compile src/tb_assignment.typ examples/tb_assignment.pdf
-  typst compile src/poster.typ examples/poster.pdf
+  #!/usr/bin/env bash
+  set -euo pipefail
+  ./scripts/show-pkg-mode
+  pids=(); declare -A pid_cmd
+  run_bg() { echo "  [//] $*"; "$@" & pid=$!; pids+=("$pid"); pid_cmd[$pid]="$*"; }
+  echo "── running 6 typst compile jobs in parallel ─────────────────────────"
+  run_bg typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
+  run_bg typst compile src/report.typ           examples/report.pdf
+  run_bg typst compile src/document.typ         examples/document.pdf
+  run_bg typst compile src/exec_summary.typ     examples/exec_summary.pdf
+  run_bg typst compile src/tb_assignment.typ    examples/tb_assignment.pdf
+  run_bg typst compile src/poster.typ           examples/poster.pdf
+  echo "── waiting for ${#pids[@]} jobs ─────────────────────────────────────"
+  failed=0
+  for pid in "${pids[@]}"; do
+    wait "$pid" || { echo "error: FAILED: ${pid_cmd[$pid]}" >&2; failed=1; }
+  done
+  [ "$failed" -eq 0 ] && echo "── all done ──────────────────────────────────────────────────────────"
+  exit $failed
 
 # run the full test suite against installed packages (your live source after install-symblinks; no packing)
 [group('dev')]
 test:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  ./scripts/show-pkg-mode
   ./scripts/test-thesis.sh
   ./scripts/test-report.sh
   ./scripts/test-document.sh
@@ -44,6 +60,9 @@ test:
 # run only the poster layout checks (every variant must fit one A1 page)
 [group('dev')]
 test-poster:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  ./scripts/show-pkg-mode
   ./scripts/test-poster-variants.sh
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -61,24 +80,49 @@ bump-version mode='patch': && install-symblinks
 # regenerate template thumbnails from examples/*.pdf (needs ImageMagick + pngquant)
 [group('pre-release')]
 generate-thumbs:
-  convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png
-  convert -density 150 'examples/report.pdf[0]' -flatten report_thumb.png
-  convert -density 150 'examples/document.pdf[0]' -flatten document_thumb.png
-  convert -density 150 'examples/exec_summary.pdf[0]' -flatten exec_summary.png
-  convert -density 150 'examples/tb_assignment.pdf[0]' -flatten tb_assignment_thumb.png
-  convert -density 150 'examples/poster.pdf[0]' -flatten poster_thumb.png
+  #!/usr/bin/env bash
+  set -euo pipefail
+  pids=(); declare -A pid_cmd
+  run_bg() { echo "  [//] $*"; "$@" & pid=$!; pids+=("$pid"); pid_cmd[$pid]="$*"; }
+  echo "── running 6 convert jobs in parallel ───────────────────────────────"
+  run_bg convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png
+  run_bg convert -density 150 'examples/report.pdf[0]'          -flatten report_thumb.png
+  run_bg convert -density 150 'examples/document.pdf[0]'        -flatten document_thumb.png
+  run_bg convert -density 150 'examples/exec_summary.pdf[0]'    -flatten exec_summary.png
+  run_bg convert -density 150 'examples/tb_assignment.pdf[0]'   -flatten tb_assignment_thumb.png
+  run_bg convert -density 150 'examples/poster.pdf[0]'          -flatten poster_thumb.png
+  echo "── waiting for ${#pids[@]} jobs ─────────────────────────────────────"
+  failed=0
+  for pid in "${pids[@]}"; do
+    wait "$pid" || { echo "error: FAILED: ${pid_cmd[$pid]}" >&2; failed=1; }
+  done
+  [ "$failed" -eq 0 ]
+  echo "  pngquant --quality 50-80 *.png --ext .png --force"
   pngquant --quality 50-80 *.png --ext .png --force
+  echo "── all done ──────────────────────────────────────────────────────────"
 
 # depends on compile-all + generate-thumbs so packed examples and thumbnails are fresh
 # pack all templates to @preview as the Universe artifact (replaces dev symlinks)
 [group('pre-release')]
 pack: compile-all generate-thumbs
-  ./scripts/pack "@preview" "bachelor-thesis"
-  ./scripts/pack "@preview" "report"
-  ./scripts/pack "@preview" "document"
-  ./scripts/pack "@preview" "exec-summary"
-  ./scripts/pack "@preview" "tb-assignment"
-  ./scripts/pack "@preview" "poster"
+  #!/usr/bin/env bash
+  set -euo pipefail
+  pids=(); declare -A pid_cmd
+  run_bg() { echo "  [//] $*"; "$@" & pid=$!; pids+=("$pid"); pid_cmd[$pid]="$*"; }
+  echo "── running 6 pack jobs in parallel ──────────────────────────────────"
+  run_bg ./scripts/pack "@preview" "bachelor-thesis"
+  run_bg ./scripts/pack "@preview" "report"
+  run_bg ./scripts/pack "@preview" "document"
+  run_bg ./scripts/pack "@preview" "exec-summary"
+  run_bg ./scripts/pack "@preview" "tb-assignment"
+  run_bg ./scripts/pack "@preview" "poster"
+  echo "── waiting for ${#pids[@]} jobs ─────────────────────────────────────"
+  failed=0
+  for pid in "${pids[@]}"; do
+    wait "$pid" || { echo "error: FAILED: ${pid_cmd[$pid]}" >&2; failed=1; }
+  done
+  [ "$failed" -eq 0 ] && echo "── all done ──────────────────────────────────────────────────────────"
+  exit $failed
 
 # pack the release, then test it — run before publishing to Typst Universe
 [group('pre-release')]

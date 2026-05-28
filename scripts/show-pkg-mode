@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Print whether @preview/isc-hei-* resolves via a dev symlink or a packed artifact.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)/.."
+VERSION=$(perl -lne 'print "$1" if /^version\s*=\s*"(.*)"/' < "$ROOT/typst.toml")
+PKG_PATH="${XDG_DATA_HOME:-$HOME/.local/share}/typst/packages/preview/isc-hei-bthesis/$VERSION"
+
+if [ -L "$PKG_PATH" ]; then
+  echo "  [dev symlink] @preview/isc-hei-*:$VERSION → $(readlink "$PKG_PATH")"
+elif [ -d "$PKG_PATH" ]; then
+  echo "  [packed] @preview/isc-hei-*:$VERSION → $PKG_PATH"
+else
+  echo "  [warning] package not found at $PKG_PATH — run 'just install-symblinks' or 'just pack'" >&2
+fi

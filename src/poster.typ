@@ -46,7 +46,7 @@
   thesis-id: "ISC-ID-26-1",
   academic-year: "2025-2026",
   school: "Haute École d'Ingénierie de Sion",
-  programme: "Informatique et Systèmes de communication (ISC)",
+  programme: "Informatique et systèmes de communication",
   major: "Data Engineering",
   orientation: poster-orientation,
   language: "fr",

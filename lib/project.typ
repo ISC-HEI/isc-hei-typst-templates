@@ -3,7 +3,7 @@
 // the per-type front matter to covers.front-matter() and renders the body.
 
 #import "includes.typ" as inc
-#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight, body-font-size, version, _luma-background
+#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight, body-font-size, version, _luma-background, programme-name
 #import "fonts.typ": body-font, sans-font, raw-font, isc-fonts-available, _missing-fonts-page
 #import "i18n.typ": i18n
 #import "decorations.typ": chapter-rule
@@ -41,9 +41,13 @@
   // Mandatory when the declaration page (pages/honneur.typ) is included.
   signature: none,
   keywords: (),
+  // Set true to suppress the thesis cover's "DOCUMENT INCOMPLET" drafting box
+  // even when required fields are still at their placeholders. A tiny coloured
+  // dot is then placed on the second cover page to record the override.
+  hide-completeness-warning: false,
   major: (),
   school: [School name],
-  programme: [Informatique et systèmes de communication],
+  programme: programme-name,
 
   // Executive summary specific
   summary: none,
@@ -100,10 +104,11 @@
   let toc-depth = if doc-type == "tb-assignment" or doc-type == "exec-summary" { 0 } else if show-toc == false { 0 } else if show-toc == true { 2 } else { int(show-toc) }
   inc.show-toc-enabled.update(toc-depth > 0)
 
+  // A missing/empty repo is no longer fatal: it flows through so the thesis
+  // completeness box can flag it (see lib/pages/cover_bachelor.typ). repo-block()
+  // renders nothing for an empty URL rather than panicking.
   if(project-repos != none) {
     inc.global-project-repos.update(project-repos)
-  }else{
-    if(doc-type == "thesis") {panic("No project repository provided, you need to provide one!")}
   }
 
   let i18n = i18n.with(extra-i18n: extra-i18n, language)
@@ -196,10 +201,10 @@
         // "Chapitre N" eyebrow over the chapter title on its own line.
         if (it.numbering != none) {
           let n = counter(heading).get().first()
-          stack(spacing: 0.8em,
+          stack(spacing: 1.2em,
             text(i18n("chapter-title") + " " + str(n),
               size: chapter-font-size * 0.8,
-              weight: 200,
+              weight: 300,
               fill: luma(45%)),
             text(it.body, size: chapter-font-size, weight: chapter-font-weight),
           )
@@ -209,6 +214,7 @@
         // Decorative rule — only for numbered (chapter) headings
         if it.numbering != none {
           chapter-rule(ornament: chapter-ornament)
+          v(1.5cm)          
         }
       })
     } else {
@@ -396,6 +402,7 @@
     thesis-expert: thesis-expert,
     thesis-supervisor: thesis-supervisor,
     thesis-co-supervisor: thesis-co-supervisor,
+    hide-completeness-warning: hide-completeness-warning,
     summary: summary,
     content: content,
     student-picture: student-picture,

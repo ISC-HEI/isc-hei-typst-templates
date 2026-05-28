@@ -117,7 +117,7 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
   doc-type: "exec-summary", // This is an executive summary, not a full thesis  
   
   school: "Haute École d'Ingénierie de Sion", 
-  programme: "Informatique et Systèmes de communication (ISC)",
+  programme: "Informatique et systèmes de communication",
 
   // Some keywords related to your thesis
   keywords: ("engineering", "data", "machine learning", "meteorology"),

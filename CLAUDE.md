@@ -152,10 +152,23 @@ the student must set are `date:` and `signature:` (an `image(...)`) on `project(
 DOCUMENT" warning box on the title page listing unfilled fields: `thesis-id`
 (empty/placeholder, or not matching `ISC-XX-YY-N` via regex), `signature`
 (missing or still the shipped `signature_placeholder.svg`), `project-repos`, and
-`keywords`. It stays silent while the document is still pristine — detected by the
-author still equalling the sample `"James Gosling"`. **Sentinels in that file
-(`sample-author`, `sample-thesis-id`, `sample-repo`, `sample-keywords`) mirror the
-placeholders shipped in `src/bachelor_thesis.typ`; update both together.**
+`keywords`. It stays silent only while **every** field still equals its shipped
+placeholder (the `at-default` test); as soon as **any** field diverges from its
+placeholder — including being emptied — the box appears and lists whichever
+required fields are still incomplete. **Sentinels in that file (`sample-author`,
+`sample-thesis-id`, `sample-repo`, `sample-keywords`) must mirror the placeholders
+shipped in `src/bachelor_thesis.typ` exactly — `at-default` compares against them
+verbatim, so any drift silently disables the gate; update both together.** An
+empty (`""`) or removed `project-repos` is no longer fatal: `repo-block()`
+(`content.typ`) renders nothing for an empty URL and the no-repo panic in
+`project.typ` is gone, so the box flags it like any other field. The box is
+positioned in the empty band below the author (`dy: 64mm`) so it never overlaps
+the title header. `project()` accepts **`hide-completeness-warning`** (default
+`false`): when `true` the box is suppressed even if fields are incomplete, and a
+tiny red dot is placed in the bottom-left margin of the **second** cover page
+(document page 3, since `cleardoublepage()` forces an odd page) as a discreet
+record of the override. The issue list is computed once by a `compute-issues()`
+closure reused by both the page-1 box and the page-2 marker.
 
 ### Fonts-not-installed guard
 

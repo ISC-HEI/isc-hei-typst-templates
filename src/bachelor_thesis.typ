@@ -5,7 +5,7 @@
 #show: project.with( 
   title: "Life, the Universe, and Everything", // Your thesis title
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
-  authors: "James Gosling", 
+  authors: "James Goslinga", 
   language: doc_language, // must be defined globally, see above
   
   thesis-supervisor: "Prof. Dr John von Neumann", 
@@ -15,15 +15,15 @@
   project-repos: "https://github.com/ISC-HEI/isc-hei-typst-templates", // Your project git repository.
 
   school: "Haute École d'Ingénierie de Sion",
-  programme: "Informatique et Systèmes de communication (ISC)",
+  programme: "Informatique et systèmes de communication (ISC)",
 
   // Some keywords related to your thesis
   keywords: ("engineering", "data", "machine learning", "meteorology"),
   major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "something else"
+  date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
 
   // Declaration of honour — the only two fields the student must provide for it
   // (everything else on that page is auto-filled). No need to edit pages/honneur.typ.
-  date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
   signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
   doc-type: "thesis",
@@ -32,9 +32,14 @@
   // true|false, scale: 0.5, angle: 45). Set to `none` for a plain rule.
   chapter-ornament: (shape: "circle", filled: true, scale: 0.5),
   split-chapters: true,
-  revision: "1.0", // Or for instance "1.0", for the version of your thesis  
+  revision: "1.0", // Or for instance "1.0", for the version of your thesis
   code-theme: "bluloco-light", // See directory themes/ for available themes
-) 
+                               // 
+  // The cover shows a red "DOCUMENT INCOMPLET" box listing required fields still
+  // left at their placeholder values. Uncomment to hide it (a tiny mark is then
+  // left on the second cover page). Only do this if you know what you are doing.
+  hide-completeness-warning: true,
+)
 
 // // If using acronyms 
 #import "@preview/acrostiche:0.7.0": *     

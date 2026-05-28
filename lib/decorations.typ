@@ -113,8 +113,8 @@
   ornament: (shape: "circle", filled: true, scale: 0.5),
 ) = {
   let color = inc.hei-purple
-  let sz    = 10pt
-  let thick = 1pt
+  let sz    = 4pt
+  let thick = 0.0pt
 
   // Distance between heading text and line
   v(-0.2em)

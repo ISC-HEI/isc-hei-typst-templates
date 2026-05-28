@@ -12,6 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 #import "includes.typ" as inc
+#import "settings.typ": programme-name-isc
 #import "decorations.typ": hash-rule
 #import "i18n.typ": i18n
 #import "fonts.typ": isc-fonts-available, _missing-fonts-page
@@ -60,7 +61,7 @@
   thesis-id: none,
   academic-year: none,
   school: "Haute École d'Ingénierie de Sion",
-  programme: "Informatique et Systèmes de communication (ISC)",
+  programme: programme-name-isc,
   major: none,
   orientation: "portrait",
   language: "fr",

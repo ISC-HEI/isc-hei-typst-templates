@@ -47,6 +47,7 @@
   thesis-expert: none,
   thesis-supervisor: none,
   thesis-co-supervisor: none,
+  hide-completeness-warning: false,
 
   // Exec-summary
   summary: none,
@@ -138,6 +139,7 @@
       revision: revision,
       logo: logo,
       language: language,
+      hide-completeness-warning: hide-completeness-warning,
     )
   } else if doc-type == "exec-summary" {
     import "pages/cover_exec_summary.typ": cover_page
