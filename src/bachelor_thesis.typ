@@ -12,7 +12,7 @@
   thesis-co-supervisor: "Lady Ada Lovelace", // Optional, use none if not needed
   thesis-expert: "Dr Grace Hopper", // Optional, use none if not needed
   thesis-id: "ISC-ID-26-1", // Your thesis ID (from the official project description)
-  project-repos: "https://isc.hevs.ch", // Your project git repository.
+  project-repos: "https://github.com/ISC-HEI/isc-hei-typst-templates", // Your project git repository.
 
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et Systèmes de communication (ISC)",
@@ -27,7 +27,10 @@
   signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
   doc-type: "thesis",
-  fancy-chapter-rule: true,
+  // Ornament at the right end of every chapter rule. Defaults to a small filled
+  // dot. Other options: (shape: "diamond"|"square"|"pentagon"|"cross", filled:
+  // true|false, scale: 0.5, angle: 45). Set to `none` for a plain rule.
+  chapter-ornament: (shape: "circle", filled: true, scale: 0.5),
   split-chapters: true,
   revision: "1.0", // Or for instance "1.0", for the version of your thesis  
   code-theme: "bluloco-light", // See directory themes/ for available themes

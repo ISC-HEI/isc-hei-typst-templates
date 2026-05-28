@@ -27,7 +27,9 @@
   show-cover: true,
   show-toc: 2, // false = no TOC, true = TOC with depth 2, integer = TOC with given depth
   fancy-line: false, // Use decorative line with squares (false = simple line)
-  fancy-chapter-rule: false, // Use decorative ornaments on chapter rules (false = plain line)
+  // Ornament drawn at the right end of every chapter rule. Dict with shape /
+  // filled / scale / angle (see lib/decorations.typ). `none` = plain line.
+  chapter-ornament: (shape: "circle", filled: true, scale: 0.5),
 
   // Bachelor thesis specific
   thesis-supervisor: [Thesis supervisor],
@@ -190,17 +192,24 @@
       inc.blank-page.update(false)
 
       block(fill: none, inset: (x: 0pt, bottom: space-after-heading, top: 6.5em), below: 0pt, {
-        // If the heading has a numbering, display it
+        // Numbered (chapter) headings get the two-line layout: smaller, lighter
+        // "Chapitre N" eyebrow over the chapter title on its own line.
         if (it.numbering != none) {
-          text(i18n("chapter-title") + " " + counter(heading).display() + " " + it.body, size: chapter-font-size, weight: chapter-font-weight)
+          let n = counter(heading).get().first()
+          stack(spacing: 0.8em,
+            text(i18n("chapter-title") + " " + str(n),
+              size: chapter-font-size * 0.8,
+              weight: 200,
+              fill: luma(45%)),
+            text(it.body, size: chapter-font-size, weight: chapter-font-weight),
+          )
         } else {
           it
         }
         // Decorative rule — only for numbered (chapter) headings
         if it.numbering != none {
-          context chapter-rule(chapter: counter(heading).get().first(), enabled: fancy-chapter-rule)
+          chapter-rule(ornament: chapter-ornament)
         }
-
       })
     } else {
       it

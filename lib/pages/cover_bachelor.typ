@@ -198,23 +198,17 @@
     align(center, par(leading: 13pt, text(subtitle, size: 12pt)))
   }
 
-  v(18mm)
-  context{    
-    let repo = str(inc.global-project-repos.get())
-    stack(
-      align(center, text(i18n("repository"))),
-      v(3mm),
-      align(center, link(repo, text(size: 10pt, font: "Fira Code", repo)))    
-    )
-  }
-  
+  // Repo block sits at the bottom-right, aligned with the last line of the
+  // bottom stack ("Travail soumis le …"). place() floats outside the flow.
+  place(bottom + right, isc.repo-block(language))
+
   v(1fr)
 
   stack(
     stack(
       spacing: 3mm,
       text(i18n("thesis-submitted")),
-      text(programme + " – " + major + " major", style: "italic"),
+      text(programme + " – " + i18n("major-prefix") + major + i18n("major-suffix"), style: "italic"),
       text(school),
     ),
     v(6mm),

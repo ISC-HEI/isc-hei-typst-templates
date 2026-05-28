@@ -21,7 +21,10 @@
         "thesis-submitted" : "Mémoire soumis pour le programme de bachelor",
         "thesis-study-course" : "Programme d'études",
         "thesis-id-title": "Référence",
-        "repository": "Lien de dépôt du projet",
+        "repository": "Dépôt du projet",
+        "repo-on": "Lien",
+        "major-prefix": "Orientation ",
+        "major-suffix": "",
         "programme-title" : "Filière",
         "hes-so" : "Haute école spécialisée de Suisse occidentale",
         "faculty" : "Faculté Ingénierie et Architecture",
@@ -58,6 +61,9 @@
         "thesis-study-course" : "Study Programme",
         "thesis-id-title": "Thesis reference",
         "repository": "Project repository",
+        "repo-on": "Go to",
+        "major-prefix": "",
+        "major-suffix": " major",
         "keywords": "Keywords",
         "programme-title" : "Degree programme",
         "hes-so" : "University of Applied Sciences and Arts Western Switzerland",
@@ -89,6 +95,8 @@
         "date-format": "dd. MMMM yyyy",
         "poster-discover": "Alle Bachelor-\nArbeiten entdecken",
         "poster-orientation": "Vertiefung",
-        "poster-academic-year": "Akademisches Jahr"
+        "poster-academic-year": "Akademisches Jahr",
+        "major-prefix": "Vertiefung ",
+        "major-suffix": ""
     }
 }

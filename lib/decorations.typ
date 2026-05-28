@@ -97,46 +97,23 @@
   })
 }
 
-// Draws a decorative horizontal rule below a chapter heading.
-// Ornaments cycle automatically by chapter number.
+// Draws a decorative horizontal rule below a chapter heading with a single
+// ornament anchored at the right end. The same ornament is used for every
+// chapter (no per-chapter cycling) — the student picks once via project()'s
+// `chapter-ornament:` parameter.
 //
-// Each entry in `decorations` is an array of shape dicts with keys:
-//   shape:  "square"|"circle"|"diamond"|"triangle-up"|"triangle-down"|"cross"|"pentagon"
+// `ornament` is a dict with keys:
+//   shape:  "square"|"circle"|"diamond"|"cross"|"pentagon"
 //   filled: true → hei-purple fill / false → white fill, hei-purple border
-//   scale:  (optional) size multiplier, e.g. 0.6 for a smaller ornament
-//   angle:  (optional) clockwise rotation in degrees (useful for square, diamond, cross)
+//   scale:  (optional) size multiplier, e.g. 0.5 for a smaller ornament
+//   angle:  (optional) clockwise rotation in degrees
 //
-// Set `enabled: false` to draw only the plain line.
-// Pass `chapter: counter(heading).get().first()` from the enclosing context — do not set manually.
+// Pass `ornament: none` to draw only the plain line.
 #let chapter-rule(
-  decorations: (
-    // — single shapes —
-    ((shape: "square",   filled: false, scale: 0.4, angle: 45),  (shape: "circle",      filled: true)),
-    ((shape: "square",        filled: false),),
-    ((shape: "pentagon",      filled: true),),
-    ((shape: "cross",    filled: true,  scale: 0.6, angle: 0),  (shape: "square",      filled: false)),
-    ((shape: "diamond",  filled: false, scale: 0.4, angle: 0),  (shape: "diamond",     filled: true)),
-    ((shape: "circle",        filled: true),),
-    ((shape: "square",   filled: true,  scale: 0.5, angle: 45),  (shape: "pentagon",    filled: false)),
-    ((shape: "circle",        filled: false),),
-
-    ((shape: "square",        filled: true),),
-    ((shape: "diamond",  filled: false),),
-    ((shape: "diamond",  filled: true,  scale: 0.6, angle: 12),  (shape: "circle",      filled: false)),
-    ((shape: "pentagon",      filled: false), (shape: "square",  filled: true)),
-    ((shape: "diamond", filled: false, scale: 0.55, angle: 15),
-     (shape: "circle",  filled: true,  scale: 0.75),
-     (shape: "square",  filled: false)),
-    ((shape: "cross",   filled: false, scale: 0.55, angle: 45),
-     (shape: "diamond", filled: true,  scale: 0.75),
-     (shape: "circle",  filled: false)),
-  ),
-  enabled: true,
-  chapter: 1,
+  ornament: (shape: "circle", filled: true, scale: 0.5),
 ) = {
   let color = inc.hei-purple
   let sz    = 10pt
-  let gap   = 12pt
   let thick = 1pt
 
   // Distance between heading text and line
@@ -146,19 +123,11 @@
     // Full-width horizontal rule
     place(line(length: size.width, stroke: (thickness: thick, paint: black)))
 
-    if enabled and decorations.len() > 0 {
-      // Pick the pattern for this chapter, cycling when chapter > len
-      let pattern = decorations.at(calc.rem(chapter - 1, decorations.len()))
-      let n = pattern.len()
-
-      // Draw each ornament; array is left-to-right, last entry is rightmost
-      for (i, spec) in pattern.enumerate() {
-        let s      = if "scale" in spec { spec.scale } else { 1.0 }
-        let e      = sz * s                           // effective size
-        let slot-x = size.width - sz - (sz + gap) * (n - 1 - i)
-        let x      = slot-x + (sz - e) / 2           // center in slot
-        place(dx: x, dy: -e / 2, _draw-ornament(spec, e, color))
-      }
+    if ornament != none {
+      let s = if "scale" in ornament { ornament.scale } else { 1.0 }
+      let e = sz * s
+      // Right edge of the ornament flush with the right end of the rule.
+      place(dx: size.width - e, dy: -e / 2, _draw-ornament(ornament, e, color))
     }
 
     // Space below the line

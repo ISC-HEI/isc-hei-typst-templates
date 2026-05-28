@@ -5,6 +5,7 @@
 #import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight
 #import "i18n.typ": i18n
 #import "@preview/gentle-clues:1.3.1": clue
+#import "@preview/tiaoma:0.3.0"
 
 #let page-title(title, mult: 1.5, bottom: 2pt, top: 4em) = {
   set text(size: chapter-font-size * mult, weight: chapter-font-weight)
@@ -144,49 +145,73 @@
 }
 
 
+// Pull a friendly "brand" out of a URL host: the first hostname component
+// after stripping protocol and an optional www. (e.g. github.com → github,
+// gitlab.hevs.ch → gitlab, isc.hevs.ch → isc).
+#let _repo-host-brand(repo) = {
+  let s = repo
+  if s.starts-with("https://") { s = s.slice(8) }
+  else if s.starts-with("http://") { s = s.slice(7) }
+  let slash = s.position("/")
+  let host = if slash == none { s } else { s.slice(0, slash) }
+  if host.starts-with("www.") { host = host.slice(4) }
+  let parts = host.split(".")
+  if parts.len() > 0 { parts.first() } else { host }
+}
+
+// Repository "card": magenta accent bar + title + brand affordance + scaled QR.
+// Reads the repo URL from global-project-repos. Sizes are em-relative so the
+// card scales with the surrounding text size. Returns content (not placed).
+// The entire text pane is wrapped in link(repo, …) so click-readers can hit it
+// anywhere; print readers use the QR.
+#let repo-block(lang, accent: inc.hei-purple) = context {
+  let repo       = str(inc.global-project-repos.get())
+  let repo-title = i18n(lang, "repository")
+  let brand      = _repo-host-brand(repo)
+  let on-prep    = i18n(lang, "repo-on")
+
+  let text-pane = block(
+    stroke: (left: 3.5pt + accent),
+    inset: (left: 0.8em, right: 0.9em, top: 0.45em, bottom: 0.45em),
+    link(repo, stack(spacing: 0.55em,
+      text(0.9em, fill: black, weight: "bold", tracking: 0.06em, upper(repo-title)),
+      text(0.82em, fill: black, [❯ #on-prep #text(fill: accent, weight: "bold", brand)]),
+    )),
+  )
+  let pane-h = measure(text-pane).height
+
+  // Scale the QR uniformly so its height matches the text pane.
+  let qr-raw = tiaoma.barcode(repo, "QRCode", options: (
+    scale: 1.0, fg-color: black, bg-color: white,
+  ))
+  let qr-scaled = scale(
+    (pane-h / measure(qr-raw).height) * 100%,
+    origin: top + left, reflow: true, qr-raw,
+  )
+
+  let qr-pane = block(
+    stroke: (left: 0.6pt + luma(70%)),
+    inset: (left: 7pt, right: 0pt, y: 0pt),
+    link(repo, qr-scaled),
+  )
+
+  stack(dir: ltr, spacing: 0pt, text-pane, qr-pane)
+}
+
 #let abstract-footer(lang) = {
-  // Suppress the inline-code background box so URLs render as plain monospace
-  show raw.where(block: false): it => it
-
   context {
-    let repo       = str(inc.global-project-repos.get())
-    let kw-list    = inc.global-keywords.get().join(", ")
-    let repo-title = i18n(lang, "repository")
-    let kw-title   = i18n(lang, "keywords")
-    let accent-repo = rgb(30, 102, 245)   // blue
-    let accent-kw   = rgb(23, 146, 153)   // teal
+    let kw-list  = inc.global-keywords.get().join(", ")
+    let kw-title = i18n(lang, "keywords")
 
-    // Repo box: floated to the top-right, compact insets, normal text size
-    // Measure header and body to size the box snugly around its content
-    let repo-header-w = measure(box(inset: (x: 0.3em),
-      grid(columns: (auto, auto), gutter: 1em,
-        align: (horizon, left + horizon),
-        box(height: 0.8em)[#text(0.8em)[🔗]], text(0.8em, repo-title))
-    )).width
-    let repo-body-w = measure(box(inset: (x: 0.4em), raw(repo))).width
-    let repo-box-w  = calc.max(repo-header-w, repo-body-w) + 2pt  // 2pt for left stroke
+    place(top + right, repo-block(lang))
 
-    place(top + right,
-      clue(
-        align(right, link(repo)[#raw(repo)]),
-        title: text(0.8em, repo-title), icon: text(0.8em)[🔗],
-        accent-color: accent-repo, body-color: accent-repo.lighten(95%),
-        radius: 0pt, stroke-width: 2pt,
-        header-inset: 0.3em, content-inset: 0.4em,
-        width: repo-box-w,
-      )
-    )
-
-    // Push keywords to the bottom of the page
     v(1fr)
 
-    // Full-width keywords clue
-    clue(
-      align(center, text(0.9em,kw-list)),
-      title: text(0.9em,kw-title), icon: text(0.9em)[🏷],
-      accent-color: accent-kw, body-color: accent-kw.lighten(95%),
-      header-inset: 0.3em, content-inset: 0.7em,
-      radius: 0pt, stroke-width: 3pt,
-    )
+    // Plain keywords block (no box, no icon)
+    align(left, {
+      text(1em, weight: "bold", kw-title)
+      linebreak()
+      text(0.9em, kw-list)
+    })
   }
 }
