@@ -95,4 +95,4 @@ Another nice possibility is of course to use VScod(e | ium) via the `Typst LSP` 
 
 If you need any help for installing or running those tools, do not hesitate to get in touch with its maintainer [pmudry](https://github.com/pmudry).
 
-You can of course also propose changes using PR or raise issues if something is not clear. Have fun writing reports!
+You can of course also propose changes using PR or raise issues if something is not clear. Have fun writing things!
