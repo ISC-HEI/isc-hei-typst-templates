@@ -1,7 +1,9 @@
 ## Bachelor thesis 
-- update the déclaration sur l'honneur properly for proper text
+
+## Document
+- The subtitle is not typeset at all in the document, for (0.8.0)
 
 ## Poster
-- print one to see how it looks like, and adjust the font size if needed
+- print one to see how it looks like, and adjust the font size if needed, for (0.8.0)
 
 ## Global
