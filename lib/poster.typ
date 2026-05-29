@@ -82,6 +82,11 @@
   // fonts are missing (same guard as project(), sized for the poster's A1 paper).
   context if not isc-fonts-available() { _missing-fonts-page(paper: "a1") } else {
 
+  // Reproducible PDF: without this, typst defaults document.date to `auto` and bakes
+  // the current wall-clock into /CreationDate + /ModDate, so every build differs in git
+  // (project()-based templates already pass date:, so only the poster needed this).
+  set document(date: none)
+
   // ISC TB aggregator — not user-facing; update here when the URL moves.
   // TODO: update when the ISC TB website moves to its permanent address
   let _isc-tbs-website = "https://isc-hei.github.io/isc-tbs/"

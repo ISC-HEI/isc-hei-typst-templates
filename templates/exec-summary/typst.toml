@@ -1,7 +1,7 @@
 [package]
 name = "isc-hei-exec-summary"
 version = "0.7.9"
-compiler = "0.14.2"
+compiler = "0.14.0"
 entrypoint = "isc_templates.typ"
 repository = "https://github.com/ISC-HEI/isc-hei-student-templates"
 authors = ["Pierre-André Mudry"]

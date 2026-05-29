@@ -8,7 +8,13 @@ Official [Typst](https://typst.app/) templates for the ISC bachelor degree progr
 
 ## Build commands
 
-Requires: `typst` (≥ 0.14.2), `just`, `ImageMagick` + `pngquant` (used by `generate-thumbs`, which `pack` runs).
+Requires: `typst` (≥ 0.14.0), `just`, `pngquant` + `zopflipng` (used by `generate-thumbs`, which `pack` runs).
+
+> `generate-thumbs` renders each `src/*.typ` page 1 **directly with typst** at 120 ppi
+> (`--pages 1 --format png --ppi 120`), then `pngquant` + a lossless `zopflipng` pass.
+> Ghostscript/ImageMagick are no longer in the chain, so the raster is **byte-for-byte
+> reproducible** given the same binaries + installed fonts (typst PNG export embeds no
+> timestamp). Cross-machine equivalence still needs the same fonts installed.
 
 The Justfile is split into four recipe groups (`just --list`): **dev** (work against
 your live source via symlinks), **pre-release** (build + check the local @preview

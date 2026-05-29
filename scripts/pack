@@ -84,7 +84,10 @@ done
 cp -a "$ROOT/templates/$TEMPLATE/README.md" "$TMP"
 cp -a "$ROOT/templates/$TEMPLATE/typst.toml" "$TMP"
 
-cp $ROOT/src/*.pdf "$ROOT/examples/" 2>/dev/null || true
+# NOTE: the example PDFs in examples/ are produced fresh by `compile-all` (a pack
+# prerequisite). Do NOT copy src/*.pdf over them — those are stray artifacts left
+# by running `typst compile src/<x>.typ` with no output path, and are usually stale
+# (e.g. predating the colophon), which silently corrupts the committed examples.
 
 # ── Keep ONLY the files this template requires ──────────────────────────────
 # The allow-list comes from scripts/template-files (shared with check-pack), so

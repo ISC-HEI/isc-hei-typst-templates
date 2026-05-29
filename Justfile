@@ -84,29 +84,36 @@ test-poster:
 bump-version mode='patch': && install-symblinks
   ./scripts/bump-version "{{mode}}"
 
-# (helper) regenerate template thumbnails from examples/*.pdf — needs ImageMagick + pngquant; auto-run by pack
+# (helper) regenerate template thumbnails — render src/ page 1 directly with typst (no Ghostscript), then pngquant + zopflipng. Reproducible byte-for-byte; needs typst + pngquant + zopflipng. Auto-run by pack.
 [private]
 [group('pre-release')]
 generate-thumbs:
   #!/usr/bin/env bash
   set -euo pipefail
+  # Render <src>.typ page 1 → <out>.png at 120 ppi (no PDF/Ghostscript in the chain,
+  # so the raster is deterministic), shrink with pngquant, then a lossless zopflipng
+  # pass. Same binaries + fonts ⇒ byte-identical output, no metadata timestamps.
+  thumb() {
+    local src="$1" out="$2"
+    typst compile "src/${src}.typ" --pages 1 --format png --ppi 120 "$out"
+    pngquant --quality 50-80 "$out" --ext .png --force
+    zopflipng -y "$out" "${out}.tmp" && mv -f "${out}.tmp" "$out"
+  }
   pids=(); declare -A pid_cmd
-  run_bg() { echo "  [//] $*"; "$@" & pid=$!; pids+=("$pid"); pid_cmd[$pid]="$*"; }
-  echo "── running 6 convert jobs in parallel ───────────────────────────────"
-  run_bg convert -density 150 'examples/bachelor_thesis.pdf[0]' -flatten bachelor_thesis_thumb.png
-  run_bg convert -density 150 'examples/report.pdf[0]'          -flatten report_thumb.png
-  run_bg convert -density 150 'examples/document.pdf[0]'        -flatten document_thumb.png
-  run_bg convert -density 150 'examples/exec_summary.pdf[0]'    -flatten exec_summary.png
-  run_bg convert -density 150 'examples/tb_assignment.pdf[0]'   -flatten tb_assignment_thumb.png
-  run_bg convert -density 150 'examples/poster.pdf[0]'          -flatten poster_thumb.png
+  run_bg() { echo "  [//] thumb $*"; thumb "$@" & pid=$!; pids+=("$pid"); pid_cmd[$pid]="thumb $*"; }
+  echo "── rendering 6 thumbnails (typst 120ppi → pngquant → zopflipng) in parallel ──"
+  run_bg bachelor_thesis bachelor_thesis_thumb.png
+  run_bg report          report_thumb.png
+  run_bg document        document_thumb.png
+  run_bg exec_summary    exec_summary.png
+  run_bg tb_assignment   tb_assignment_thumb.png
+  run_bg poster          poster_thumb.png
   echo "── waiting for ${#pids[@]} jobs ─────────────────────────────────────"
   failed=0
   for pid in "${pids[@]}"; do
     wait "$pid" || { echo "error: FAILED: ${pid_cmd[$pid]}" >&2; failed=1; }
   done
   [ "$failed" -eq 0 ]
-  echo "  pngquant --quality 50-80 *.png --ext .png --force"
-  pngquant --quality 50-80 *.png --ext .png --force
   echo "── all done ──────────────────────────────────────────────────────────"
 
 # ▶ build all six @preview packages — the real artifact (auto-runs: compile-all, generate-thumbs; replaces dev symlinks)

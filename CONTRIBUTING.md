@@ -8,10 +8,11 @@ Since v0.2.0, the build process is based on [`just`](https://github.com/casey/ju
 
 To build, test and deploy new releases I'm using [just](https://github.com/casey/just), which is really nice!
 
-`ImageMagick` (with `pngquant`) is used for creating the thumbnails:
+`pngquant` and `zopflipng` are used for creating the thumbnails (thumbnails are
+rendered directly by `typst`, so ImageMagick/Ghostscript are no longer needed):
 
 ```bash
-sudo apt install imagemagick pngquant
+sudo apt install pngquant zopfli
 ```
 
 #### Installing a recent `just`
@@ -177,8 +178,13 @@ git push origin main --force
 
 ### Thumbnails & image quantization
 
-Template thumbnails are regenerated from `examples/*.pdf` with `just generate-thumbs` (this is also pulled in automatically by `just pack`). It rasterises the first page of each example and runs `pngquant` to keep the template size on the Universe small. To re-quantize images by hand:
+Template thumbnails are regenerated with `just generate-thumbs` (this is also pulled in automatically by `just pack`). It renders the first page of each `src/*.typ` example **directly with `typst`** at 120 ppi (`--pages 1 --format png --ppi 120`), then shrinks each PNG with `pngquant` and a lossless `zopflipng` pass to keep the template size on the Universe small.
+
+Rendering with `typst` instead of going through `examples/*.pdf` → Ghostscript → ImageMagick makes the output **byte-for-byte reproducible**: typst's PNG export embeds no timestamp, so regenerating with the same binaries and installed fonts yields identical files (no spurious git diffs). Cross-machine equivalence still requires the same fonts installed.
+
+To re-quantize / re-compress images by hand:
 
 ```bash
 pngquant --quality 50-80 *.png --ext .png --force
+zopflipng -y in.png out.png   # lossless second pass
 ```

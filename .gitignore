@@ -1,11 +1,8 @@
 _dev/
 isc_template_report.pdf
-src/report.pdf
-src/acronyms.pdf
-src/bachelor_thesis.pdf
-src/exec_summary.pdf
-src/document.pdf
-src/tb_assignment.pdf
+# Stray PDFs from `typst compile src/<x>.typ` with no output path — never commit
+# these; the real example artifacts live in examples/ (see scripts/pack note).
+src/*.pdf
 src/fonts/modern-isc-fonts
 lib/**/*.pdf
 scripts/tmp
