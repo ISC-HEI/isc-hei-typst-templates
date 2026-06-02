@@ -88,9 +88,8 @@
   // (project()-based templates already pass date:, so only the poster needed this).
   set document(date: none)
 
-  // ISC TB aggregator — not user-facing; update here when the URL moves.
-  // TODO: update when the ISC TB website moves to its permanent address
-  let _isc-tbs-website = "https://isc-hei.github.io/isc-tbs/"
+  // ISC TB aggregator — not user-facing; update here when the URL moves.  
+  let _isc-tbs-website = "https://tbs.isc-hei.ch"
 
   // ── Logo resolution ───────────────────────────────────────────────────────
   // auto → default logo at the given height; none → suppress; custom → pass through as-is.
