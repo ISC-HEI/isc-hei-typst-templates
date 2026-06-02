@@ -35,13 +35,8 @@
 // ─── Column 1 ────────────────────────────────────────────────────────────────
 
 #isc-card(title: "Résumé")[
-  Les dossiers de santé électroniques ne peuvent être centralisés sans risque juridique et
-  éthique. Ce travail présente *MediFL*, un cadre d'apprentissage fédéré intégrant la
-  confidentialité différentielle (ε-DP) et une agrégation robuste aux nœuds défaillants.
-  Évalué sur trois cohortes hospitalières totalisant 180 000 patients, MediFL atteint une
-  AUC de *0.91* avec un budget de confidentialité ε = 0.5, à seulement trois points de
-  l'oracle centralisé (AUC 0.94). La convergence est assurée en *60 rounds* de communication,
-  sans qu'aucune donnée brute ne quitte les établissements participants.
+  Les dossiers de santé électroniques ne peuvent être centralisés sans risque juridique et éthique. Ce travail présente *MediFL*, un cadre d'apprentissage fédéré intégrant la
+  confidentialité différentielle (ε-DP) et une agrégation robuste aux nœuds défaillants. Évalué sur trois cohortes hospitalières totalisant 180 000 patients, MediFL atteint une AUC de *0.91* avec un budget de confidentialité ε = 0.5, à seulement trois points de l'oracle centralisé (AUC 0.94). La convergence est assurée en *60 rounds* de communication, sans qu'aucune donnée brute ne quitte les établissements participants.
 ]
 
 #isc-card(title: "Introduction")[
@@ -125,8 +120,7 @@
 })
 
 #isc-card(title: "Résultats")[
-  Évaluation sur les cohortes des HUG (Genève), du CHUV (Lausanne) et de l'Inselspital
-  (Berne), ainsi que sur le jeu de données public MIMIC-IV (53 000 séjours UCI). La
+  Évaluation sur les cohortes des HUG (Genève), du CHUV (Lausanne) et de l'Inselspital (Berne), ainsi que sur le jeu de données public MIMIC-IV (53 000 séjours UCI). La
   convergence est atteinte en 60 rounds, contre 80 pour FedAvg+DP classique.
 
   #figure(
@@ -139,33 +133,23 @@
     caption: [Graphe de connectivité inter-sites (gauche) et courbes de convergence AUC par méthode (droite). MediFL converge plus vite malgré le bruit différentiel.],
   )
 
-  Le budget de confidentialité ε = 0.5 est maintenu grâce à la composition RDP (*Rényi
-  Differential Privacy*). L'écart résiduel avec l'oracle centralisé (3 points AUC)
-  s'explique principalement par l'hétérogénéité des distributions inter-sites (Non-IID).
-  Sur les cohortes de plus de 10 000 patients, l'AUC monte à *0.93*.
+  Le budget de confidentialité ε = 0.5 est maintenu grâce à la composition RDP (*Rényi Differential Privacy*). L'écart résiduel avec l'oracle centralisé (3 points AUC)   s'explique principalement par l'hétérogénéité des distributions inter-sites (Non-IID). Sur les cohortes de plus de 10 000 patients, l'AUC monte à *0.93*.
 ]
 
 #isc-card(title: "Discussion")[
-  *Forces :* MediFL ne nécessite aucun transfert de données brutes entre établissements.
-  La confidentialité est prouvable formellement (ε = 0.5, δ = 10⁻⁵). L'architecture
-  tolère jusqu'à 30 % de participants défaillants par round grâce à l'agrégation
-  pondérée par taille de cohorte.
+  *Forces :* MediFL ne nécessite aucun transfert de données brutes entre établissements. La confidentialité est prouvable formellement (ε = 0.5, δ = 10⁻⁵). L'architecture
+  tolère jusqu'à 30 % de participants défaillants par round grâce à l'agrégation pondérée par taille de cohorte.
 
-  *Limites :* l'ajout de bruit gaussien dégrade la convergence sur les cohortes de petite
-  taille (\< 2 000 patients). L'optimisation conjointe du budget ε et du taux de
-  participation par round reste un problème ouvert. La communication reste un goulot
-  d'étranglement pour des réseaux hospitaliers à faible bande passante.
+  *Limites :* l'ajout de bruit gaussien dégrade la convergence sur les cohortes de petite taille (\< 2 000 patients). L'optimisation conjointe du budget ε et du taux de
+  participation par round reste un problème ouvert. La communication reste un goulot d'étranglement pour des réseaux hospitaliers à faible bande passante.
 
-  *Perspective :* extension à la confidentialité locale (LDP) pour des scénarios sans
-  serveur central de confiance, et intégration de techniques de compression de gradients
+  *Perspective :* extension à la confidentialité locale (LDP) pour des scénarios sans serveur central de confiance, et intégration de techniques de compression de gradients
   (Top-k sparsification) pour réduire la charge réseau.
 ]
 
 #isc-card(title: "Conclusion")[
-  MediFL démontre qu'il est possible d'approcher la précision d'un modèle centralisé
-  (AUC 0.91 vs 0.94) tout en offrant des garanties formelles de confidentialité
-  différentielle (ε = 0.5). Le cadre est générique : il s'applique à toute tâche de
-  classification médicale distribuée sans modification architecturale majeure. Le code
+  MediFL démontre qu'il est possible d'approcher la précision d'un modèle centralisé (AUC 0.91 vs 0.94) tout en offrant des garanties formelles de confidentialité
+  différentielle (ε = 0.5). Le cadre est générique : il s'applique à toute tâche de classification médicale distribuée sans modification architecturale majeure. Le code
   source est publié en open source sous licence Apache 2.0.
 ]
 
