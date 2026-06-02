@@ -9,15 +9,22 @@
 
 #import "@preview/isc-hei-tb-assignment:0.8.0" : *
 
-#let language = "fr" // Document language (fr or en), choose to your liking
+#let language = "fr" // Document language (fr/en/de), choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name
 #let tb-id = "ISC-ID-26-1" // TB identifier, please ask the secretariat for the proper number (format: ISC-ID-XX-Y, where XX last two digits of the academic year, and Y is a sequential number)
-#let tb-supervisor = "Prof. Dr L. Lettry" // Responsible supervisor
-#let tb-co-supervisor = none // Co-superviseur·e (none = tiret)
+#let tb-supervisor = "Prof. Dr L. Lettry" // Responsible supervisor (HES-SO side)
+#let tb-co-supervisor = none // Co-superviseur·e (none = tiret) — local projects only
 #let tb-study-program = "ISC" // Do not change
 #let tb-academic-year = "2025-26" // Update accordingly
 
-// Expert·e, with address and email address (use \ for new lines)
+// Bachelor thesis carried out abroad (e.g. through the MOVE exchange programme).
+// When true: tb-supervisor is shown as the "HES-SO supervisor", the expert field is
+// dropped, and the co-supervisor is replaced by the two host fields below.
+#let tb-abroad = true
+#let tb-host-supervisor = none // (abroad only) Supervisor at the host institution
+#let tb-host-mentor = none     // (abroad only, optional) First-line mentor at the host institution
+
+// Expert·e, with address and email address (use \ for new lines) — local projects only
 #let tb-expert = [
   Dr John Carmack \
   Rue de la Paix 24 \
@@ -27,7 +34,7 @@
 
 // Mandator and location of where the work will be done (either hes(), industry("Acme Corp"), school("EPFL"))
 #let tb-mandator = hes()
-#let tb-location = school("MOVE, Tokyo University")
+#let tb-location = school("EPFL")
 #let tb-confidential = false
 #let tb-title = [Software co-design for embedded systems] // Must be concise and descriptive, use subtitle if you need more space
 #let tb-subtitle = [An exploration of the intersection between science and engineering]  // Optional, use none if not needed
@@ -48,7 +55,7 @@
 ]
 
 // Document information
-#let doc-version = "1.21"
+#let doc-version = "1.30"
 #let doc-date = datetime.today() // or datetime(year: 2026, month: 3, day: 8)
 
 #let date-attribution = datetime(year: 2026, month: 3, day: 3)
@@ -98,7 +105,10 @@ En cas d'indisponibilité, nous utiliserons un ancien modèle que nous avons dé
   id: tb-id,
   supervisor: tb-supervisor,
   co-supervisor: tb-co-supervisor,
-  expert: tb-expert, 
+  expert: tb-expert,
+  abroad: tb-abroad,
+  host-supervisor: tb-host-supervisor,
+  host-mentor: tb-host-mentor,
   study-program: tb-study-program,
   academic-year: tb-academic-year,
   mandator: tb-mandator,

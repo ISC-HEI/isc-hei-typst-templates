@@ -38,13 +38,13 @@
 
   doc-type: "thesis",
   split-chapters: true,
-  revision: "1.0", // Or for instance "1.0", for the version of your thesis
+  revision: "1.0", // If you have multiple versions of your thesis, you can update this field to keep track of them.
   code-theme: "bluloco-light", // See directory themes/ for available themes
                                
-  // The cover shows a red "ATTENTION REQUISE" box listing required fields still
+  // The cover might show a red "ATTENTION REQUISE" box listing required fields still
   // left at their placeholder values (and warns if the title/subtitle is too long).
-  // Uncomment to hide it (a tiny mark is then left on the second cover page).
-  // Only do this if you know what you are doing.
+  // 
+  // Uncomment to hide it, but only do this if you know what you are doing.
   // hide-completeness-warning: true,
 )
 
@@ -53,7 +53,6 @@
 #include "acronyms.typ"
 
 // Let's get started folks!
-// 52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 
 #cleardoublepage()
 #include "pages/abstract.typ"

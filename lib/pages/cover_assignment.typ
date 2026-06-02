@@ -28,6 +28,10 @@
     confidential: "Travail confidentiel",
     professor: "Professeur·e",
     co-supervisor: "Co-superviseur·e",
+    hes-so-supervisor: "Superviseur·e HES-SO",
+    host-supervisor: "Superviseur·e d'accueil",
+    host-mentor: "Mentor·e de proximité (opt.)",
+    move: "MOVE",
     yes: "oui",
     no: "non",
     date-version: "Date du document | version",
@@ -78,6 +82,10 @@
     confidential: "Confidential work",
     professor: "Professor",
     co-supervisor: "Co-supervisor",
+    hes-so-supervisor: "HES-SO supervisor",
+    host-supervisor: "Host supervisor",
+    host-mentor: "First-line mentor (opt.)",
+    move: "MOVE",
     yes: "yes",
     no: "no",
     date-version: "Date | version",
@@ -128,6 +136,10 @@
     confidential: "Vertrauliche Arbeit",
     professor: "Professor·in",
     co-supervisor: "Ko-Betreuer·in",
+    hes-so-supervisor: "HES-SO Betreuer·in",
+    host-supervisor: "Gastbetreuer·in",
+    host-mentor: "Erstbetreuer·in (opt.)",
+    move: "MOVE",
     yes: "ja",
     no: "nein",
     date-version: "Datum und Version",
@@ -178,6 +190,11 @@
   supervisor:      "Prof. Dr ...",
   co-supervisor:   none,
   expert:          "Dr ...",
+  // Abroad (e.g. MOVE) thesis: renames the supervisor label to "HES-SO supervisor",
+  // drops the expert, and replaces the co-supervisor with the two host fields below.
+  abroad:          false,
+  host-supervisor: none,
+  host-mentor:     none,
   study-program: "ISC",
   academic-year: "20xx-xx",
 
@@ -281,6 +298,46 @@
   let _m = _resolve(mandator, _t.industry, _t.institution)
   let _l = _resolve(site, _t.industry, _t.institution)
 
+  // ── People fields: local vs abroad (MOVE) ───────────────────────────────
+  // Both modes keep the same 3×2 grid, so the org fields (mandator / location /
+  // confidential) never move. Only the middle (col 2) and rightmost (cols 3-4)
+  // people cells differ:
+  //   local  — expert / professor / co-supervisor
+  //   abroad — expert dropped; professor → HES-SO supervisor; co-supervisor unfolds
+  //            into host supervisor + (optional) host first-line mentor.
+  let _dash(v) = if v != none { v } else { sym.dash.em }
+  let _people = if abroad {
+    (
+      mid2-lbl:   _lbl[#_t.hes-so-supervisor],
+      mid2-val:   _val(align: horizon)[#supervisor],
+      mid3-lbl:   _lbl[#_t.host-supervisor],
+      mid3-val:   _val(align: horizon)[#_dash(host-supervisor)],
+      right3-lbl: _lbl(colspan: 2)[#_t.host-mentor],
+      right3-val: _val(colspan: 2, align: horizon)[#_dash(host-mentor)],
+    )
+  } else {
+    (
+      mid2-lbl:   _lbl[#_t.expert],
+      mid2-val:   _val[#expert],
+      mid3-lbl:   _lbl[#_t.professor],
+      mid3-val:   _val(align: horizon)[#supervisor],
+      right3-lbl: _lbl(colspan: 2)[#_t.co-supervisor],
+      right3-val: _val(colspan: 2, align: horizon)[#_dash(co-supervisor)],
+    )
+  }
+
+  // MOVE column (last position, row 1 only): a checkbox ticked when abroad.
+  // Its own tight horizontal inset so the column hugs the word "MOVE" and hands
+  // the freed width back to the three 1fr columns. The width is pinned to the
+  // measured "MOVE" header (see the `columns:` of Table 1) rather than `auto`,
+  // because the colspan cells below span this track and would otherwise inflate
+  // an auto column to their full content width (fr tracks contribute nothing to
+  // min-content sizing, so the spanned width lands entirely on the auto track).
+  let _ci-move = (x: 3pt, y: 5pt)
+  let _move-lbl = table.cell(fill: _fill, inset: _ci-move, align: center + horizon,
+    text(weight: "bold", size: 9pt)[#_t.move])
+  let _move-val = table.cell(inset: _ci-move, align: center + horizon)[#_checkbox(abroad)]
+
   place(
     top + right,
     dx: 0mm,
@@ -289,40 +346,46 @@
   )
 
   // Table 1 — informations générales
-  table(
-    columns: (1fr, 1fr, 1fr),
+  // 4 columns: the last (MOVE) column carries a tick when the thesis is done
+  // abroad, and is only split out in row 1 — every other row's rightmost cell
+  // spans cols 3-4 (or 2-4 for the date row) so the table stays a clean rectangle.
+  // The MOVE track is sized to the measured bold "MOVE" header (+ its inset) so it
+  // hugs the word and the three 1fr columns share the rest; `context` is needed
+  // only so `measure()` resolves (see the _ci-move note above for why not `auto`).
+  context table(
+    columns: (1fr, 1fr, 1fr, measure(text(weight: "bold", size: 9pt)[#_t.move]).width + 2 * _ci-move.x),
     stroke: _stroke,
 
-    _lbl[#_t.study-program], _lbl[#_t.academic-year], _lbl[#_t.tb-number],
-    _val[#study-program], _val[#academic-year], _val[#id],
+    _lbl[#_t.study-program], _lbl[#_t.academic-year], _lbl[#_t.tb-number], _move-lbl,
+    _val[#study-program], _val[#academic-year], _val[#id], _move-val,
 
-    _lbl[#_t.mandator], _lbl[#_t.expert], _lbl[#_t.location],
+    _lbl[#_t.mandator], _people.mid2-lbl, _lbl(colspan: 2)[#_t.location],
     table.cell(fill: white, inset: _ci)[
       #set text(size: 9pt)
       #_checkbox(_m.type == "hes") HES---SO Valais-Wallis \
       #_checkbox(_m.type == "industry") #_m.industry-label \
       #_checkbox(_m.type == "institution") #_m.institution-label
     ],
-    _val[#expert],
-    table.cell(fill: white, inset: _ci)[
+    _people.mid2-val,
+    table.cell(fill: white, inset: _ci, colspan: 2)[
       #set text(size: 9pt)
       #_checkbox(_l.type == "hes") HES---SO Valais-Wallis \
       #_checkbox(_l.type == "industry") #_l.industry-label \
       #_checkbox(_l.type == "institution") #_l.institution-label
     ],
 
-    _lbl[#_t.confidential], _lbl[#_t.professor], _lbl[#_t.co-supervisor],
+    _lbl[#_t.confidential], _people.mid3-lbl, _people.right3-lbl,
     table.cell(fill: white, inset: _ci)[
       #set text(size: 9pt)
       #_checkbox(confidential) #_t.yes #h(1em)
       #_checkbox(not confidential) #_t.no
     ],
-    _val(align: horizon)[#supervisor],
-    _val(align: horizon)[#{ if co-supervisor != none { co-supervisor } else { sym.dash.em } }],
+    _people.mid3-val,
+    _people.right3-val,
 
-    // Row 7 — Date et version (single row: label col 1, values cols 2-3)
+    // Row 7 — Date et version (single row: label col 1, values cols 2-4)
     _lbl[#_t.date-version],
-    table.cell(fill: white, inset: _ci, colspan: 2)[
+    table.cell(fill: white, inset: _ci, colspan: 3)[
       #set text(size: 9pt)
       #_fmtdate(datetime.today()) - v#doc-version
     ],
@@ -381,6 +444,10 @@
       }
       if supervisor == sample-supervisor {
         issues.push(if fr [Le·la superviseur·e (`supervisor`) n'a pas été modifié·e.] else [The supervisor (`supervisor`) has not been updated.])
+      }
+      // Abroad theses also need a host-institution supervisor (the mentor stays optional).
+      if abroad and host-supervisor == none {
+        issues.push(if fr [Le·la superviseur·e d'accueil (`host-supervisor`) n'a pas été renseigné·e.] else [The host supervisor (`host-supervisor`) has not been filled in.])
       }
       if dates-pristine {
         issues.push(if fr [Les dates des délais (`date-attribution`, `date-start`, …) n'ont pas été mises à jour.] else [The milestone dates (`date-attribution`, `date-start`, …) have not been updated.])
@@ -543,10 +610,14 @@
       #if material-dep >= 3 {
         v(0.4em)
         table(
-          columns: (auto, 1fr),
-          stroke: (left: none, right: none, top: 0.3pt + luma(210), bottom: 0.3pt + luma(210)),
+          // Narrow label column (wraps the long "procedure" label on purpose) so the
+          // value column gets the width. Delineation is a single vertical hairline
+          // between label and value — no horizontal rules or fill — set via a
+          // per-cell stroke function that draws only the left edge of column 1.
+          columns: (30mm, 1fr),
+          stroke: (x, y) => (left: if x == 1 { 0.5pt + luma(190) } else { none }),
           inset: (x: 6pt, y: 4pt),
-          align: (left + horizon, left + horizon),
+          align: (left + top, left + top),
           text(size: 9pt, weight: "bold")[#_t.material-cost],
           text(size: 9pt)[#{
             if material-cost == none {
