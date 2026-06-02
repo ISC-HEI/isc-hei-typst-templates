@@ -66,10 +66,7 @@
 #cleardoublepage()
 #include "pages/acknowledgements.typ"
 
-= Writing a thesis 
-
-// Enable headers and footers from this point on
-#set-header-footer(true)
+= Writing a thesis
 
 Writing a report is an exercise that involves both *content* and *form*. In this document, we aim to simplify the formatting aspect without making any assumptions about the content, specifically in the context of the ISC degree programme#footnote[Here is how to add a footnote https://isc.hevs.ch].
 

@@ -177,7 +177,10 @@
     // For reports and documents, we want to put the header and footer on all pages
     set-header-footer(true)
   } else {
-    // For theses, we want to put the header and footer only on the first page
+    // For theses, keep the front matter (abstract, résumé, declaration of
+    // honour, acknowledgements) unheadered. The show-heading rule below turns
+    // the running header/footer back on automatically at the first numbered
+    // chapter, so the student never has to call set-header-footer() by hand.
     set-header-footer(false)
   }
 
@@ -222,6 +225,18 @@
       })
     } else {
       it
+    }
+
+    // Auto-enable the running header/footer from the first numbered chapter of a
+    // thesis. The front matter (abstract, résumé, declaration of honour,
+    // acknowledgements) uses page-title(), not real headings, so it stays
+    // unheadered — this replaces the manual #set-header-footer(true) students
+    // used to place by hand right after their first chapter title. The update
+    // is idempotent, so firing it on every chapter is harmless, and it is
+    // skipped under no-decorations. Mirrors the in-flow position of the old
+    // manual call, so the chapter's first page keeps its footer-but-no-header.
+    if doc-type == "thesis" and it.level == 1 and it.numbering != none and not no-decorations {
+      inc.header-footers-enabled.update(true)
     }
   }
 
