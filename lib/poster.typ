@@ -89,7 +89,7 @@
   set document(date: none)
 
   // ISC TB aggregator — not user-facing; update here when the URL moves.  
-  let _isc-tbs-website = "https://tbs.isc-hei.ch"
+  let _isc-tbs-website = "https://tbs.isc-vs.ch/"
 
   // ── Logo resolution ───────────────────────────────────────────────────────
   // auto → default logo at the given height; none → suppress; custom → pass through as-is.
