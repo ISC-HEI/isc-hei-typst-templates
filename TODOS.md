@@ -1,4 +1,6 @@
 ## Bachelor thesis 
+ - "something else" a enlever
+ - Unknown font family: source sans 3 (warning) in web editor
 
 ## Document
 - The subtitle is not typeset at all in the document, for (0.8.0)
