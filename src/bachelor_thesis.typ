@@ -1,9 +1,19 @@
-#import "@preview/isc-hei-bthesis:0.7.9" : *
+//        ___ ____   ____      _   _ _____ ___
+//       |_ _/ ___| / ___|    | | | | ____|_ _|     Informatique et
+//        | |\___ \| |   ___  | |_| |  _|  | |       systèmes de communication
+//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais / mui 24-26
+//       |___|____/ \____|    |_| |_|_____|___|
+//
+//   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
+// 
+
+#import "@preview/isc-hei-bthesis:0.8.0" : *
 
 #let doc_language = "fr" // Valid values are en, fr
 
 #show: project.with( 
-  title: "Life, the Universe and Everything", // Your thesis title
+  //title: "Life, the Universe and Everything", // Your thesis title
+  title: "Software co-design for embedded systems", 
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
   authors: "Margaret Hamilton", // Your name
   language: doc_language, // must be defined globally, see above
@@ -19,7 +29,7 @@
 
   // Some keywords related to your thesis
   keywords: ("engineering", "data", "machine learning", "meteorology"),
-  major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "something else"
+  major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "Networks and systems""
   date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
 
   // Declaration of honour — the only two fields the student must provide for it
@@ -31,9 +41,10 @@
   revision: "1.0", // Or for instance "1.0", for the version of your thesis
   code-theme: "bluloco-light", // See directory themes/ for available themes
                                
-  // The cover shows a red "DOCUMENT INCOMPLET" box listing required fields still
-  // left at their placeholder values. Uncomment to hide it (a tiny mark is then
-  // left on the second cover page). Only do this if you know what you are doing.
+  // The cover shows a red "ATTENTION REQUISE" box listing required fields still
+  // left at their placeholder values (and warns if the title/subtitle is too long).
+  // Uncomment to hide it (a tiny mark is then left on the second cover page).
+  // Only do this if you know what you are doing.
   // hide-completeness-warning: true,
 )
 

@@ -1,11 +1,11 @@
 //        ___ ____   ____      _   _ _____ ___
 //       |_ _/ ___| / ___|    | | | | ____|_ _|     Informatique et
 //        | |\___ \| |   ___  | |_| |  _|  | |       systèmes de communication
-//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais
+//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais / mui 24-26
 //       |___|____/ \____|    |_| |_|_____|___|
 //
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
-//
+// 
 // Templates for ISC bachelor degree programme at the School of engineering in Sion
 // 
 // Since 2024, @pmudry with contributions from @LordBaryhobal, @MadeInShineA

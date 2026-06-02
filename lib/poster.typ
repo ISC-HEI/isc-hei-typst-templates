@@ -16,6 +16,7 @@
 #import "decorations.typ": hash-rule
 #import "i18n.typ": i18n
 #import "fonts.typ": isc-fonts-available, _missing-fonts-page
+#import "overflow.typ" as overflow
 
 // State for isc-poster's distribute-columns feature (read by isc-card)
 #let _isc-poster-distribute = state("_isc-poster-distribute", false)
@@ -257,7 +258,22 @@
     ),
   )
 
-  set page(foreground: place(bottom + left, pad(left: 2.5cm, bottom: 1.6cm, _info-block)))
+  // Foreground overlay: the bottom-left institutional block, plus the title
+  // overflow warning when it fires. The warning lives in the FOREGROUND (not the
+  // flow) so it never pushes content onto a second page — important on the short
+  // landscape A1. The verdict uses the shared thesis reference (see lib/overflow.typ)
+  // so it matches every other document type. lang is passed explicitly because the
+  // poster bypasses project() and keeps its own language.
+  set page(foreground: {
+    place(bottom + left, pad(left: 2.5cm, bottom: 1.6cm, _info-block))
+    context {
+      let issues = overflow.title-overflow-issues(title, subtitle: subtitle, lang: language)
+      if issues.len() > 0 {
+        place(top + center, dy: 7cm,
+          overflow.overflow-warning-box(issues, font: "Source Sans Pro", width: 78%, scale: 3, lang: language))
+      }
+    }
+  })
 
   // ── Initialise distribute-columns state before body renders ───────────────
   // State updates must appear before the content that reads them in document flow.

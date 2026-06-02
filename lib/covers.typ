@@ -146,6 +146,7 @@
 
     cover_page(
       title: title,
+      subtitle: subtitle,
       authors: authors-str,
       summary: summary,
       content: content,

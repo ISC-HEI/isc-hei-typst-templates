@@ -36,7 +36,11 @@
         "revision": "Révision",
         "poster-discover": "Découvrez tous\nnos bachelors",
         "poster-orientation": "Orientation",
-        "poster-academic-year": "Année académique"
+        "poster-academic-year": "Année académique",
+        "layout-warning-header": "⚠ TITRE TROP LONG — risque de déborder de la mise en page",
+        "completeness-warning-header": "⚠ ATTENTION REQUISE — à vérifier avant le rendu",
+        "title-too-long": "Le titre est trop long et s'étend sur trop de lignes.",
+        "subtitle-too-long": "Le sous-titre est trop long et s'étend sur trop de lignes."
     },
     "en": {
         "toc-title": "Table of Contents",
@@ -75,7 +79,11 @@
         "revision": "Revision",
         "poster-discover": "Discover all\nour theses",
         "poster-orientation": "Major",
-        "poster-academic-year": "Academic year"
+        "poster-academic-year": "Academic year",
+        "layout-warning-header": "⚠ TITLE TOO LONG — it may overflow the cover layout",
+        "completeness-warning-header": "⚠ ATTENTION REQUIRED — review before submission",
+        "title-too-long": "The title is too long and wraps onto too many lines.",
+        "subtitle-too-long": "The subtitle is too long and wraps onto too many lines."
     },
     "de": {
         "toc-title": "Inhaltsverzeichnis",
@@ -97,6 +105,10 @@
         "poster-orientation": "Vertiefung",
         "poster-academic-year": "Akademisches Jahr",
         "major-prefix": "Vertiefung ",
-        "major-suffix": ""
+        "major-suffix": "",
+        "layout-warning-header": "⚠ TITEL ZU LANG — könnte das Layout überschreiten",
+        "completeness-warning-header": "⚠ ACHTUNG ERFORDERLICH — vor der Abgabe prüfen",
+        "title-too-long": "Der Titel ist zu lang und erstreckt sich über zu viele Zeilen.",
+        "subtitle-too-long": "Der Untertitel ist zu lang und erstreckt sich über zu viele Zeilen."
     }
 }

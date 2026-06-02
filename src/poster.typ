@@ -1,55 +1,33 @@
-#import "@preview/isc-hei-poster:0.7.9": isc-poster, isc-card, isc-colbreak
+//        ___ ____   ____      _   _ _____ ___
+//       |_ _/ ___| / ___|    | | | | ____|_ _|     Informatique et
+//        | |\___ \| |   ___  | |_| |  _|  | |       systèmes de communication
+//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais / mui 24-26
+//       |___|____/ \____|    |_| |_|_____|___|
+//
+//   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
+// 
+
+#import "@preview/isc-hei-poster:0.8.0": isc-poster, isc-card, isc-colbreak
 #import "@preview/cetz:0.5.2": canvas, draw
 
-// ─── Dodecahedron figure (reused from exec-summary) ──────────────────────────
-#let ex_fig = canvas(length: 2cm, {
-  import draw: *
-  let phi = (1 + calc.sqrt(5)) / 2
-  ortho(flatten: true, {
-    hide({
-      line((-phi, -1, 0), (-phi, 1, 0), (phi, 1, 0), (phi, -1, 0), close: true, name: "xy")
-      line((-1, 0, -phi), (1, 0, -phi), (1, 0, phi), (-1, 0, phi), close: true, name: "xz")
-      line((0, -phi, -1), (0, -phi, 1), (0, phi, 1), (0, phi, -1), close: true, name: "yz")
-    })
-    intersections("a", "yz", "xy")
-    intersections("b", "xz", "yz")
-    intersections("c", "xy", "xz")
-    set-style(stroke: (thickness: 0.5pt, cap: "round", join: "round"))
-    line((0, 0, 0), "c.1", (phi, 1, 0), (phi, -1, 0), "c.3")
-    line("c.0", (-phi, 1, 0), "a.2")
-    line((0, 0, 0), "b.1", (1, 0, phi), (-1, 0, phi), "b.3")
-    line("b.0", (1, 0, -phi), "c.2")
-    line((0, 0, 0), "a.1", (0, phi, 1), (0, phi, -1), "a.3")
-    line("a.0", (0, -phi, 1), "b.2")
-    anchor("A", (0, phi, 1))
-    content("A", [$A$], anchor: "north", padding: .1)
-    anchor("B", (-1, 0, phi))
-    content("B", [$B$], anchor: "south", padding: .1)
-    anchor("C", (1, 0, phi))
-    content("C", [$C$], anchor: "south", padding: .1)
-    line("A", "B", stroke: (dash: "dashed"))
-    line("A", "C", stroke: (dash: "dashed"))
-  })
-})
-
-// ─── Choose orientation: "portrait" or "landscape" ──────────────────────────
+// Choose orientation: "portrait" or "landscape"
 #let poster-orientation = "portrait"
 
 #show: isc-poster.with(
-  title: [Apprentissage fédéré pour la protection de la vie privée dans l'analyse de données médicales],
+  title: [Apprentissage fédéré et vie privée],
   subtitle: [Confidentialité différentielle et agrégation distribuée des gradients],
   student: "Margaret Hamilton",
   permanent-email: "margaret.hamilton@hevs.ch",
   supervisor: "Prof. Dr John von Neumann",
-  // co-supervisor: "Lady Ada Lovelace",  // optional
-  expert: "Prof. Dr Grace Hopper",
+  co-supervisor: "Lady Ada Lovelace",  // optional, use none if not needed
+  expert: "Prof. Dr Grace Hopper", // optional, use none if not needed
   thesis-id: "ISC-ID-26-1",
   academic-year: "2025-2026",
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et systèmes de communication",
-  major: "Data Engineering",
+  major: "Data Engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering"
   orientation: poster-orientation,
-  language: "fr",
+  language: "fr", // Valid values are en, fr, de
   num-columns: 2,
   distribute-columns: true,  // evenly distributes cards vertically; set false to disable
 )
@@ -113,6 +91,38 @@
 // ─── Column 2 ────────────────────────────────────────────────────────────────
 
 #isc-colbreak()
+
+
+// ─── Dodecahedron figure (reused from exec-summary) ──────────────────────────
+#let ex_fig = canvas(length: 2cm, {
+  import draw: *
+  let phi = (1 + calc.sqrt(5)) / 2
+  ortho(flatten: true, {
+    hide({
+      line((-phi, -1, 0), (-phi, 1, 0), (phi, 1, 0), (phi, -1, 0), close: true, name: "xy")
+      line((-1, 0, -phi), (1, 0, -phi), (1, 0, phi), (-1, 0, phi), close: true, name: "xz")
+      line((0, -phi, -1), (0, -phi, 1), (0, phi, 1), (0, phi, -1), close: true, name: "yz")
+    })
+    intersections("a", "yz", "xy")
+    intersections("b", "xz", "yz")
+    intersections("c", "xy", "xz")
+    set-style(stroke: (thickness: 0.5pt, cap: "round", join: "round"))
+    line((0, 0, 0), "c.1", (phi, 1, 0), (phi, -1, 0), "c.3")
+    line("c.0", (-phi, 1, 0), "a.2")
+    line((0, 0, 0), "b.1", (1, 0, phi), (-1, 0, phi), "b.3")
+    line("b.0", (1, 0, -phi), "c.2")
+    line((0, 0, 0), "a.1", (0, phi, 1), (0, phi, -1), "a.3")
+    line("a.0", (0, -phi, 1), "b.2")
+    anchor("A", (0, phi, 1))
+    content("A", [$A$], anchor: "north", padding: .1)
+    anchor("B", (-1, 0, phi))
+    content("B", [$B$], anchor: "south", padding: .1)
+    anchor("C", (1, 0, phi))
+    content("C", [$C$], anchor: "south", padding: .1)
+    line("A", "B", stroke: (dash: "dashed"))
+    line("A", "C", stroke: (dash: "dashed"))
+  })
+})
 
 #isc-card(title: "Résultats")[
   Évaluation sur les cohortes des HUG (Genève), du CHUV (Lausanne) et de l'Inselspital

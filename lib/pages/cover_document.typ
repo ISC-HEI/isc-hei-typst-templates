@@ -1,5 +1,6 @@
 // Simple document cover page — no course info, no cover image
 #import "../includes.typ" as inc
+#import "../overflow.typ" as overflow
 #import "/isc_templates.typ" as isc
 
 #let cover_page(
@@ -42,6 +43,19 @@
   v(1em, weak: true)
   text(font: font, 1.2em, subtitle)
   line(length: 100%)
+
+  // Title / subtitle overflow warning. The verdict is measured against the shared
+  // thesis reference (see lib/overflow.typ) so it matches every other document;
+  // the box is just displayed here at this cover's content width. Plain context
+  // (NOT layout, which is a real block and would shift the fr-spaced layout even
+  // when empty) keeps the no-overflow case zero-footprint.
+  context {
+    let issues = overflow.title-overflow-issues(title, subtitle: subtitle)
+    if issues.len() > 0 {
+      v(0.8em)
+      overflow.overflow-warning-box(issues, font: font, width: 210mm - 2 * 2.0cm)
+    }
+  }
 
   v(12em)
 

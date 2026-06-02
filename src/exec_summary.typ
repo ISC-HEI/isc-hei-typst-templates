@@ -1,6 +1,14 @@
+//        ___ ____   ____      _   _ _____ ___
+//       |_ _/ ___| / ___|    | | | | ____|_ _|     Informatique et
+//        | |\___ \| |   ___  | |_| |  _|  | |       systèmes de communication
+//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais / mui 24-26
+//       |___|____/ \____|    |_| |_|_____|___|
+//
+//   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
+// 
 // Adapted from the BFH year book idea at https://www.bfh.ch/dam/jcr:e512ae31-a3ed-4b65-b589-870383d794b0/abschlussarbeiten-bsc-informatik.pdf
 
-#import "@preview/isc-hei-exec-summary:0.7.9" : *
+#import "@preview/isc-hei-exec-summary:0.8.0" : *
 
 // Must be <= 365 characters long.
 #let summary = "DataFlowX is a scalable data engineering platform for real-time analytics on large, heterogeneous datasets. DataFlowX automates data ingestion, transformation, and validation using distributed processing and intelligent scheduling. The system ensures data quality, accelerates insights, and supports seamless integration with modern business intelligence tools."
@@ -93,7 +101,8 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 
 // TODO: please modify the following to suit your needs.
 #show: project.with(  
-  title: "DataFlowX: A Scalable Data Engineering Platform for Real-Time Analytics", 
+  title: "DataFlowX — Real-Time Data Analytics",
+  subtitle: "Automated ingestion, transformation and validation at scale", // Optional, use none if not needed
   language: "en", // Valid values are en, fr, de
   authors: "Stormy Peters", 
   student-picture: image("figs/random_image.png"), // [Optional], put none if not used

@@ -38,7 +38,7 @@
   // Mandatory when the declaration page (pages/honneur.typ) is included.
   signature: none,
   keywords: (),
-  // Set true to suppress the thesis cover's "DOCUMENT INCOMPLET" drafting box
+  // Set true to suppress the thesis cover's "ATTENTION REQUISE" drafting box
   // even when required fields are still at their placeholders. A tiny coloured
   // dot is then placed on the second cover page to record the override.
   hide-completeness-warning: false,

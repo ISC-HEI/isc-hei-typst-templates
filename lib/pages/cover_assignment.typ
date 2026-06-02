@@ -3,6 +3,8 @@
 // P.-A. Mudry March, 2026
 
 #import "../includes.typ" as inc
+#import "../overflow.typ" as overflow
+#import "../i18n.typ": i18n
 
 // Various project types
 #let project-types = (exploratory: "exploratory", implementation: "implementation")
@@ -190,6 +192,7 @@
 
   // Content[
   title:       [Donnée du travail de bachelor],
+  subtitle:    none,
   description: [Description du travail de bachelor.],
   objectives-content: [Objectifs du travail de bachelor.],
 
@@ -327,13 +330,104 @@
 
   v(0.6em)
 
+  // ── Completeness check (drafting aid) ─────────────────────────────────────
+  // Mirrors the bachelor-thesis cover (lib/pages/cover_bachelor.typ). The
+  // sentinels below MUST mirror the placeholder values shipped in
+  // src/tb_assignment.typ verbatim — `at-default` compares against them, so any
+  // drift silently disables the gate; update both together. While EVERY tracked
+  // field still carries its shipped placeholder we assume the student hasn't
+  // started and stay silent; as soon as ANY is touched we flag whichever required
+  // fields are still at their placeholder. The title/subtitle overflow issues are
+  // appended UNCONDITIONALLY (a layout problem, independent of the gate).
+  let sample-student    = "Barbara Liskov"
+  let sample-id         = "ISC-ID-26-1"
+  let sample-supervisor = "Prof. Dr L. Lettry"
+  // The five datetime milestones shipped in src/tb_assignment.typ (date-defense is
+  // free text and not tracked here).
+  let sample-dates = (
+    datetime(year: 2026, month: 3, day: 3),   // date-attribution
+    datetime(year: 2026, month: 5, day: 11),  // date-start
+    datetime(year: 2026, month: 7, day: 24),  // date-submission
+    datetime(year: 2026, month: 8, day: 28),  // date-exhibition-hei
+    datetime(year: 2026, month: 8, day: 31),  // date-exhibition-monthey
+  )
+  // Reference format: ISC-ID-XX-Y (fixed "ISC-ID" prefix, XX = two-digit year,
+  // Y = sequential number — see the comment on `tb-id` in src/tb_assignment.typ).
+  // The regex stays permissive (any two-letter code) to match the bachelor-thesis
+  // numbering too, so "ISC-ID-26-3" and "ISC-SE-26-3" both validate.
+  let id-pattern = regex("^ISC-[A-Za-z]{2}-[0-9]{2}-[0-9]+$")
+  let fr = language == "fr"
+
+  // Returns the list of still-incomplete fields, empty while the document is fully
+  // pristine. MUST be called from a context block (overflow checks use measure()).
+  let compute-issues() = {
+    let dates-pristine = (date-attribution, date-start, date-submission, date-exhibition-hei, date-exhibition-monthey) == sample-dates
+    let at-default = (
+      student == sample-student
+        and id == sample-id
+        and supervisor == sample-supervisor
+        and dates-pristine
+    )
+
+    let issues = ()
+    if not at-default {
+      if student == sample-student {
+        issues.push(if fr [Le nom de l'étudiant·e (`student`) n'a pas été modifié.] else [The student name (`student`) has not been updated.])
+      }
+      if id == sample-id {
+        issues.push(if fr [La référence du travail (`id`) n'a pas été mise à jour.] else [The thesis reference (`id`) has not been updated.])
+      } else if type(id) == str and id.match(id-pattern) == none {
+        issues.push(if fr [Le format de la référence (`id`) est invalide — attendu p. ex. `ISC-ID-26-3`.] else [The reference (`id`) format is invalid — expected e.g. `ISC-ID-26-3`.])
+      }
+      if supervisor == sample-supervisor {
+        issues.push(if fr [Le·la superviseur·e (`supervisor`) n'a pas été modifié·e.] else [The supervisor (`supervisor`) has not been updated.])
+      }
+      if dates-pristine {
+        issues.push(if fr [Les dates des délais (`date-attribution`, `date-start`, …) n'ont pas été mises à jour.] else [The milestone dates (`date-attribution`, `date-start`, …) have not been updated.])
+      }
+    }
+
+    // Title / subtitle overflow — measured against the shared thesis reference (see
+    // lib/overflow.typ) so the verdict matches every other document. Appended
+    // unconditionally: a too-long title is a layout problem regardless of the gate.
+    issues += overflow.title-overflow-issues(title, subtitle: subtitle)
+    issues
+  }
+
+  // A very long title also inflates the auto-height title row of Table 2 and
+  // squeezes the 1fr rows off the page. Plain context (not layout, which would
+  // perturb the 1fr table even when empty) keeps the no-issue case zero-footprint.
+  context {
+    let issues = compute-issues()
+    if issues.len() > 0 {
+      overflow.overflow-warning-box(
+        issues,
+        width: 210mm - 2 * 2.0cm,
+        header: i18n(language, "completeness-warning-header"),
+      )
+      v(0.6em)
+    }
+  }
+
   // Table 2 — titre, description, objectifs (flexible height)
   block(width: 100%, height: 1fr,
     table(
       columns: (auto, 1fr),
       rows: (auto, 1fr, 1fr),
       stroke: _stroke,
-      _lbl[#_t.title],       _val[#text(size: 11pt, weight: "semibold", title)],
+      _lbl[#_t.title],       _val[
+        #if subtitle == none {
+          text(size: 11pt, weight: "semibold", title)
+        } else {
+          // stack spacing is the ONLY gap between title and subtitle, so it is not
+          // swamped by the cell's default paragraph spacing — tune it here.
+          stack(
+            spacing: 7pt,
+            text(size: 11pt, weight: "semibold", title),
+            text(size: 9.5pt, style: "italic", subtitle),
+          )
+        }
+      ],
       _lbl[#_t.description], _val[#description],
       _lbl[#_t.objectives],   _val[#objectives-content],
     )

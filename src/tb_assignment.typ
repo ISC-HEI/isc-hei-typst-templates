@@ -1,4 +1,13 @@
-#import "@preview/isc-hei-tb-assignment:0.7.9" : *
+//        ___ ____   ____      _   _ _____ ___
+//       |_ _/ ___| / ___|    | | | | ____|_ _|     Informatique et
+//        | |\___ \| |   ___  | |_| |  _|  | |       systèmes de communication
+//        | | ___) | |__|___| |  _  | |___ | |       HEI Sion · HES-SO Valais / mui 24-26
+//       |___|____/ \____|    |_| |_|_____|___|
+//
+//   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
+// 
+
+#import "@preview/isc-hei-tb-assignment:0.8.0" : *
 
 #let language = "fr" // Document language (fr or en), choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name
@@ -20,7 +29,7 @@
 #let tb-mandator = hes()
 #let tb-location = school("MOVE, Tokyo University")
 #let tb-confidential = false
-#let tb-title = [A hardware-software co-design approach for embedded systems] // Must be concise and descriptive, ideally not exceeding 10 words.
+#let tb-title = [Software co-design for embedded systems] // Must be concise and descriptive, use subtitle if you need more space
 #let tb-subtitle = [An exploration of the intersection between science and engineering]  // Optional, use none if not needed
 
 #let tb-description = [
@@ -77,7 +86,6 @@ En cas d'indisponibilité, nous utiliserons un ancien modèle que nous avons dé
  * DO NOT EDIT BELOW THIS LINE
  * (unless you know what you are doing)
  ****/
-// Let's get started with the document!
 #show: project.with(
   doc-type: "tb-assignment",
   language: language,
@@ -97,6 +105,7 @@ En cas d'indisponibilité, nous utiliserons un ancien modèle que nous avons dé
   site: tb-location,
   confidential: tb-confidential,
   title: tb-title,
+  subtitle: tb-subtitle,
   description: tb-description,
   objectives-content: tb-objectives,
   date-attribution: date-attribution,

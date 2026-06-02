@@ -1,9 +1,11 @@
 #import "../includes.typ" as inc
 #import "../settings.typ": programme-name-isc
+#import "../overflow.typ" as overflow
 #import "/isc_templates.typ" as isc
 
 #let cover_page(
   title: "Life, the Universe and Everything",
+  subtitle: none,
   summary: "",
   content: none,
   language: none, // Valid values are en, fr
@@ -55,12 +57,31 @@
 
   set par(leading: 0.4em)
 
-  let title_block = block(align(horizon, text(title, size: 22pt, weight: "bold")), fill: none, width: if video-url != none {100%} else {100%}, spacing: 0em, height: 6em)  
+  let title_block = block(
+    align(horizon, stack(
+      spacing: 1.1em,
+      text(title, size: 22pt, weight: "bold"),
+      if subtitle != none { text(subtitle, size: 13pt, style: "italic", fill: luma(70)) },
+    )),
+    fill: none, width: 100%, spacing: 0em, height: 6.5em,
+  )
 
   let author-text = if(permanent-email != none and permanent-email != "") {
     text(authors + " | " + permanent-email, size: 14pt, fill: hei_color)
   } else {
     text(authors, size: 14pt, fill: hei_color)
+  }
+
+  // Title overflow warning, measured against the shared thesis reference (see
+  // lib/overflow.typ) so it matches every other document. Rendered as a banner
+  // above the title; only appears on overflow, so the sample is unaffected. Plain
+  // context (not layout) keeps the no-overflow case zero-footprint.
+  context {
+    let issues = overflow.title-overflow-issues(title, subtitle: subtitle)
+    if issues.len() > 0 {
+      overflow.overflow-warning-box(issues, font: font, width: 210mm - 1.5cm - 1cm)
+      v(0.6em)
+    }
   }
 
   title_block

@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-bthesis:0.7.9" : *
+#import "@preview/isc-hei-bthesis:0.8.0" : *
 
 #page-title("Résumé")
 

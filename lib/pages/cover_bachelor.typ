@@ -1,4 +1,5 @@
 #import "../includes.typ" as inc
+#import "../overflow.typ" as overflow
 #import "/isc_templates.typ" as isc
 
 // Adapted from https://github.com/LasseRosenow/HAW-Hamburg-Typst-Template/tree/main
@@ -26,7 +27,7 @@
   let i18n = isc.i18n.with(extra-i18n: none, language)
   let hei-purple = inc.hei-purple
   let right-margin = 12mm
-  let left-margin = 35mm
+  let left-margin = 30mm
 
   // Set the document's basic properties.
   set page(margin: (left: 0mm, right: right-margin, top: 0mm, bottom: 0mm), numbering: none, number-align: center)
@@ -88,6 +89,13 @@
         issues.push(if fr [Les mots-clés (keywords) n'ont pas été modifiés.] else [The keywords (keywords) have not been changed.])
       }
     }
+
+    // Title / subtitle overflow — checked unconditionally (a layout problem,
+    // independent of whether the metadata fields are still at their placeholders).
+    // The thesis IS the reference cover the verdict is measured against, so this is
+    // exact here and identical on every other document type.
+    issues += overflow.title-overflow-issues(title, subtitle: subtitle)
+
     issues
   }
 
@@ -105,7 +113,7 @@
         inset: 10pt,
         {
           set text(font: font, fill: rgb("#9d0208"))
-          text(weight: 900, size: 13pt, if fr [⚠ DOCUMENT INCOMPLET — à compléter avant le rendu] else [⚠ INCOMPLETE DOCUMENT — complete before submission])
+          text(weight: 900, size: 13pt, i18n("completeness-warning-header"))
           v(4pt)
           set text(size: 10pt, weight: 500)
           for it in issues {
@@ -117,7 +125,7 @@
   }
 
   let title_block = if subtitle == none {
-    stack(par(leading: 11pt, text(title, size: 24pt, weight: 660)), v(5mm))
+    stack(par(leading: 11pt, text(title, size: 23pt, weight: 660)), v(5mm))
   } else {
     stack(
       par(leading: 11pt, text(title, size: 24pt, weight: 660)),

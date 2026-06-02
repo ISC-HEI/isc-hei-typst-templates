@@ -181,11 +181,18 @@ constant can't reach them. Keep the lowercase `s` consistent everywhere.
 
 ### Completeness check (thesis cover, drafting aid)
 
-`lib/pages/cover_bachelor.typ` renders a red "DOCUMENT INCOMPLET / INCOMPLETE
-DOCUMENT" warning box on the title page listing unfilled fields: `thesis-id`
-(empty/placeholder, or not matching `ISC-XX-YY-N` via regex), `signature`
-(missing or still the shipped `signature_placeholder.svg`), `project-repos`, and
-`keywords`. It stays silent only while **every** field still equals its shipped
+`lib/pages/cover_bachelor.typ` renders a red **"ATTENTION REQUISE"** warning box
+(header from the `completeness-warning-header` i18n key, fr/en/de) on the title
+page listing unfilled fields: `thesis-id` (empty/placeholder, or not matching
+`ISC-XX-YY-N` via regex), `signature` (missing or still the shipped
+`signature_placeholder.svg`), `project-repos`, and `keywords`. The same box also
+carries the **title/subtitle-too-long** issues (see *Title/subtitle overflow*
+below), which are appended unconditionally — independent of the `at-default`
+gate, since overflow is a layout problem, not a completeness one. Because they
+share the box, `hide-completeness-warning: true` suppresses the overflow warning
+on the thesis too (the report, document, exec-summary and poster show a standalone
+overflow box; the **tb-assignment** also folds overflow into its own completeness
+box — see the next subsection). It stays silent only while **every** field still equals its shipped
 placeholder (the `at-default` test); as soon as **any** field diverges from its
 placeholder — including being emptied — the box appears and lists whichever
 required fields are still incomplete. **Sentinels in that file (`sample-author`,
@@ -202,6 +209,73 @@ tiny red dot is placed in the bottom-left margin of the **second** cover page
 (document page 3, since `cleardoublepage()` forces an odd page) as a discreet
 record of the override. The issue list is computed once by a `compute-issues()`
 closure reused by both the page-1 box and the page-2 marker.
+
+### Completeness check (tb-assignment cover, drafting aid)
+
+`lib/pages/cover_assignment.typ` mirrors the thesis gate with its own
+`compute-issues()`: silent while **every** tracked field still carries its shipped
+placeholder (`at-default`); as soon as **any** is touched it flags whichever of
+`id` (placeholder, or not matching the `ISC-XX-YY-N` regex), `student`,
+`supervisor` and the milestone **dates** are still incomplete. The dates
+(`date-attribution`, `date-start`, `date-submission`, `date-exhibition-hei`,
+`date-exhibition-monthey`) are compared **as a group** against their shipped
+datetimes and flagged with one line. The title/subtitle-too-long issues are
+appended unconditionally, and the merged red box — rendered between Table 1 and
+Table 2 with the `completeness-warning-header` ("ATTENTION REQUISE"), not the
+`layout-warning-header` — is absorbed by Table 2's `1fr` rows, so even the worst
+case (long title + subtitle + every field flagged) stays on the existing two
+pages. **Sentinels in that file (`sample-student`, `sample-id`,
+`sample-supervisor`, `sample-dates`) must mirror the placeholders shipped in
+`src/tb_assignment.typ` exactly — `at-default` compares against them verbatim, so
+any drift silently disables the gate; update both together.** Unlike the thesis
+there is no `hide-completeness-warning` opt-out. Caveat: a cohort that
+legitimately keeps the shipped milestone dates still sees the dates flagged once
+another field is touched — it is a drafting reminder, not a hard error.
+
+### Title/subtitle overflow warning (all six document types)
+
+`lib/overflow.typ` flags titles/subtitles that wrap onto too many lines and would
+break a cover layout. It **measures** (not character-counts — that can't account
+for glyph widths, smallcaps, or FR/EN/DE word lengths).
+
+**One shared reference, for cross-document consistency.** A student reuses the same
+title across the thesis, report, poster, exec-summary, etc. If each cover counted
+lines at its *own* width/font, the same title could be flagged on the narrow thesis
+cover yet pass on the huge A1 poster — confusing. So the verdict is always measured
+against ONE reference cover: the **bachelor thesis** (the narrowest/strictest
+layout) — `_ref-width = 151mm`, title `24pt/660`, subtitle `12pt`, font **pinned**
+to `body-font` so the measurement is identical regardless of which document's
+context runs it. A title that fits the thesis fits every cover, so the warning is
+identical on all six documents. Two library knobs in `lib/settings.typ`:
+**`max-title-lines`** and **`max-subtitle-lines`**, interpreted *at the reference*
+(1 title line ≈ 35–45 chars; 2 subtitle lines ≈ 140 chars).
+
+`exceeds-lines(style, body, width, max-lines)` (must run in `context`) compares the
+wrapped height to a probe of exactly `max-lines` forced lines in the same styling —
+no fragile height÷leading math. `title-too-long()` / `subtitle-too-long()` apply it
+to the reference; `title-overflow-issues(title, subtitle:, lang:)` returns the
+i18n'd list; `overflow-warning-box()` renders the red box (completeness-box visual,
+with a `scale` factor for the A1 poster, and a `lang` override for the poster which
+bypasses `project()`'s `global-language` state). i18n keys: `layout-warning-header`,
+`completeness-warning-header`, `title-too-long`, `subtitle-too-long` (fr/en/de).
+
+Per-cover the verdict is the same; only **where the box renders** differs. Each call
+sits in a plain `context {}` — **never `layout()`**, which is a real block that
+shifts the fr-spaced covers even when it renders nothing (so a no-overflow render
+stays byte-identical):
+- **thesis** — appended to `compute-issues()`, shown in the "ATTENTION REQUISE" box.
+- **report / document** — in-flow box below the title (absorbed by the flexible
+  spacing); runs only when `show-cover: true` (the compact inline header is unchecked).
+- **exec-summary** — banner above the title; has its own `subtitle:` (rendered under
+  the title inside the 6em block, wired from `covers.typ`).
+- **tb-assignment** — folded into `compute-issues()` (like the thesis) and shown in
+  the "ATTENTION REQUISE" box between Table 1 and Table 2; checks the `subtitle` too.
+- **poster** — placed in the page **foreground** (an overlay, NOT in the flow) so the
+  warning never pushes content onto a second A1 page; passes `lang:` explicitly.
+
+Because the shipped example titles must clear the strict (1-line) reference, the
+exec-summary / tb-assignment / poster sample titles are kept short; lengthening one
+past ~45 chars will make every document show the warning.
 
 ### Fonts-not-installed guard
 

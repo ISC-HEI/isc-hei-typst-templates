@@ -8,7 +8,7 @@
 //
 // NOTE: the declaration *wording* below is a first draft and will be refined.
 //
-#import "@preview/isc-hei-bthesis:0.7.9" : *
+#import "@preview/isc-hei-bthesis:0.8.0" : *
 
 #page-title(context i18n(inc.global-language.get(), "honour-title"))
 
