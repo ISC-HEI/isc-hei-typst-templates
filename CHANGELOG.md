@@ -1,5 +1,78 @@
 # Changelog
 
+# [v0.8.0](https://github.com/ISC-HEI/isc-hei-typst-templates/releases/tag/0.8.0), June 2026
+
+## Added
+- **Title & subtitle overflow warnings** across all six templates (new `lib/overflow.typ`). Titles/subtitles are *measured* (not character-counted) against a single shared reference cover — the bachelor thesis, the narrowest layout — so the same title is flagged identically on every document type. Tunable via `max-title-lines` / `max-subtitle-lines` in `lib/settings.typ`. On the poster the warning is a foreground overlay, so it never pushes content onto a second A1 page.
+- **Completeness / sanity check on the TB assignment cover**: once any field is edited, the sheet flags a still-placeholder student, ID, supervisor or milestone dates, and an invalid `ISC-XX-YY-N` ID format — folding the overflow warnings into the same box.
+- **Subtitle support on the executive summary**, rendered under the title.
+- New FR / EN / DE i18n keys: `layout-warning-header`, `completeness-warning-header`, `title-too-long`, `subtitle-too-long`.
+
+## Changed
+- **The TB assignment now supports theses carried out abroad** (e.g. the MOVE exchange programme): the supervisor is shown as the "HES-SO supervisor", the expert field is dropped, and the co-supervisor is replaced by host-institution supervisor + (optional) first-line mentor fields.
+- **The bachelor-thesis running header/footer now turns on automatically** at the first numbered chapter — students no longer place `#set-header-footer(true)` by hand (it stays exported as an escape hatch). Output is byte-identical to the old manual call.
+- The TB assignment subtitle is now rendered under the title (previously accepted but unused).
+- Thesis drafting warning box renamed *DOCUMENT INCOMPLET* → *ATTENTION REQUISE*.
+- Updated the thesis-showcase website link printed on the poster to `https://tbs.isc-vs.ch`.
+- Minimum supported Typst compiler relaxed to `0.14.0` for flexibility.
+
+## Fixed / Internal
+- **Deterministic re-renders**: removed encoder- and timestamp-level nondeterminism from the build, so thumbnails (now also smaller) and PDFs are byte-reproducible given the same compiler, fonts and document content.
+- Removed a stale committed `src/poster.pdf`.
+- Refreshed the example PDFs, preview thumbnails, READMEs and `CLAUDE.md`; bumped the root and all six `templates/*/typst.toml` to `0.8.0`.
+
+# [v0.7.9](https://github.com/ISC-HEI/isc-hei-typst-templates/releases/tag/0.7.9), May 2026
+
+This is a large release that grows the suite from five to **six packages**, restructures the whole codebase into a modular library, and ships a complete contributor release pipeline. Highlights below.
+
+## Added
+
+### New `isc-hei-poster` package
+- A sixth template for **A1 scientific posters**, with `isc-poster()`, `isc-card()` and `isc-colbreak()` for column-based layouts.
+- Dedicated README, thumbnail, `typst.toml` metadata, runnable `src/poster.typ` example and example PDF.
+- Layout regression tests (`scripts/test-poster.sh`, `scripts/test-poster-variants.sh`, `just test-poster`).
+
+### Declaration of honour (thesis)
+- New bilingual (FR/EN) *déclaration sur l'honneur* page (`src/pages/honneur.typ`), included in the bachelor thesis between the résumé and acknowledgements.
+- Auto-fills author / title / academic year / date from project metadata — the student only sets `date:` and `signature:`. A missing signature renders a flagged placeholder instead of failing.
+
+### Completeness check on the thesis cover
+- A red "DOCUMENT INCOMPLET / INCOMPLETE DOCUMENT" warning box lists unfilled required fields (`thesis-id`, `signature`, `project-repos`, `keywords`) as a drafting aid.
+- New `hide-completeness-warning` option suppresses the box, leaving a discreet red dot in the margin as a record of the override.
+
+### Fonts-not-installed guard
+- When the ISC fonts are missing, both `project()` and `isc-poster()` now render a clear "fonts not installed" page instead of silently falling back to system fonts.
+
+### Release & packaging tooling
+- **Typst Universe release automation**: `just universe-stage` / `universe-check` / `universe-push` / `update-pr` recipes plus supporting scripts to open and refresh release PRs against `typst/packages`.
+- **Allow-list-driven packing**: `scripts/template-files` is the single source of truth for each package's required files; `just check-pack` verifies packed packages contain exactly those files (no dangling leaks, e.g. the thesis-only signature placeholder no longer bleeds into other packages).
+- **Version bumping**: `scripts/bump-version` / `just bump-version` updates all `typst.toml` files and `src/` imports at once.
+- Project guidance file `.gitattributes`.
+
+## Changed
+
+### Major library refactor
+- The monolithic source was split into a modular `lib/` tree (`includes`, `settings`, `fonts`, `i18n`, `decorations`, `content`, `code`, `covers`, `project`, `poster`, `pages/cover_*`). `isc_templates.typ` is now a thin façade that re-exports the modules, so existing `#import "@preview/isc-hei-*": *` usage is unchanged.
+
+### Layout & typography
+- **Chapter rule** completely rewritten; **margins fixed**.
+- Hashed cover line now matches the title text width.
+- Improved, more informative running footers.
+- `exec-summary` gains a web-usage opt-out disclaimer; thesis declaration-of-honour wording reworked.
+
+### Build experience
+- **Parallel compilation** in the Justfile; detection of symlinked vs. packed `@preview` installs.
+- Normalised casing for "ISC"; consistent lowercase `s` in "systèmes" across the programme name.
+- Reduced user-facing boilerplate; default document language is now **`fr`**.
+- Reworked font installation script and documentation.
+
+### Fixes
+- Fixed font warnings both locally and on the web (closes #25).
+- Fixed the `document` template's header; corrected several wrong default values.
+- Cleaned up dangling/ignored files and refreshed examples and thumbnails for the release.
+
+**Full Changelog**: https://github.com/ISC-HEI/isc-hei-typst-templates/compare/0.7.1...0.7.9
+
 # [v0.7.1](https://github.com/ISC-HEI/isc-hei-report/releases/tag/0.7.1), March 2026
 
 ## Added

@@ -2,8 +2,8 @@
     <img src="https://github.com/ISC-HEI/isc_logos/blob/ab8c41c12930c787f590183baa229a22709c81f9/black/ISC%20Logo%20inline%20black%20v3%20-%20large.webp?raw=true" align="right" alt="ISC Logo" height="50"/>
 </p>
 
-![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-report)
-![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-report?include_prereleases)
+![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-typst-templates)
+![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-typst-templates?include_prereleases)
 ![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)
 
 # Executive Summary Template for ISC Students
@@ -11,7 +11,7 @@
 This is the official template for executive summary of the bachelor thesis for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. It is part of the official templates repository, which also include templates for reports (`isc-hei-report`) and bachelor thesis as well (`isc-hei-bthesis`).
 
 <p align="center">
-  <a href="https://github.com/ISC-HEI/isc-hei-student-templates/blob/ad7ebe178126b2910e3a0e2ba1b1929cf24e47f3/examples/exec_summary.pdf?raw=true"><img src="exec_summary.png" alt="Preview of the ISC executive summary template title page" height="300"></a>
+  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/0.8.0/examples/exec_summary.pdf?raw=true"><img src="exec_summary.png" alt="Preview of the ISC executive summary template title page" height="300"></a>
 </p>
 
 ## Using the Template on the Web
