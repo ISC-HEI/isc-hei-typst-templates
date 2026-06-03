@@ -1,6 +1,6 @@
 #import "../includes.typ" as inc
 #import "../overflow.typ" as overflow
-#import "/isc_templates.typ" as isc
+#import "../../isc_templates.typ" as isc
 
 // Adapted from https://github.com/LasseRosenow/HAW-Hamburg-Typst-Template/tree/main
 
@@ -150,9 +150,9 @@
       v(70mm),
       // Title
       title_block,
-      
+
       v(5mm),
-      
+
       // Decorative line: hash-encoded bit pattern (square ends + circle bits).
       // Its width matches the programme text rendered just below it, so measure
       // that line and feed the result to hash-rule as its length.
