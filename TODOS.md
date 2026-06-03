@@ -39,3 +39,5 @@ For version 0.8.1
 - some easter egg game in the library ? 
 - Put more than one picture in the README.md of the different templates, to make it more appealing.
 - Verify on the typst universe that the templates are tagged as official.
+- Make a whole review of the code to check for any possible improvement, and to make sure that the code is clean and well documented.
+- Include feedback from all stakeholders, review after everyone handed in their project, and make the necessary adjustments to the templates for the next academic year.
