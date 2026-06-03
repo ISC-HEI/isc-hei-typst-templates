@@ -9,17 +9,16 @@
 
 #import "@preview/isc-hei-bthesis:0.8.0" : *
 
-#let doc_language = "fr" // Valid values are en, fr
+#let doc_language = "en" // Valid values are [en, fr]
 
 #show: project.with( 
-  //title: "Life, the Universe and Everything", // Your thesis title
-  title: "Software co-design for embedded systems", 
+  title: "Life, the Universe and Everything", 
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
   authors: "Margaret Hamilton", // Your name
   language: doc_language, // must be defined globally, see above
   
   thesis-supervisor: "Prof. Dr John von Neumann", 
-  thesis-co-supervisor: "Lady Ada Lovelace", // Optional, use none if not needed
+  thesis-co-supervisor: "Lady Ada Lovelace", // Optional, use 'none'if not needed
   thesis-expert: "Dr Grace Hopper", // Optional, use none if not needed
   thesis-id: "ISC-ID-26-1", // Your thesis ID (from the official project description)
   project-repos: "https://github.com/ISC-HEI/isc-hei-typst-templates", // Your project git repository.
@@ -27,13 +26,11 @@
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et systèmes de communication (ISC)",
 
-  // Some keywords related to your thesis
-  keywords: ("engineering", "data", "machine learning", "meteorology"),
+  keywords: ("engineering", "data", "machine learning", "meteorology"), // Relevant keywords to your thesis
   major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "Networks and systems""
   date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
 
-  // Declaration of honour — the only two fields the student must provide for it
-  // (everything else on that page is auto-filled). No need to edit pages/honneur.typ.
+  // Declaration of honour signature
   signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
   doc-type: "thesis",
@@ -43,16 +40,18 @@
                                
   // The cover might show a red "ATTENTION REQUISE" box listing required fields still
   // left at their placeholder values (and warns if the title/subtitle is too long).
-  // 
   // Uncomment to hide it, but only do this if you know what you are doing.
+  
   // hide-completeness-warning: true,
 )
 
-// // If using acronyms 
+// If using acronyms 
 #import "@preview/acrostiche:0.7.0": *     
 #include "acronyms.typ"
 
+////////////////////////////
 // Let's get started folks!
+////////////////////////////
 
 #cleardoublepage()
 #include "pages/abstract.typ"
@@ -147,8 +146,8 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
 = Conclusion
 #lorem-pars(1200)
 
-//#bibliography("bibliography.bib", full: true, style: "ieee", title)
 #pagebreak()
+
 #the-bibliography(bib-file: "bibliography.bib", full: true, style: "ieee")
 
 //////////////
@@ -198,6 +197,5 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
     ],
   caption: "Second code included from the file example.scala"
 )
-
 
 // This is the end, folks!

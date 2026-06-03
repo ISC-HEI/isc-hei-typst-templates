@@ -8,7 +8,7 @@
 // 
 #import "@preview/isc-hei-report:0.8.0" : *
 
-#let doc_language = "fr" // Valid values are en, fr
+#let doc_language = "fr" // The document language, valid values are [en, fr]
 
 #show: project.with(
   title: "Rapport de projet pour la filière ISC",
@@ -31,7 +31,7 @@
   code-theme: "bluloco-light", // See directory themes/ for available themes
 )
 
-//// If using acronyms
+// If using acronyms
 #import "@preview/acrostiche:0.7.0": *
 #include "acronyms.typ"
 

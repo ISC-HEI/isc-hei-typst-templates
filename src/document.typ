@@ -20,7 +20,7 @@
   authors: ("A. Lovelace", "Prof. B. Liskov", "Prof. N. Wirth",),    
   
   date: datetime(year: 2026, month: 3, day: 24), // or datetime.today()
-  revision: "1.0",
+  revision: "1.0", // Your document revision, update as needed
   language: "fr", // Valid values are en, fr, de
   logo: auto, // Set to none if you wish no logo at all
   

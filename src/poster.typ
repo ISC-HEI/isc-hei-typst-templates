@@ -27,7 +27,7 @@
   programme: "Informatique et systèmes de communication",
   major: "Data Engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering"
   orientation: poster-orientation,
-  language: "fr", // Valid values are en, fr, de
+  language: "fr", // Valid values are [en, fr, de]
   num-columns: 2,
   distribute-columns: true,  // evenly distributes cards vertically; set false to disable
 )

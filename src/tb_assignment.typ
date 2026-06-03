@@ -9,7 +9,7 @@
 
 #import "@preview/isc-hei-tb-assignment:0.8.0" : *
 
-#let language = "fr" // Document language (fr/en/de), choose to your liking
+#let language = "fr" // Document language [fr, en, de]. Choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name
 #let tb-id = "ISC-ID-26-1" // TB identifier, please ask the secretariat for the proper number (format: ISC-ID-XX-Y, where XX last two digits of the academic year, and Y is a sequential number)
 #let tb-supervisor = "Prof. Dr L. Lettry" // Responsible supervisor (HES-SO side)

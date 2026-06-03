@@ -103,7 +103,7 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 #show: project.with(  
   title: "DataFlowX — Real-Time Data Analytics",
   subtitle: "Automated ingestion, transformation and validation at scale", // Optional, use none if not needed
-  language: "en", // Valid values are en, fr, de
+  language: "en", // Valid values are [en, fr]
   authors: "Stormy Peters", 
   student-picture: image("figs/random_image.png"), // [Optional], put none if not used
   permanent-email: "stormy.peters@example.com", // [Optional], put none if not used. Prefer a long term viable address!
