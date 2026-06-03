@@ -37,3 +37,5 @@ For version 0.8.1
 ## Global
 - have something like a global enum to choose among the different majors, and use it in the various templates throughout
 - some easter egg game in the library ? 
+- Put more than one picture in the README.md of the different templates, to make it more appealing.
+- Verify on the typst universe that the templates are tagged as official.
