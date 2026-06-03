@@ -39,7 +39,7 @@
   // its shipped placeholder — including being emptied) we flag every required
   // field still left empty or at its shipped placeholder value.
   let sample-author    = "Margaret Hamilton"
-  let sample-thesis-id = "ISC-ID-26-1"
+  let sample-thesis-id = "ISC-ID-26-0"
   let sample-repo      = "https://github.com/ISC-HEI/isc-hei-typst-templates"
   let sample-keywords  = ("engineering", "data", "machine learning", "meteorology")
   // Expected reference format: ISC-XX-YY-N (XX = two letters, YY = two-digit
@@ -150,9 +150,9 @@
       v(70mm),
       // Title
       title_block,
-      
+
       v(5mm),
-      
+
       // Decorative line: hash-encoded bit pattern (square ends + circle bits).
       // Its width matches the programme text rendered just below it, so measure
       // that line and feed the result to hash-rule as its length.
