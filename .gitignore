@@ -15,3 +15,6 @@ test
 .Spotlight-V100
 .Trashes
 ._*
+
+# Ignore direnv folder
+.direnv/
