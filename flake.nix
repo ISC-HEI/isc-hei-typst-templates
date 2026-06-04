@@ -38,8 +38,9 @@
             zopfli
           ];
 
-          shellHook = ''
+           shellHook = ''
             export FONTCONFIG_FILE="${fontsConf}"
+            unset SOURCE_DATE_EPOCH
           '';
         };
       }
