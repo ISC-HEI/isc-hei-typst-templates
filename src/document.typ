@@ -170,7 +170,11 @@ On peut utiliser les boîtes de `showybox` pour mettre en valeur du contenu :
 Il est important de citer les sources que l'on utilise. Par exemple, les deux travaux @mui_nasa_dod09, @mui_hybrid_06 et @mudry:133438 sont des papiers très intéressants à lire et dont les références complètes se trouvent dans la bibliographie à la fin de ce document. 
 
 #pagebreak()
-#the-bibliography(bib-file: "bibliography.bib", full: true, style: "ieee")
+#the-bibliography(
+  bib-file: read("bibliography.bib", encoding: none),
+  full: true,
+  style: "ieee"
+)
 
 
 // This is the end !

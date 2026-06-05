@@ -5,19 +5,19 @@
 //       |___|____/ \____|    |_| |_|_____|___|
 //
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
-// 
+//
 
 #import "@preview/isc-hei-bthesis:0.8.0" : *
 
 #let doc_language = "en" // Valid values are [en, fr]
 
-#show: project.with( 
-  title: "Life, the Universe and Everything", 
+#show: project.with(
+  title: "Life, the Universe and Everything",
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
   authors: "Margaret Hamilton", // Your name
   language: doc_language, // must be defined globally, see above
-  
-  thesis-supervisor: "Prof. Dr John von Neumann", 
+
+  thesis-supervisor: "Prof. Dr John von Neumann",
   thesis-co-supervisor: "Lady Ada Lovelace", // Optional, use 'none'if not needed
   thesis-expert: "Dr Grace Hopper", // Optional, use none if not needed
   thesis-id: "ISC-ID-26-1", // Your thesis ID (from the official project description)
@@ -37,16 +37,16 @@
   split-chapters: true,
   revision: "1.0", // If you have multiple versions of your thesis, you can update this field to keep track of them.
   code-theme: "bluloco-light", // See directory themes/ for available themes
-                               
+
   // The cover might show a red "ATTENTION REQUISE" box listing required fields still
   // left at their placeholder values (and warns if the title/subtitle is too long).
   // Uncomment to hide it, but only do this if you know what you are doing.
-  
+
   // hide-completeness-warning: true,
 )
 
-// If using acronyms 
-#import "@preview/acrostiche:0.7.0": *     
+// If using acronyms
+#import "@preview/acrostiche:0.7.0": *
 #include "acronyms.typ"
 
 ////////////////////////////
@@ -148,11 +148,15 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
 
 #pagebreak()
 
-#the-bibliography(bib-file: "bibliography.bib", full: true, style: "ieee")
+#the-bibliography(
+  bib-file: read("bibliography.bib", encoding: none),
+  full: true,
+  style: "ieee"
+)
 
 //////////////
 // Appendices
-////////////// 
+//////////////
 #cleardoublepage()
 #appendix-page()
 #pagebreak()
@@ -163,12 +167,12 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
   sorted: "up",
   delimiter: " : ",
   row-gutter: 0.7em,
-  outlined: false,  
+  outlined: false,
 )
 
 #pagebreak()
 
-// Table of listings 
+// Table of listings
 #table-of-figures()
 
 // Code inclusion
@@ -177,21 +181,21 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
 
 #let code_sample = read("code/sample.scala")
 
-#figure( 
+#figure(
     code()[
       #raw(code_sample, lang: "scala")
     ],
   caption: "Code included from the file example.scala"
 )
 
-#figure( 
+#figure(
     code()[
       #raw(read("code/sort.py"), lang: "python")
     ],
   caption: "Second code included from the file example.scala"
 )
 
-#figure( 
+#figure(
     code()[
       #raw(code_sample, lang: "scala")
     ],

@@ -215,7 +215,11 @@ $ S = sqrt(S_x^2+S_y^2) = sqrt(109^2+185^2) =214.47 $
 #lorem(500)
 
 #pagebreak()
-#the-bibliography(bib-file: "bibliography.bib", full: true, style: "ieee")
+#the-bibliography(
+  bib-file: read("bibliography.bib", encoding: none),
+  full: true,
+  style: "ieee"
+)
 
 //////////////
 // Appendices
