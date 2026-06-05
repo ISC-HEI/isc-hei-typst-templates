@@ -140,7 +140,7 @@
     show heading: none
     heading(bookmarked: true, numbering: none, outlined: true)[#title]
     page-title(title, mult: 1, top: 0.5em, bottom: 0.3em)
-    bibliography("../src/" + bib-file, full: full, style: style, title:none)
+    bibliography(bib-file, full: full, style: style, title:none)
   }
 }
 
