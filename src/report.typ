@@ -6,7 +6,7 @@
 //
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 // 
-#import "@preview/isc-hei-report:0.8.0" : *
+#import "@preview/isc-hei-report:0.8.1" : *
 
 #let doc_language = "fr" // The document language, valid values are [en, fr]
 
@@ -34,6 +34,15 @@
 // If using acronyms
 #import "@preview/acrostiche:0.7.0": *
 #include "acronyms.typ"
+
+// A tidy acronym table for the appendix, using the acronyms declared above.
+#let acronym-table() = print-index(
+  title: page-title(i18n(doc_language, "acronym-table-title"), mult: 1, top: 1em, bottom: 1em),
+  sorted: "up",
+  delimiter: " : ",
+  row-gutter: 0.7em,
+  outlined: false,
+)
 
 // Let's get started folks!
 
@@ -228,14 +237,8 @@ $ S = sqrt(S_x^2+S_y^2) = sqrt(109^2+185^2) =214.47 $
 #appendix-page()
 #pagebreak()
 
-// Table of acronyms, NOT COMPULSORY
-#print-index(
-  title: page-title(i18n(doc_language, "acronym-table-title"), mult:1, top:1em, bottom: 1em),
-  sorted: "up",
-  delimiter: " : ",
-  row-gutter: 0.7em,
-  outlined: false,
-)
+// Table of acronyms (optional). Defined near the acronyms above.
+#acronym-table()
 
 #pagebreak()
 

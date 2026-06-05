@@ -1,4 +1,4 @@
-#import "@preview/isc-hei-bthesis:0.8.0" : *
+#import "@preview/isc-hei-bthesis:0.8.1" : *
 
 #page-title("Abstract")
 

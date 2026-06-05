@@ -250,7 +250,7 @@
     stack(
       spacing: 3mm,
       text(i18n("thesis-submitted")),
-      text(programme + " – " + i18n("major-prefix") + major + i18n("major-suffix"), style: "italic"),
+      text(programme + " – " + i18n("major-prefix") + isc.resolve-major(major, language) + i18n("major-suffix"), style: "italic"),
       text(school),
     ),
     v(6mm),

@@ -44,18 +44,13 @@ done
 cp -a "$ROOT/templates/$TEMPLATE/typst.toml" "$STAGING_DIR/typst.toml"
 
 # ── 2. Point the Typst package entry at the staging directory ──────────────
+# Clear the version path FIRST — it may be a stale dev symlink, a dangling
+# symlink, or a real packed dir left by a previous `pack` — then create a clean
+# symlink. The unconditional `rm -rf` (a no-op when the path is absent) is what
+# makes re-linking after a pack reliable: `ln -sf` onto an existing *real dir*
+# would nest the link INSIDE it instead of replacing it.
 echo "Installing dev symlink in $TARGET_DIR"
-if [ -e "$DEST_LINK/$VERSION" ]; then
-  echo "Removing existing $DEST_LINK/$VERSION"
-  rm -rf "$DEST_LINK/$VERSION"
-fi
 mkdir -p "$DEST_LINK"
-
-ln -sf "$STAGING_DIR" "$DEST_LINK/$VERSION"
-
-if [ $? -eq 0 ]; then
-  echo "Symlink created: $DEST_LINK/$VERSION -> $STAGING_DIR"
-else
-  echo "Error: Failed to create symlink $DEST_LINK/$VERSION" >&2
-  exit 1
-fi
+rm -rf "${DEST_LINK:?}/${VERSION:?}"
+ln -s "$STAGING_DIR" "$DEST_LINK/$VERSION"
+echo "Symlink created: $DEST_LINK/$VERSION -> $STAGING_DIR"

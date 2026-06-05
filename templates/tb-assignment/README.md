@@ -13,7 +13,7 @@ This is the official template for the bachelor thesis assignment sheet (*Donnée
 This document is **filled in by the professor**, not by the student. Once compiled to PDF, it should be included in the student's bachelor thesis document.
 
 <p align="center">
-  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/0.8.0/examples/tb_assignment.pdf?raw=true"><img src="tb_assignment_thumb.png" alt="Preview of the ISC thesis assignment template title page" height="300"></a>
+  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/0.8.1/examples/tb_assignment.pdf?raw=true"><img src="tb_assignment_thumb.png" alt="Preview of the ISC thesis assignment template title page" height="300"></a>
 </p>
 
 ## Using the Template in Your Shell

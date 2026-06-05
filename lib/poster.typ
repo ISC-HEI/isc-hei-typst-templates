@@ -12,7 +12,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 #import "includes.typ" as inc
-#import "settings.typ": programme-name-isc
+#import "settings.typ": programme-name-isc, resolve-major, validate-major
 #import "decorations.typ": hash-rule
 #import "i18n.typ": i18n
 #import "fonts.typ": isc-fonts-available, _missing-fonts-page
@@ -88,6 +88,9 @@
   // (project()-based templates already pass date:, so only the poster needed this).
   set document(date: none)
 
+  // Validate the major (same known set as project()); empty is allowed.
+  validate-major(major)
+
   // ISC TB aggregator — not user-facing; update here when the URL moves.  
   let _isc-tbs-website = "https://tbs.isc-vs.ch/"
 
@@ -144,7 +147,7 @@
   // hyphenate: false keeps long words whole — placard justifies the title, which
   // would otherwise split words mid-line (e.g. "hospitalières" → "hospital-ières").
   let tight-title = { set par(leading: 0.5em); set text(hyphenate: false); title }
-  let _affil-parts = (school, programme) + (if major != none { (major,) } else { () })
+  let _affil-parts = (school, programme) + (if major != none { (resolve-major(major, language),) } else { () })
   let affiliation = layout(size => block(width: size.width, {
     align(center, text(size: 18pt, weight: "regular", fill: luma(140), _affil-parts.join([  ·  ])))
     if thesis-id != none {
@@ -249,7 +252,7 @@
     stack(dir: ttb, spacing: 10pt,
       _info-value(programme, first: true),
       ..(if major != none {
-        (_info-row(_label-orientation, major),)
+        (_info-row(_label-orientation, resolve-major(major, language)),)
       } else { () }),
       ..(if academic-year != none {
         (_info-row(_label-academic-year, academic-year),)

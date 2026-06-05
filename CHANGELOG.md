@@ -1,5 +1,25 @@
 # Changelog
 
+# [v0.8.1](https://github.com/ISC-HEI/isc-hei-typst-templates/releases/tag/0.8.1), June 2026
+
+## Added
+- **Full German (DE) localisation.** Completed the missing `de` UI strings (faculty, HES-SO, programme / study-course titles, supervising roles, thesis reference & submission, keywords, …) and made the **declaration of honour trilingual (FR/DE/EN)**. German theses, executive summaries and documents now render fully localised covers. New i18n key `summary-too-long`.
+- **Per-document-type aliases** `thesis` / `report` / `exec-summary` / `tb-assignment` (thin `project.with(doc-type: …)` shims): example files now write `#show: thesis.with(…)` and never pass `doc-type` (the thesis also drops `split-chapters`). `project()` stays the canonical entry; there is deliberately **no `document` alias** — it would shadow Typst's built-in `document` element.
+- **Shared `majors` enum + validation** (`lib/settings.typ`): the five ISC majors as a single FR/EN/DE source of truth. The value is validated on every cover (`validate-major`) and rendered in the document's language (`resolve-major`), so a major shows correctly localised on every document type.
+- **`#acronym-table()` helper** in the example files, collapsing the verbose appendix `#print-index(…)` block to a single call — kept example-side, so `acrostiche` stays out of the package dependencies.
+- **Nix dev environment** (`flake.nix` + `.envrc`, by @MadeInShineA — #30): a reproducible `nix develop` shell with `typst`, `tinymist`, `just`, `pngquant`, `zopfli` and the ISC fonts (Fira Code, Source Sans / Source Sans Pro, Inria) preconfigured.
+
+## Changed
+- **Declaration of honour moved into the package** as `#declaration-of-honour()` (was the user-facing `src/pages/honneur.typ`, now `lib/pages/honour.typ`). Students only set `signature:` and call the function — they never edit the wording. Output is byte-identical for FR/EN.
+- **The executive-summary over-length summary is now a soft warning** in the cover's warning box instead of a hard `panic`: the blurb is *measured* against its box and flagged only if it would actually overflow (an entirely missing summary still hard-fails). The shared layout-warning header was generalised to *"LAYOUT WARNING — content may overflow"* since the box now also carries the summary.
+- **Consistent major naming.** The label had drifted between templates (thesis said "Security" and omitted "Data engineering"; exec said "Computer security"; the poster "Data Engineering") — all six now draw from the shared enum, with French as canonical.
+- Removed the now-unnecessary `doc-type` / `split-chapters` plumbing from the bachelor-thesis and executive-summary examples.
+
+## Fixed / Internal
+- **Bibliography rendering fixed** (by @MadeInShineA — #31): `the-bibliography(bib-file: …)` now takes the file *contents* via `read("bibliography.bib", encoding: none)` instead of a path string, and the package no longer hard-codes a `../src/` prefix — so the bibliography resolves correctly after the `lib/` refactor.
+- **One dev command, `just dev`** — re-links `@preview` to live source and compiles all six examples. It **self-heals** the dev symlinks, so it works even right after a `pack` / `test-all`; `test-all` and `bump-version` now restore the symlinks automatically too. Hardened `scripts/dev_link` so re-linking reliably *replaces* a leftover packed dir (it could previously nest the symlink inside it). `install-symblinks` is now internal plumbing — hidden from `just --list`, still callable directly.
+- Refreshed example PDFs, preview thumbnails, `CLAUDE.md` and `CONTRIBUTING.md`; bumped the root and all six `templates/*/typst.toml` to `0.8.1`.
+
 # [v0.8.0](https://github.com/ISC-HEI/isc-hei-typst-templates/releases/tag/0.8.0), June 2026
 
 ## Added

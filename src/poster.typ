@@ -7,7 +7,7 @@
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 // 
 
-#import "@preview/isc-hei-poster:0.8.0": isc-poster, isc-card, isc-colbreak
+#import "@preview/isc-hei-poster:0.8.1": isc-poster, isc-card, isc-colbreak
 #import "@preview/cetz:0.5.2": canvas, draw
 
 // Choose orientation: "portrait" or "landscape"
@@ -25,7 +25,7 @@
   academic-year: "2025-2026",
   school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et systèmes de communication",
-  major: "Data Engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering"
+  major: "Data engineering", // One of: Software engineering, Embedded systems, Computer security, Networks and systems, Data engineering
   orientation: poster-orientation,
   language: "fr", // Valid values are [en, fr, de]
   num-columns: 2,

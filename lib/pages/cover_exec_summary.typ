@@ -19,7 +19,7 @@
   school: "Haute École d'Ingénierie de Sion",
   programme: programme-name-isc,
   keywords: ("engineering", "data", "machine learning", "meteorology"), // Some keywords related to your thesis
-  major: "Data engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering""
+  major: "Data engineering", // see lib/settings.typ `majors` for the valid set
   bind: none, // Bind the left side of the page
   footer: none,
   font: none,  
@@ -78,6 +78,7 @@
   // context (not layout) keeps the no-overflow case zero-footprint.
   context {
     let issues = overflow.title-overflow-issues(title, subtitle: subtitle)
+    if overflow.summary-too-long(summary) { issues.push(i18n("summary-too-long")) }
     if issues.len() > 0 {
       overflow.overflow-warning-box(issues, font: font, width: 210mm - 1.5cm - 1cm)
       v(0.6em)
@@ -94,7 +95,7 @@
   stack(
     // Author
     stack(spacing: 1em, if (supervisors != none) {
-      text(i18n("programme-title")) + text(colon + programme + " | " + major, style: "italic")
+      text(i18n("programme-title")) + text(colon + programme + " | " + isc.resolve-major(major, language), style: "italic")
       linebreak()
 
       if type(supervisors) != array {
@@ -120,12 +121,11 @@
 
   v(-0.5em)
 
+  // An over-length summary is now flagged in the cover warning box (above the
+  // title) instead of aborting the compile — consistent with the title/subtitle
+  // overflow checks. An entirely missing summary is still a hard error.
   if (summary.len() == 0) {
     panic("You must provide a summary for the executive summary cover page.")
-  }
-
-  if (summary.len() > 365) {
-    panic("The summary must be less than 365 characters long. Currently it is " + str(summary.len()) + " characters long.")
   }
 
   block(align(horizon, text(summary, fill: hei_color, size: 14pt)), fill: none, height: 3cm)

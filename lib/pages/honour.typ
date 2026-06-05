@@ -2,17 +2,24 @@
 // Filière Informatique et systèmes de communication (ISC)
 // Haute École d'Ingénierie — HES-SO Valais-Wallis
 //
-// Bilingual page: the language is taken from the document language passed to
-// project(). The identity fields are auto-filled from the thesis metadata and
-// the signature image is mandatory (passed to project() via `signature:`).
+// Trilingual page (FR/DE/EN): the language is taken from the document language
+// passed to project(). The identity fields are auto-filled from the thesis
+// metadata and the signature image is supplied to project() via `signature:`.
+//
+// Part of the package now (was the user-facing src/pages/honneur.typ): the user
+// file only calls #declaration-of-honour() and never edits this wording. Imports
+// the lib/ modules directly — NOT the entrypoint — to avoid the cyclic-import
+// trap that bites lib/pages/cover_*.typ.
 //
 // NOTE: the declaration *wording* below is a first draft and will be refined.
-//
-#import "@preview/isc-hei-bthesis:0.8.0" : *
+#import "../includes.typ" as inc
+#import "../i18n.typ": i18n
+#import "../content.typ": page-title
 
-#page-title(context i18n(inc.global-language.get(), "honour-title"))
+#let declaration-of-honour() = {
+  page-title(context i18n(inc.global-language.get(), "honour-title"))
 
-#context {
+  context {
   let lang = inc.global-language.get()
   let meta = inc.global-thesis-meta.get()
 
@@ -45,6 +52,25 @@
       place-date: [Fait à Sion, le #date-str],
       signature-label: [Signature],
       note: [Document inspiré de la Directive 0.3 de l'Université de Lausanne, de la Directive en matière de plagiat des étudiant·e·s de l'Université de Genève, et du formulaire de Déclaration sur l'honneur de l'Université de Neuchâtel.],
+    )
+  } else if lang == "de" {
+    (
+      subtitle: [Bachelorarbeit],
+      labels: ("Verfasser·in", "Titel der Arbeit", "Akademisches Jahr"),
+      intro-prefix: [Ich,],
+      intro: [erkläre hiermit ehrenwörtlich:],
+      items: (
+        [dass ich die für die Bachelorarbeit des Studiengangs ISC geltenden Regeln zur Verhinderung von Plagiaten zur Kenntnis genommen habe und mich verpflichte, sie einzuhalten;],
+        [dass die eingereichte Arbeit das Ergebnis meiner eigenen Überlegungen ist und selbstständig angefertigt wurde;],
+        [dass jede Formulierung, Idee, Argumentation und Analyse sowie alle Daten, Bilder, Schemata oder Quellcode-Fragmente, die von Dritten — einschließlich von einem generativen Werkzeug der künstlichen Intelligenz — übernommen wurden, klar als solche gekennzeichnet sind und ihre Quelle gemäss den geltenden Zitierregeln genau angegeben ist;],
+        [dass ich jede Nutzung eines generativen Werkzeugs der künstlichen Intelligenz transparent offengelegt habe, unter Angabe des verwendeten Werkzeugs, der Zwecke und der betroffenen Passagen;],
+        [dass ich weder Plagiat noch Eigenplagiat, _Ghostwriting_ noch eine andere Form des akademischen Betrugs begangen habe;],
+        [dass mir bewusst ist, dass ein Verstoss gegen die oben genannten Regeln zu Sanktionen führen kann, die von der Note 1.0 bis zum Ausschluss aus der Ausbildung oder sogar zum Entzug des erworbenen Titels reichen;],
+        [dass ich akzeptiere, dass meine Arbeit mithilfe einer Software zur Erkennung von Ähnlichkeiten oder mit anderen geeigneten Mitteln überprüft werden kann.],
+      ),
+      place-date: [Sitten, den #date-str],
+      signature-label: [Unterschrift],
+      note: [Dokument inspiriert von der Richtlinie 0.3 der Universität Lausanne, von der Richtlinie der Universität Genf zum studentischen Plagiat und vom Formular der ehrenwörtlichen Erklärung der Universität Neuenburg.],
     )
   } else {
     (
@@ -113,7 +139,7 @@
     align: (left + horizon, left + bottom),
     strong(t.signature-label + " :"),
     if signature != none { signature } else {
-      text(fill: red, style: "italic", if lang == "fr" [⟨ signature manquante ⟩] else [⟨ signature missing ⟩])
+      text(fill: red, style: "italic", if lang == "fr" [⟨ signature manquante ⟩] else if lang == "de" [⟨ Unterschrift fehlt ⟩] else [⟨ signature missing ⟩])
     },
   )
 
@@ -122,4 +148,5 @@
   line(length: 100%, stroke: 0.3pt)
   v(0.5em)
   text(size: 8pt, style: "italic")[#t.note]
+  }
 }

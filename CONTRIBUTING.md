@@ -38,27 +38,27 @@ The Justfile is split into two workflows, surfaced as recipe groups in `just --l
 - **`dev`** — work against your live source via symlinks; nothing gets packed.
 - **`release`** — build and check the artifacts published to the Typst Universe.
 
-:warning: Packing **replaces the dev symlinks**, so re-run `just install-symblinks` to return to local work afterwards.
+:warning: Packing **replaces the dev symlinks** with real dirs — but you don't need to think about it: `just dev` self-heals them, and `just test-all` / `just bump-version` restore them automatically.
 
 ### Working on the template (`dev`)
 
 :warning: If running on Mac, you might have to adapt the shell used in `scripts/package` (uncomment the second line).
 
-To develop new features in the template, install the dev symlinks so the `@preview` packages point at this repo (run once):
+To develop in the template, the one command you need is:
 
 ```bash
-just install-symblinks
+just dev
 ```
 
-Once done, you can work on any of the document and compile it with
+It links the `@preview` packages at this repo's live source and compiles all six examples. It **self-heals** the symlinks, so it works even right after a `pack`/`test-all` — run it any time. (Under the hood it runs the internal `install-symblinks` step and then `just test`; you can still call `just install-symblinks` on its own for a bare relink without compiling.)
+
+You can then work on any document and live-preview it, for instance with
 
 ```bash
 typst watch src/bachelor_thesis.typ
 ```
 
-for instance. The six examples can be compiled in one go to `examples/*.pdf` with `just compile-all`.
-
-Run the full test suite against your live source (no packing) with `just test`, or only the poster layout checks (every variant must fit one A1 page) with `just test-poster`.
+The six examples can be compiled in one go to `examples/*.pdf` with `just compile-all`. Run the full test suite against your live source (no packing) with `just test`, or only the poster layout checks (every variant must fit one A1 page) with `just test-poster`.
 
 ### Testing local deployment (`release`)
 
@@ -70,10 +70,10 @@ To deploy locally for `typst` command-line
 just pack
 ```
 
-This packs all six packages to `@preview` as the real Universe artifact (it depends on `compile-all` + `generate-thumbs`, so packed examples and thumbnails are fresh). Note that it replaces the dev symlinks, so re-run `just install-symblinks` afterwards to return to local development. The templates can be tested as needed by creating a local sample using:
+This packs all six packages to `@preview` as the real Universe artifact (it depends on `compile-all` + `generate-thumbs`, so packed examples and thumbnails are fresh). It replaces the dev symlinks; `just dev` restores them when you go back to development (and `just test-all` / `just bump-version` restore them for you). The templates can be tested as needed by creating a local sample using:
 
 ```bash
-typst init @preview/isc-hei-report:0.7.9
+typst init @preview/isc-hei-report:0.8.1
 ```
 
 Then go the directory, try to compile with `typst watch report.typ`.

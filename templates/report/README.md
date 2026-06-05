@@ -11,7 +11,7 @@
 This is the official template for project reports for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. It is part of the official templates repository, which also include templates for bachelor thesis (`isc-hei-bthesis`) and executive summaries (`isc-hei-exec-summary`).
 
 <p align="center">
-  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/0.8.0/examples/report.pdf?raw=true"><img src="report_thumb.png" alt="Preview of the ISC report template title page" height="300"></a>
+  <a href="https://github.com/ISC-HEI/isc-hei-typst-templates/blob/0.8.1/examples/report.pdf?raw=true"><img src="report_thumb.png" alt="Preview of the ISC report template title page" height="300"></a>
 </p>
 
 ## Using the Template on the Web

@@ -7,7 +7,7 @@
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 // 
 
-#import "@preview/isc-hei-tb-assignment:0.8.0" : *
+#import "@preview/isc-hei-tb-assignment:0.8.1" : *
 
 #let language = "fr" // Document language [fr, en, de]. Choose to your liking
 #let tb-student = "Barbara Liskov" // Student's name

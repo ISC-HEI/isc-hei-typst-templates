@@ -15,11 +15,19 @@ default:
 
 # ──────────────────────────────────────────────────────────────────────────────
 # LOCAL DEVELOPMENT — work against your live source, nothing gets packed.
-# Day-to-day loop: `install-symblinks` once, then edit source and `test`.
+# Day-to-day loop: just run `dev`. It re-links @preview to this repo and compiles
+# all six examples, and it SELF-HEALS the symlinks — so it works even right after
+# a `pack`/`test-all` clobbered them. No more "did my symlinks survive?".
 # ──────────────────────────────────────────────────────────────────────────────
 
-# ▶ [run once] dev mode: make @preview resolve to this repo so source edits are live
+# ▶ the dev command: (re)link @preview to live source, then compile all six examples
 [group('dev')]
+dev: install-symblinks test
+
+# internal plumbing: (re)link @preview to this repo's live source. Not in the menu —
+# `dev` runs it, and `test-all` / `bump-version` reuse it to restore dev mode. You can
+# still call `just install-symblinks` directly for a relink without the compile.
+[private]
 install-symblinks:
   ./scripts/dev_link "@preview" "bachelor-thesis"
   ./scripts/dev_link "@preview" "report"
@@ -75,8 +83,9 @@ test-poster:
 
 # ──────────────────────────────────────────────────────────────────────────────
 # PRE-RELEASE (Typst Universe) — build + validate the local @preview artifacts.
-# `pack` builds the real packages and REPLACES the dev symlinks; run
-# `install-symblinks` afterwards to return to local development.
+# `pack` builds the real packages and REPLACES the dev symlinks; run `just dev`
+# (or `install-symblinks`) afterwards to return to local development. `test-all`
+# and `bump-version` already restore the symlinks for you.
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ▶ bump version across typst.toml + src/ imports: patch (default) | minor | X.Y.Z  (then restores dev symlinks)
@@ -143,9 +152,9 @@ pack: compile-all generate-thumbs
 check-pack:
   ./scripts/check-pack
 
-# ▶ full pre-publish gate — auto-runs: pack → check-pack → test
+# ▶ full pre-publish gate — auto-runs: pack → check-pack → test, then restores dev symlinks
 [group('pre-release')]
-test-all: pack check-pack test
+test-all: pack check-pack test && install-symblinks
 
 # ▶ remove all isc-hei-* packages/symlinks from @preview
 [group('pre-release')]

@@ -20,22 +20,24 @@ The Justfile is split into four recipe groups (`just --list`): **dev** (work aga
 your live source via symlinks), **pre-release** (build + check the local @preview
 artifacts), **universe** (open a release PR against `typst/packages`), and
 **active-pr-flow** (refresh a PR that is already open). Packing replaces the dev
-symlinks, so re-run `just install-symblinks` to return to local work afterwards.
+symlinks with real dirs; `just dev` self-heals them (and `test-all` / `bump-version`
+restore them automatically), so you rarely need to think about it.
 
 ```sh
 # ── dev ──
-# Install dev symlinks so @preview points at this repo (run once)
-just install-symblinks
+# THE dev command: re-link @preview to this repo (self-healing, even after a pack)
+# then compile all six examples. Run this any time during development.
+just dev
 
-# Compile all six examples to examples/*.pdf
-just compile-all
+# (other dev recipes, if you want a step on its own)
+just test                # compile all six packaged examples from live source
+just test-poster         # only the poster layout checks
+just compile-all         # compile the six src/ examples straight to examples/*.pdf
+# `install-symblinks` is internal plumbing (hidden from the menu): `dev`, `test-all`
+# and `bump-version` run it for you, but `just install-symblinks` still works for a
+# bare relink (e.g. to refresh the editor live-preview without compiling).
 # …or a single template
 typst compile src/bachelor_thesis.typ examples/bachelor_thesis.pdf
-
-# Run the full test suite against your live source (no packing)
-just test
-# …or only the poster layout checks
-just test-poster
 
 # ── pre-release ──
 # Pack all six packages to @preview (the real artifact; replaces dev symlinks)
@@ -93,10 +95,11 @@ lib/
   project.typ            ← project(): the multi-type document template (orchestrator)
   poster.typ             ← isc-poster() / isc-card() / isc-colbreak()
   pages/cover_*.typ      ← one cover renderer per document type
+  pages/honour.typ       ← declaration-of-honour() (thesis; FR/DE/EN), moved in from src/
   assets/                ← SVG logos
 src/
   *.typ                  ← runnable demo/example documents (one per template)
-  pages/                 ← shared content blocks (abstract, acknowledgements, résumé, honneur = bilingual declaration of honour)
+  pages/                 ← shared content blocks (abstract, acknowledgements, résumé)
   themes/                ← .tmTheme files for code highlighting
 templates/*/typst.toml   ← per-package metadata (name, version, thumbnail)
 typst.toml               ← root package version (must stay in sync with templates/)
@@ -153,19 +156,31 @@ document type, then delegates the per-type front matter to
 module (`content.typ`, `decorations.typ`, `code.typ`, …) and read the shared
 state variables declared in `lib/includes.typ`.
 
+> Doc-type aliases (end of `lib/project.typ`): `thesis`, `report`, `exec-summary`,
+> `tb-assignment` are thin `project.with(doc-type: …)` shims so example files write
+> `#show: thesis.with(…)` and never pass `doc-type` (the thesis also drops
+> `split-chapters`, which already defaults `true`). `project()` stays the canonical
+> entry. There is deliberately **no `document` alias** — it would shadow Typst's
+> built-in `document` element, so the document example keeps its explicit
+> `doc-type: "document"`.
+
 When verifying a refactor that should not change output, render the six examples
 to PNG before and after and diff `md5sum`s — PDFs embed timestamps so compare
 rasterised pages, not the PDFs themselves.
 
 ### Declaration of honour (thesis only)
 
-`src/pages/honneur.typ` is a bilingual (FR/EN, driven by the document language)
-declaration-of-honour page, `#include`d in `src/bachelor_thesis.typ` between the
-résumé and the acknowledgements. It auto-fills author / title / academic-year /
-date from `inc.global-thesis-meta` (populated by `project()`), so the only fields
-the student must set are `date:` and `signature:` (an `image(...)`) on `project()`
-— they never edit `honneur.typ`. A missing signature renders a red placeholder
-(not a panic) and is flagged by the completeness check below.
+`lib/pages/honour.typ` is a trilingual (FR/DE/EN, driven by the document language)
+declaration-of-honour page. It lives in the **package** (it was the user-facing
+`src/pages/honneur.typ`) and is exported as `declaration-of-honour()`, which the
+thesis example calls between the résumé and the acknowledgements — the student
+never edits the wording. It imports the `lib/` modules directly (NOT the
+entrypoint) to dodge the cyclic-import trap. It auto-fills author / title /
+academic-year / date from `inc.global-thesis-meta` (populated by `project()`), so
+the only field the student sets is `signature:` (an `image(...)`) on `project()`.
+A missing signature renders a red placeholder (not a panic) and is flagged by the
+completeness check below. The legal wording is a first draft pending institutional
+review (esp. the German: `Sitten` vs `Sion`, gendered middot forms).
 
 ### Programme name (default `programme:`)
 
@@ -178,6 +193,19 @@ uses `programme-name` (no suffix); `lib/poster.typ` and
 documents pass `programme:` explicitly as a literal string (they're detached from
 the package by students), so the spelling must be fixed **in place** there — the
 constant can't reach them. Keep the lowercase `s` consistent everywhere.
+
+### Majors (default `major:`)
+
+The five ISC majors are the single source of truth in `lib/settings.typ`:
+`majors` is a list of `(fr, en, de)` dicts (**French is canonical**; the value
+used to be a free-form string that drifted between covers). `validate-major(m)`
+asserts a passed value is one of the known labels (any language; empty allowed)
+and is called early in `project()` and `isc-poster()`. `resolve-major(m, lang)`
+maps the value to the label for `lang`, so the cover always shows the major in
+the document's language — wired into `cover_bachelor.typ`,
+`cover_exec_summary.typ` and both poster render sites via `isc.resolve-major`.
+The `src/*.typ` demos pass the English label (validated); a French/German doc
+renders the FR/DE label automatically.
 
 ### Completeness check (thesis cover, drafting aid)
 
@@ -256,8 +284,15 @@ no fragile height÷leading math. `title-too-long()` / `subtitle-too-long()` appl
 to the reference; `title-overflow-issues(title, subtitle:, lang:)` returns the
 i18n'd list; `overflow-warning-box()` renders the red box (completeness-box visual,
 with a `scale` factor for the A1 poster, and a `lang` override for the poster which
-bypasses `project()`'s `global-language` state). i18n keys: `layout-warning-header`,
-`completeness-warning-header`, `title-too-long`, `subtitle-too-long` (fr/en/de).
+bypasses `project()`'s `global-language` state). `summary-too-long()` is an
+exec-summary-only check that **measures** whether the blurb, wrapped at the exec box
+width, is taller than its 3cm box (same measure-don't-count philosophy as the
+title/subtitle; geometry constants `_summary-box-{width,height}` live in overflow.typ
+and mirror the cover render). An over-length summary is flagged in the same box
+instead of panicking. i18n keys:
+`layout-warning-header` (a generic "content may overflow" header — the box now carries
+title/subtitle/summary), `completeness-warning-header`, `title-too-long`,
+`subtitle-too-long`, `summary-too-long` (fr/en/de).
 
 Per-cover the verdict is the same; only **where the box renders** differs. Each call
 sits in a plain `context {}` — **never `layout()`**, which is a real block that
@@ -267,7 +302,8 @@ stays byte-identical):
 - **report / document** — in-flow box below the title (absorbed by the flexible
   spacing); runs only when `show-cover: true` (the compact inline header is unchecked).
 - **exec-summary** — banner above the title; has its own `subtitle:` (rendered under
-  the title inside the 6em block, wired from `covers.typ`).
+  the title inside the 6em block, wired from `covers.typ`). Also flags an over-length
+  `summary` here (the old hard `panic` for length is gone; an empty summary still panics).
 - **tb-assignment** — folded into `compute-issues()` (like the thesis) and shown in
   the "ATTENTION REQUISE" box between Table 1 and Table 2; checks the `subtitle` too.
 - **poster** — placed in the page **foreground** (an overlay, NOT in the flow) so the
@@ -301,7 +337,7 @@ Typst `state` objects thread document-wide settings without argument passing:
 | `global-project-repos` | Repository URL shown on abstract page |
 | `blank-page` | Suppress decorations on intentionally blank pages |
 | `show-toc-enabled` | Whether `table-of-contents()` renders |
-| `global-thesis-meta` | Dict (`title`, `author`, `academic-year`, `date`, `signature`) forwarded to the declaration-of-honour page (`src/pages/honneur.typ`) |
+| `global-thesis-meta` | Dict (`title`, `author`, `academic-year`, `date`, `signature`) forwarded to the declaration-of-honour page (`lib/pages/honour.typ`) |
 
 ### Internationalisation
 

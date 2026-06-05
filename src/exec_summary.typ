@@ -8,7 +8,7 @@
 // 
 // Adapted from the BFH year book idea at https://www.bfh.ch/dam/jcr:e512ae31-a3ed-4b65-b589-870383d794b0/abschlussarbeiten-bsc-informatik.pdf
 
-#import "@preview/isc-hei-exec-summary:0.8.0" : *
+#import "@preview/isc-hei-exec-summary:0.8.1" : *
 
 // Must be <= 365 characters long.
 #let summary = "DataFlowX is a scalable data engineering platform for real-time analytics on large, heterogeneous datasets. DataFlowX automates data ingestion, transformation, and validation using distributed processing and intelligent scheduling. The system ensures data quality, accelerates insights, and supports seamless integration with modern business intelligence tools."
@@ -100,7 +100,7 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 ]
 
 // TODO: please modify the following to suit your needs.
-#show: project.with(  
+#show: exec-summary.with(
   title: "DataFlowX — Real-Time Data Analytics",
   subtitle: "Automated ingestion, transformation and validation at scale", // Optional, use none if not needed
   language: "en", // Valid values are [en, fr]
@@ -123,14 +123,12 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
   thesis-expert: "Dr Grace Hopper", // Optional, use none if not needed
   academic-year: "2025-2026", // Optional, use none if not needed
 
-  doc-type: "exec-summary", // This is an executive summary, not a full thesis  
-  
-  school: "Haute École d'Ingénierie de Sion", 
+  school: "Haute École d'Ingénierie de Sion",
   programme: "Informatique et systèmes de communication",
 
   // Some keywords related to your thesis
   keywords: ("engineering", "data", "machine learning", "meteorology"),
-  major : "Data engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering""
+  major : "Data engineering", // One of: Software engineering, Embedded systems, Computer security, Networks and systems, Data engineering
 
   bind: right, // Bind the left side of the page
   footer: none, // align(right, text(0.9em)[This is some content for the footer])

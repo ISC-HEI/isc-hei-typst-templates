@@ -52,6 +52,25 @@
   subtitle not in (none, "") and exceeds-lines(_ref-subtitle-style, subtitle, _ref-width, settings.max-subtitle-lines)
 )
 
+// Exec-summary blurb box geometry — mirrors the render in
+// lib/pages/cover_exec_summary.typ: text(size: 14pt) under par(leading: 0.6em),
+// inside a block of height 3cm at the A4 content width (210mm − 1.5cm − 1cm
+// margins). Keep in sync if that cover's geometry changes.
+#let _summary-box-width  = 210mm - 1.5cm - 1cm
+#let _summary-box-height = 3cm
+
+// True when the executive-summary blurb, wrapped at the box width, is TALLER than
+// the box — i.e. it would actually overflow. We MEASURE (same philosophy as the
+// title / subtitle checks) instead of counting characters, so glyph widths, accents
+// and wrapping are all accounted for. MUST be called from within a `context` block
+// (it uses measure()); the ambient font is the exec font, matching the real render.
+#let summary-too-long(summary) = (
+  summary not in (none, "") and {
+    let probe = { set par(leading: 0.6em); text(summary, size: 14pt) }
+    measure(probe, width: _summary-box-width).height > _summary-box-height + 0.5pt
+  }
+)
+
 // Builds the list of overflow issues (i18n'd content) for a document, empty when
 // nothing overflows. The verdict is measured against the reference cover, so it is
 // the same for every document type. lang defaults to the global-language state

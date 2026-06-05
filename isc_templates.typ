@@ -36,3 +36,6 @@
 
 // tb-assignment public helpers (used directly in user documents).
 #import "lib/pages/cover_assignment.typ": tb-assignment-page, hes, industry, school, project-types, get-document-title
+
+// Bachelor-thesis declaration of honour, called directly in the user document.
+#import "lib/pages/honour.typ": declaration-of-honour

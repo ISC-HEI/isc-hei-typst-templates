@@ -3,7 +3,7 @@
 // the per-type front matter to covers.front-matter() and renders the body.
 
 #import "includes.typ" as inc
-#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight, body-font-size, version, _luma-background, programme-name
+#import "settings.typ": space-after-heading, chapter-font-size, chapter-font-weight, body-font-size, version, _luma-background, programme-name, validate-major
 #import "fonts.typ": body-font, sans-font, raw-font, isc-fonts-available, _missing-fonts-page
 #import "i18n.typ": i18n
 #import "decorations.typ": chapter-rule
@@ -35,7 +35,8 @@
   thesis-id: none,
   project-repos: none,
   // Signature image for the declaration of honour, e.g. image("signature.png").
-  // Mandatory when the declaration page (pages/honneur.typ) is included.
+  // Consumed by #declaration-of-honour() (thesis only); a missing image renders a
+  // red placeholder rather than aborting the compile.
   signature: none,
   keywords: (),
   // Set true to suppress the thesis cover's "ATTENTION REQUISE" drafting box
@@ -88,6 +89,9 @@
   // Validate doc-type
   let valid-doc-types = ("report", "thesis", "document", "exec-summary", "tb-assignment")
   assert(doc-type in valid-doc-types, message: "Invalid doc-type '" + doc-type + "'. Must be one of: " + valid-doc-types.join(", "))
+
+  // Validate the major early (clear error here rather than at render time).
+  validate-major(major)
 
   // Update state with the passed values so they are accessible globally
   inc.global-keywords.update(keywords)
@@ -451,3 +455,17 @@
   } // else (fonts available)
   } // context font check
 }
+
+/*********************************
+ ** Per-document-type aliases
+ ********************************/
+// Thin shims so a user file can write `#show: thesis.with(...)` instead of
+// `#show: project.with(doc-type: "thesis", ...)`, keeping the doc-type plumbing
+// out of the template. project() stays the canonical entry point; these only
+// preset doc-type. There is deliberately NO `document` alias: it would shadow
+// Typst's built-in `document` element, so the document example keeps its
+// explicit `doc-type: "document"`.
+#let thesis        = project.with(doc-type: "thesis")
+#let report        = project.with(doc-type: "report")
+#let exec-summary  = project.with(doc-type: "exec-summary")
+#let tb-assignment = project.with(doc-type: "tb-assignment")

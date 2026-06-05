@@ -7,11 +7,11 @@
 //   52 65 61 64 69 6e 67 20 68 65 78 20 66 6f 72 20 66 75 6e 3f 20 49 53 43 20 66 6f 72 65 76 65 72
 //
 
-#import "@preview/isc-hei-bthesis:0.8.0" : *
+#import "@preview/isc-hei-bthesis:0.8.1" : *
 
 #let doc_language = "en" // Valid values are [en, fr]
 
-#show: project.with(
+#show: thesis.with(
   title: "Life, the Universe and Everything",
   subtitle: "An exploration of the intersection between computer science and engineering, focusing on their impact on modern technological advancements.", // Optional, use none if not needed
   authors: "Margaret Hamilton", // Your name
@@ -27,14 +27,12 @@
   programme: "Informatique et systèmes de communication (ISC)",
 
   keywords: ("engineering", "data", "machine learning", "meteorology"), // Relevant keywords to your thesis
-  major : "Data engineering", // "Software engineering", "Embedded systems", "Security", "Networks and systems""
+  major : "Data engineering", // One of: Software engineering, Embedded systems, Computer security, Networks and systems, Data engineering
   date: datetime(year: 2026, month: 6, day: 30), // Date of the thesis & the declaration (or datetime.today())
 
   // Declaration of honour signature
   signature: image("figs/signature_placeholder.svg", width: 4.5cm), // A scan/photo of your handwritten signature
 
-  doc-type: "thesis",
-  split-chapters: true,
   revision: "1.0", // If you have multiple versions of your thesis, you can update this field to keep track of them.
   code-theme: "bluloco-light", // See directory themes/ for available themes
 
@@ -49,6 +47,16 @@
 #import "@preview/acrostiche:0.7.0": *
 #include "acronyms.typ"
 
+// A tidy acronym table for the appendix, using the acronyms declared above.
+// (Kept here, not in the package, so acrostiche stays an example-only dependency.)
+#let acronym-table() = print-index(
+  title: page-title(i18n(doc_language, "acronym-table-title"), mult: 1, top: 1em, bottom: 1em),
+  sorted: "up",
+  delimiter: " : ",
+  row-gutter: 0.7em,
+  outlined: false,
+)
+
 ////////////////////////////
 // Let's get started folks!
 ////////////////////////////
@@ -60,7 +68,7 @@
 #include "pages/résumé.typ"
 
 #cleardoublepage()
-#include "pages/honneur.typ"
+#declaration-of-honour()
 
 #cleardoublepage()
 #include "pages/acknowledgements.typ"
@@ -161,14 +169,8 @@ Have fun #todo[writing your thesis!] and good luck with it !#footnote[And should
 #appendix-page()
 #pagebreak()
 
-// Table of acronyms, NOT COMPULSORY
-#print-index(
-  title: page-title(i18n(doc_language, "acronym-table-title"), mult:1, top:1em, bottom: 1em),
-  sorted: "up",
-  delimiter: " : ",
-  row-gutter: 0.7em,
-  outlined: false,
-)
+// Table of acronyms (optional). Defined near the acronyms above.
+#acronym-table()
 
 #pagebreak()
 
