@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(typst compile *)"
+      "Bash(typst compile *)",
+      "Bash(typst fonts *)",
+      "Bash(just --list)",
+      "Bash(just compile_all)",
+      "Bash(just compile-all)"
     ]
   }
 }
