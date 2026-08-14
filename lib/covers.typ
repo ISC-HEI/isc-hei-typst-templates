@@ -163,6 +163,7 @@
       bind: bind,
       footer: footer,
       font: sans-font,
+      hide-completeness-warning: hide-completeness-warning,
     )
   }
 }

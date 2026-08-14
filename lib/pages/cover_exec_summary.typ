@@ -22,7 +22,8 @@
   major: "Data engineering", // "Software engineering", "Networks and systems", "Embedded systems", "Computer security", "Data engineering""
   bind: none, // Bind the left side of the page
   footer: none,
-  font: none,  
+  font: none,
+  hide-completeness-warning: false, // Set true to suppress the title overflow warning
 ) = {
 
   let i18n = isc.i18n.with(extra-i18n: none, language)
@@ -76,11 +77,17 @@
   // lib/overflow.typ) so it matches every other document. Rendered as a banner
   // above the title; only appears on overflow, so the sample is unaffected. Plain
   // context (not layout) keeps the no-overflow case zero-footprint.
+  // When hide-completeness-warning is true, the warning is suppressed but a
+  // discreet red dot is placed on this page to record the override.
   context {
     let issues = overflow.title-overflow-issues(title, subtitle: subtitle)
     if issues.len() > 0 {
-      overflow.overflow-warning-box(issues, font: font, width: 210mm - 1.5cm - 1cm)
-      v(0.6em)
+      if not hide-completeness-warning {
+        overflow.overflow-warning-box(issues, font: font, width: 210mm - 1.5cm - 1cm)
+        v(0.6em)
+      } else {
+        place(bottom + left, dx: -5mm, dy: -0.4mm, circle(radius: 2.5pt, fill: rgb("#c1121f"), stroke: none))
+      }
     }
   }
 
