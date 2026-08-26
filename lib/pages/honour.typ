@@ -43,7 +43,7 @@
       items: (
         [avoir pris connaissance des règles relatives à la prévention du plagiat dans le cadre du travail de Bachelor de la filière ISC, et m'engager à les respecter ;],
         [que le travail soumis est le fruit de ma réflexion personnelle et qu'il a été réalisé de manière autonome ;],
-        [que toute formulation, idée, raisonnement, analyse, donnée, image, schéma ou fragment de code source empruntés à un tiers — y compris à un outil d'intelligence artificielle générative — sont clairement signalés comme tels et que leur source est précisément indiquée, conformément aux règles de citation en vigueur ;],
+        [que toute formulation, idée, raisonnement, analyse, donnée, image, schéma ou fragment de code source empruntés à un tiers --- y compris à un outil d'intelligence artificielle générative --- sont clairement signalés comme tels et que leur source est précisément indiquée, conformément aux règles de citation en vigueur ;],
         [avoir déclaré de manière transparente tout recours à un outil d'intelligence artificielle générative, en précisant l'outil utilisé, les finalités et les passages concernés ;],
         [ne pas avoir eu recours au plagiat, à l'autoplagiat, au _ghostwriting_ ni à toute autre forme de fraude académique ;],
         [avoir conscience que la transgression des règles ci-dessus peut entraîner des sanctions allant de la note de 1.0 à l'exclusion de la formation, voire au retrait du titre obtenu ;],
@@ -62,7 +62,7 @@
       items: (
         [dass ich die für die Bachelorarbeit des Studiengangs ISC geltenden Regeln zur Verhinderung von Plagiaten zur Kenntnis genommen habe und mich verpflichte, sie einzuhalten;],
         [dass die eingereichte Arbeit das Ergebnis meiner eigenen Überlegungen ist und selbstständig angefertigt wurde;],
-        [dass jede Formulierung, Idee, Argumentation und Analyse sowie alle Daten, Bilder, Schemata oder Quellcode-Fragmente, die von Dritten — einschließlich von einem generativen Werkzeug der künstlichen Intelligenz — übernommen wurden, klar als solche gekennzeichnet sind und ihre Quelle gemäss den geltenden Zitierregeln genau angegeben ist;],
+        [dass jede Formulierung, Idee, Argumentation und Analyse sowie alle Daten, Bilder, Schemata oder Quellcode-Fragmente, die von Dritten --- einschließlich von einem generativen Werkzeug der künstlichen Intelligenz --- übernommen wurden, klar als solche gekennzeichnet sind und ihre Quelle gemäss den geltenden Zitierregeln genau angegeben ist;],
         [dass ich jede Nutzung eines generativen Werkzeugs der künstlichen Intelligenz transparent offengelegt habe, unter Angabe des verwendeten Werkzeugs, der Zwecke und der betroffenen Passagen;],
         [dass ich weder Plagiat noch Eigenplagiat, _Ghostwriting_ noch eine andere Form des akademischen Betrugs begangen habe;],
         [dass mir bewusst ist, dass ein Verstoss gegen die oben genannten Regeln zu Sanktionen führen kann, die von der Note 1.0 bis zum Ausschluss aus der Ausbildung oder sogar zum Entzug des erworbenen Titels reichen;],
@@ -81,7 +81,7 @@
       items: (
         [that I have read the rules on the prevention of plagiarism applicable to the ISC Bachelor thesis, and undertake to comply with them;],
         [that the submitted work is the result of my own reflection and was carried out independently;],
-        [that any wording, idea, line of reasoning, analysis, data, image, diagram or fragment of source code borrowed from a third party — including from a generative artificial-intelligence tool — is clearly identified as such and its source is precisely indicated, in accordance with the citation rules in force;],
+        [that any wording, idea, line of reasoning, analysis, data, image, diagram or fragment of source code borrowed from a third party --- including from a generative artificial-intelligence tool --- is clearly identified as such and its source is precisely indicated, in accordance with the citation rules in force;],
         [that I have transparently declared any use of a generative artificial-intelligence tool, specifying the tool used, the purposes and the passages concerned;],
         [that I have not engaged in plagiarism, self-plagiarism, _ghostwriting_ or any other form of academic fraud;],
         [that I am aware that breaching the above rules may lead to sanctions ranging from a grade of 1.0 to exclusion from the programme, or even withdrawal of the awarded degree;],
@@ -139,7 +139,8 @@
     align: (left + horizon, left + bottom),
     strong(t.signature-label + " :"),
     if signature != none { signature } else {
-      text(fill: red, style: "italic", if lang == "fr" [⟨ signature manquante ⟩] else if lang == "de" [⟨ Unterschrift fehlt ⟩] else [⟨ signature missing ⟩])
+      let _txt = if lang == "fr" [signature manquante] else if lang == "de" [Unterschrift fehlt] else [signature missing]
+      text(fill: red, style: "italic")[#sym.chevron.l #_txt #sym.chevron.r]
     },
   )
 

@@ -263,7 +263,7 @@
     signature: signature,
   ))
 
-  let footer-title = if type(title) == str { title.replace("\n", " – ") } else { title }
+  let footer-title = if type(title) == str { title.replace("\n", " " + sym.dash.em + " ") } else { title }
 
   let footer-content = context text(0.75em)[
     #{
@@ -300,7 +300,7 @@
           }
           if revision != none {
             if date != none {
-              [ — v#revision]
+              [ --- v#revision]
             } else {
               [v#revision]
             }
@@ -322,7 +322,7 @@
   show link: set text(ligatures: true, fill: blue)
 
   // Sections numbers
-  set heading(numbering: "1.1.1 –")
+  set heading(numbering: "1.1.1 " + sym.dash.en)
 
   /////////////////////////////////////////////////
   // Handle specific captions styling

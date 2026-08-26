@@ -70,12 +70,12 @@ The platform leverages distributed processing and intelligent scheduling to opti
 == Explanation
 The development of DataFlowX followed an agile methodology, emphasizing iterative progress and continuous feedback. The project began with requirements gathering and architectural design, focusing on scalability and integration capabilities. Core modules for data ingestion, transformation, and validation were implemented using distributed processing frameworks. Automated testing and code reviews ensured reliability and maintainability throughout development. 
 
-Regular meetings with stakeholders guided feature prioritization and refinements. Integration with business intelligence tools was achieved via standardized APIs. Performance benchmarks and user acceptance testing validated the system’s effectiveness.
+Regular meetings with stakeholders guided feature prioritization and refinements. Integration with business intelligence tools was achieved via standardized APIs. Performance benchmarks and user acceptance testing validated the system's effectiveness.
 
 #colbreak() // As Typst does not support auto column balancing, this must be put to break the columns evenly. Move it to a location that makes the columns even.
 
 == Conclusion / Benefits 
-DataFlowX delivers significant benefits by enabling organizations to harness real-time analytics on large, heterogeneous datasets with ease. Its automated data ingestion, transformation, and validation processes reduce manual effort and minimize errors, ensuring high data quality. The platform’s distributed architecture and intelligent scheduling optimize resource usage and scalability, supporting growing business needs. By streamlining complex data workflows and providing robust performance, DataFlowX empowers businesses to respond quickly to changing environments and make informed, data-driven decisions with confidence and efficiency.
+DataFlowX delivers significant benefits by enabling organizations to harness real-time analytics on large, heterogeneous datasets with ease. Its automated data ingestion, transformation, and validation processes reduce manual effort and minimize errors, ensuring high data quality. The platform's distributed architecture and intelligent scheduling optimize resource usage and scalability, supporting growing business needs. By streamlining complex data workflows and providing robust performance, DataFlowX empowers businesses to respond quickly to changing environments and make informed, data-driven decisions with confidence and efficiency.
 
 #figure(code(numbering: none)[
 ```scala
@@ -101,7 +101,7 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 
 // TODO: please modify the following to suit your needs.
 #show: exec-summary.with(
-  title: "DataFlowX — Real-Time Data Analytics",
+  title: "DataFlowX " + sym.dash.em + " Real-Time Data Analytics",
   subtitle: "Automated ingestion, transformation and validation at scale", // Optional, use none if not needed
   language: "en", // Valid values are [en, fr]
   authors: "Stormy Peters", 

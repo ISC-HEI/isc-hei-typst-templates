@@ -75,7 +75,7 @@
       if thesis-id in (none, "", sample-thesis-id) {
         issues.push(if fr [La référence du travail (`thesis-id`) n'a pas été mise à jour.] else [The thesis reference (`thesis-id`) has not been updated.])
       } else if str(thesis-id).match(id-pattern) == none {
-        issues.push(if fr [Le format de la référence (`thesis-id`) est invalide — attendu p. ex. `ISC-SE-26-3`.] else [The thesis reference (`thesis-id`) format is invalid — expected e.g. `ISC-SE-26-3`.])
+        issues.push(if fr [Le format de la référence (`thesis-id`) est invalide --- attendu p. ex. `ISC-SE-26-3`.] else [The thesis reference (`thesis-id`) format is invalid --- expected e.g. `ISC-SE-26-3`.])
       }
       if signature == none {
         issues.push(if fr [L'image de la signature (`signature`) est manquante.] else [The signature image (`signature`) is missing.])
@@ -250,7 +250,7 @@
     stack(
       spacing: 3mm,
       text(i18n("thesis-submitted")),
-      text(programme + " – " + i18n("major-prefix") + isc.resolve-major(major, language) + i18n("major-suffix"), style: "italic"),
+      text(programme + " " + sym.dash.en + " " + i18n("major-prefix") + isc.resolve-major(major, language) + i18n("major-suffix"), style: "italic"),
       text(school),
     ),
     v(6mm),

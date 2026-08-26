@@ -74,7 +74,7 @@
   
   if revision != none {
     if date != none {
-      text(1.1em, [ — v#revision])
+      text(1.1em, [ --- v#revision])
     } else {
       text(1.1em, [v#revision])
     }
