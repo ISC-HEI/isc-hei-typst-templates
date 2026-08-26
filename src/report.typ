@@ -13,19 +13,19 @@
 #show: project.with(
   title: "Rapport de projet pour la filière ISC",
   subtitle: [Avec une mise en page `Typst`],
-  authors: ("D. Knuth", "L. Torvalds", "M. Odersky",),  
+  authors: ("D. Knuth", "L. Torvalds", "M. Odersky",),
   date: datetime(year: 2026, month: 3, day: 15), // or datetime.today()
-    
+
   course-name: "101.1 Programmation impérative",
   course-supervisor: "Prof. Dr P.-A. Mudry",
   semester: "Semestre de printemps",
   academic-year: "2025-2026",
-  
+
   logo: image("figs/isc_logo.svg"),
   cover-image: image("figs/cover_image_placeholder.png"), // Change this to your cover image
   cover-image-height: 8cm,
   cover-image-caption: [KNN graph -- Inspired by _Marcus Volg_],
-    
+
   show-toc: true, // Set to true if you want a table of contents, or 1, 2, 3... for a specific depth
   language: doc_language, // Please change the value above if required
   code-theme: "bluloco-light", // See directory themes/ for available themes

@@ -13,17 +13,17 @@
   doc-type: "document",
   show-cover: false,
   show-toc: false, // Set to true if you want a table of contents, or 1, 2, 3... for a specific depth
-  fancy-line: true,  
+  fancy-line: true,
 
   title: "A simple template for ISC documents",
   subtitle: [Typeset with `Typst`],
-  authors: ("A. Lovelace", "Prof. B. Liskov", "Prof. N. Wirth",),    
-  
+  authors: ("A. Lovelace", "Prof. B. Liskov", "Prof. N. Wirth",),
+
   date: datetime(year: 2026, month: 3, day: 24), // or datetime.today()
   revision: "1.0", // Your document revision, update as needed
   language: "fr", // Valid values are en, fr, de
   logo: auto, // Set to none if you wish no logo at all
-  
+
   code-theme: "bluloco-light", // See directory themes/ for available themes
 )
 
@@ -167,7 +167,7 @@ On peut utiliser les boîtes de `showybox` pour mettre en valeur du contenu :
 #todo[Compléter cette section avec d'autres exemples]
 
 = Citer ses sources
-Il est important de citer les sources que l'on utilise. Par exemple, les deux travaux @mui_nasa_dod09, @mui_hybrid_06 et @mudry:133438 sont des papiers très intéressants à lire et dont les références complètes se trouvent dans la bibliographie à la fin de ce document. 
+Il est important de citer les sources que l'on utilise. Par exemple, les deux travaux @mui_nasa_dod09, @mui_hybrid_06 et @mudry:133438 sont des papiers très intéressants à lire et dont les références complètes se trouvent dans la bibliographie à la fin de ce document.
 
 #pagebreak()
 #the-bibliography(

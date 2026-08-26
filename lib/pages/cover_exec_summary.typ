@@ -22,7 +22,7 @@
   major: "Data engineering", // see lib/settings.typ `majors` for the valid set
   bind: none, // Bind the left side of the page
   footer: none,
-  font: none,  
+  font: none,
 ) = {
 
   let i18n = isc.i18n.with(extra-i18n: none, language)
@@ -35,7 +35,7 @@
   let marg = if(bind == left) {
       (left: 1.5cm, right: 1cm, bottom: 1.3cm, top: 1.3cm)}
     else{
-      (left: 1cm, right: 1.5cm, bottom: 1.3cm, top: 1.3cm)}    
+      (left: 1cm, right: 1.5cm, bottom: 1.3cm, top: 1.3cm)}
 
   // Executive summary specific settings
   set page(
@@ -44,13 +44,13 @@
     footer: footer
   )
 
-  // Make the caption for the executive summary 
+  // Make the caption for the executive summary
   set figure(numbering: none, supplement: none)
   set heading(numbering: none)
-  
+
   show figure.caption: set text(8pt) // Smaller font size
   show figure.caption: emph // Use italics
-  set figure.caption(separator: " - ") // With a nice separator  
+  set figure.caption(separator: " - ") // With a nice separator
 
   let colon = if language == "fr" { " : " } else { ": " }
   set text(font: font, size: 9pt)
@@ -113,9 +113,9 @@
           text(i18n("supervising-expert") + colon + text(expert, style: "italic"))
         }
       }
-    }, 
-    v(1.3em), 
-    line(start: (0pt, 0pt), length: 25pt, stroke: 1mm),     
+    },
+    v(1.3em),
+    line(start: (0pt, 0pt), length: 25pt, stroke: 1mm),
     ),
   )
 
@@ -146,8 +146,8 @@
   )
 
   // The main content of the executive summary
-  let student-content = rect[#columns(2, gutter: 9pt, content)]  
-  
+  let student-content = rect[#columns(2, gutter: 9pt, content)]
+
   let w = 30mm
   let h = w * 9 / 6.5
 
@@ -162,10 +162,10 @@
         height: 100%
       )
 
-      grid.cell(      
+      grid.cell(
         colspan: 1,
-        stack(     
-          spacing: 0.5em, 
+        stack(
+          spacing: 0.5em,
           box(
             clip: true,
             stroke: stroke(paint: color.luma(40%), thickness: .2pt, cap: "round"),
@@ -173,18 +173,18 @@
             picture,
             width: w,
             height: h
-          ),        
+          ),
           align(bind, text(authors, size: 7pt, fill: hei_color)),
           // align(right)[#text(permanent-email, size: 6pt)],
           )
       )
     }
   ]
-  
+
   // How do we layout the content, depending on the presence of a picture and binding
   let layout = if(picture != none and bind == left) {(5fr, 1fr)}
                else if (picture != none and bind == right) {(1fr, 5fr)}
-               else {(1fr)}  
+               else {(1fr)}
 
   let content = if(bind == left){(student-content, student-picture)} else{(student-picture, student-content)}
 
@@ -195,23 +195,23 @@
       rows: (auto),
       gutter:15pt,
       ..content
-    ) 
+    )
   )
-  
-  if(video-url != none) {  
+
+  if(video-url != none) {
     // QR code generation
     import "@preview/tiaoma:0.3.0"
 
     place(
       top+right,
-      float: false,        
+      float: false,
       dx: 0mm,
       dy: 25mm,
       clearance: 0em,
       // Put it in a box to be resized
       stack(
-        spacing: 0.5em,                
-        tiaoma.barcode(video-url, "QRCode", options: (            
+        spacing: 0.5em,
+        tiaoma.barcode(video-url, "QRCode", options: (
             scale: 1.0,
             fg-color: black,
             bg-color: white,
@@ -219,11 +219,9 @@
               barcode-dotty-mode: false
             ),
             dot-size: 1.0,
-        )),        
+        )),
         align(center)[#text("Video", size: 8pt)],
       )
     )
   }
-
-
 }

@@ -30,4 +30,4 @@ def merge(left, right):
 
 mylist = [3, 7, 6, -10, 15, 23.5, 55, -13]
 mysortedlist = mergeSort(mylist)
-print("Sorted array:", mysortedlist) 
+print("Sorted array:", mysortedlist)

@@ -22,11 +22,11 @@ These are the official templates for reports, bachelor theses, project executive
 
 ## Using the template, on the Web
 
-In the `Typst` web application, start with the `isc-hei-*` document and voilà ! 
+In the `Typst` web application, start with the `isc-hei-*` document and voilà !
 
 ## Using one of templates in your shell
 
-The package provides the following templates : 
+The package provides the following templates :
 
 ```text
 @preview/isc-hei-document
@@ -45,7 +45,7 @@ typst init @preview/isc-hei-report
 
 This template will initialize an sample report with sensible default values.
 
-For the latest template for a bachelor thesis, use: 
+For the latest template for a bachelor thesis, use:
 
 ```bash
 typst init @preview/isc-hei-bthesis
@@ -57,7 +57,7 @@ or if you need a specific version, use:
 typst init @preview/isc-hei-bthesis:0.5.0
 ```
 
-For the latest template of the executive summary, use: 
+For the latest template of the executive summary, use:
 
 ```bash
 typst init @preview/isc-hei-exec-summary

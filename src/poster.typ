@@ -43,7 +43,7 @@
 #isc-card(title: "Introduction")[
   L'accès partagé aux dossiers médicaux électroniques permettrait d'entraîner des modèles prédictifs plus robustes et de détecter des pathologies rares. Cependant, la réglementation (RGPD, LPD suisse) et les impératifs éthiques empêchent la transmission de données brutes entre établissements. L'apprentissage fédéré déplace le calcul vers les données plutôt que l'inverse : seuls des gradients de modèle sont échangés, jamais les dossiers patients.
 
-  *Verrou scientifique :* comment garantir une confidentialité formelle (#e-dp) tout en préservant la convergence du modèle global face à l'hétérogénéité statistique des   cohortes --- chaque hôpital ayant ses propres pratiques de codage et démographies ?
+  *Verrou scientifique :* comment garantir une confidentialité formelle (#e-dp) tout en préservant la convergence du modèle global face à l'hétérogénéité statistique des cohortes --- chaque hôpital ayant ses propres pratiques de codage et démographies ?
 
   #figure(
     rect(width: 100%, height: 7cm, fill: luma(235), stroke: none,
@@ -70,7 +70,7 @@
     [Oracle centralisé],   [0.94], [---],    [$oo$],
   )
 
-  Concrètement, le code correspond à une agrégation DP-FedAvg classique:  
+  Concrètement, le code correspond à une agrégation DP-FedAvg classique:
   #figure(
     ```python
     def dp_fedavg(grads, sizes, eps=0.5, C=1.0):
@@ -80,7 +80,7 @@
         w       = [n / sum(sizes) for n in sizes]
         return sum(wi * gi for wi, gi in zip(w, noisy))
     ```,
-        caption: [Agrégation DP-FedAvg --- clipping + bruit gaussien calibré sur #sym.epsilon.],  
+        caption: [Agrégation DP-FedAvg --- clipping + bruit gaussien calibré sur #sym.epsilon.],
     )
 ]
 
