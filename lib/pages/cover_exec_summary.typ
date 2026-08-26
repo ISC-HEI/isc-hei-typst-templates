@@ -186,7 +186,9 @@
                else if (picture != none and bind == right) {(1fr, 5fr)}
                else {(1fr)}  
 
-  let content = if(bind == left){(student-content, student-picture)} else{(student-picture, student-content)}
+  let content = if picture == none {(student-content,)}
+                else if bind == left {(student-content, student-picture)}
+                else {(student-picture, student-content)}
 
   block(
     height: 1fr,
