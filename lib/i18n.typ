@@ -3,7 +3,7 @@
 
 #let langs = json("../i18n.json")
 
-#let i18n(lang, key, extra-i18n: none) = {
+#let i18n(lang, key, extra-i18n: none, params: (:)) = {
   let langs = langs
   if type(extra-i18n) == dictionary {
     for (lng, keys) in extra-i18n {
@@ -17,5 +17,9 @@
   let keys = langs.at(lang)
 
   assert(key in keys, message: "I18n key " + str(key) + " doesn't exist")
-  return keys.at(key)
+  let translation = keys.at(key)
+  for (name, value) in params.pairs() {
+    translation.replace("$" + name, value)
+  }
+  return translation
 }
