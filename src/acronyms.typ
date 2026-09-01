@@ -11,4 +11,4 @@
   "VGA": (link("https://fr.wikipedia.org/wiki/Video_Graphics_Array")[Virtual Graphics Array],),
 )
 
-#init-acronyms(acronyms) 
+#init-acronyms(acronyms)

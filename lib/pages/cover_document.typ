@@ -71,15 +71,15 @@
   if date != none {
     text(1.1em, inc.custom-date-format(date, pattern: i18n("date-format"), lang: language))
   }
-  
+
   if revision != none {
     if date != none {
-      text(1.1em, [ — v#revision])
+      text(1.1em, [ --- v#revision])
     } else {
       text(1.1em, [v#revision])
     }
   }
-  
+
   v(2.4fr)
   pagebreak()
 }

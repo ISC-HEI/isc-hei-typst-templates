@@ -49,7 +49,7 @@
     exhibitions: "Expositions des posters",
     pitch: "Pitch",
     document-title: "Donnée du travail de bachelor",
-    addendum-title: "Addendum — Donnée du travail de bachelor",
+    addendum-title: "Addendum " + sym.dash.em + " Donnée du travail de bachelor",
     project-type: "Type de projet",
     exploratory: "Exploratoire",
     implementation: "Implémentation",
@@ -103,7 +103,7 @@
     exhibitions: "Poster exhibitions",
     pitch: "Pitch challenge",
     document-title: "Bachelor thesis description",
-    addendum-title: "Addendum — Bachelor thesis description",
+    addendum-title: "Addendum " + sym.dash.em + " Bachelor thesis description",
     project-type: "Project type",
     exploratory: "Exploratory",
     implementation: "Implementation",
@@ -157,7 +157,7 @@
     exhibitions: "Ausstellungen",
     pitch: "Pitch challenge",
     document-title: "Daten der Bachelorarbeit",
-    addendum-title: "Addendum — Daten der Bachelorarbeit",
+    addendum-title: "Addendum " + sym.dash.em + " Daten der Bachelorarbeit",
     project-type: "Projekttyp",
     exploratory: "Explorativ",
     implementation: "Implementierung",
@@ -242,7 +242,7 @@
   // ── Date formatter ─────────────────────────────────────────────────────
   let _langs = json("../../i18n.json")
   let _fmt = _langs.at(language, default: _langs.fr).at("date-format")
-  let _fmtdate(d) = if d == none { "–" } else { inc.custom-date-format(d, pattern: _fmt, lang: language) }
+  let _fmtdate(d) = if d == none { sym.dash.en } else { inc.custom-date-format(d, pattern: _fmt, lang: language) }
   let _t = _i18n.at(language, default: _i18n.fr)
 
   // ── Style constants ────────────────────────────────────────────────────
@@ -440,7 +440,7 @@
       if id == sample-id {
         issues.push(if fr [La référence du travail (`id`) n'a pas été mise à jour.] else [The thesis reference (`id`) has not been updated.])
       } else if type(id) == str and id.match(id-pattern) == none {
-        issues.push(if fr [Le format de la référence (`id`) est invalide — attendu p. ex. `ISC-ID-26-3`.] else [The reference (`id`) format is invalid — expected e.g. `ISC-ID-26-3`.])
+        issues.push(if fr [Le format de la référence (`id`) est invalide --- attendu p. ex. `ISC-ID-26-3`.] else [The reference (`id`) format is invalid --- expected e.g. `ISC-ID-26-3`.])
       }
       if supervisor == sample-supervisor {
         issues.push(if fr [Le·la superviseur·e (`supervisor`) n'a pas été modifié·e.] else [The supervisor (`supervisor`) has not been updated.])
@@ -450,7 +450,7 @@
         issues.push(if fr [Le·la superviseur·e d'accueil (`host-supervisor`) n'a pas été renseigné·e.] else [The host supervisor (`host-supervisor`) has not been filled in.])
       }
       if dates-pristine {
-        issues.push(if fr [Les dates des délais (`date-attribution`, `date-start`, …) n'ont pas été mises à jour.] else [The milestone dates (`date-attribution`, `date-start`, …) have not been updated.])
+        issues.push(if fr [Les dates des délais (`date-attribution`, `date-start`, ...) n'ont pas été mises à jour.] else [The milestone dates (`date-attribution`, `date-start`, ...) have not been updated.])
       }
     }
 

@@ -4,7 +4,7 @@ All the fonts downloaded by this script for the layout of the documents are lice
 
 ## Installing fonts
 
-This report template uses several fonts packaged in this repository. To install the fonts in a Linux environment, simply type: 
+This report template uses several fonts packaged in this repository. To install the fonts in a Linux environment, simply type:
 
 ```bash
 source install_fonts.sh

@@ -33,20 +33,21 @@
 )
 
 // ─── Column 1 ────────────────────────────────────────────────────────────────
+#let e-dp = [#{sym.epsilon}-DP]
 
 #isc-card(title: "Résumé")[
   Les dossiers de santé électroniques ne peuvent être centralisés sans risque juridique et éthique. Ce travail présente *MediFL*, un cadre d'apprentissage fédéré intégrant la
-  confidentialité différentielle (ε-DP) et une agrégation robuste aux nœuds défaillants. Évalué sur trois cohortes hospitalières totalisant 180 000 patients, MediFL atteint une AUC de *0.91* avec un budget de confidentialité ε = 0.5, à seulement trois points de l'oracle centralisé (AUC 0.94). La convergence est assurée en *60 rounds* de communication, sans qu'aucune donnée brute ne quitte les établissements participants.
+  confidentialité différentielle (#e-dp) et une agrégation robuste aux nœuds défaillants. Évalué sur trois cohortes hospitalières totalisant 180 000 patients, MediFL atteint une AUC de *0.91* avec un budget de confidentialité $epsilon = 0.5$, à seulement trois points de l'oracle centralisé (AUC 0.94). La convergence est assurée en *60 rounds* de communication, sans qu'aucune donnée brute ne quitte les établissements participants.
 ]
 
 #isc-card(title: "Introduction")[
   L'accès partagé aux dossiers médicaux électroniques permettrait d'entraîner des modèles prédictifs plus robustes et de détecter des pathologies rares. Cependant, la réglementation (RGPD, LPD suisse) et les impératifs éthiques empêchent la transmission de données brutes entre établissements. L'apprentissage fédéré déplace le calcul vers les données plutôt que l'inverse : seuls des gradients de modèle sont échangés, jamais les dossiers patients.
 
-  *Verrou scientifique :* comment garantir une confidentialité formelle (ε-DP) tout en préservant la convergence du modèle global face à l'hétérogénéité statistique des   cohortes — chaque hôpital ayant ses propres pratiques de codage et démographies ?
+  *Verrou scientifique :* comment garantir une confidentialité formelle (#e-dp) tout en préservant la convergence du modèle global face à l'hétérogénéité statistique des cohortes --- chaque hôpital ayant ses propres pratiques de codage et démographies ?
 
   #figure(
     rect(width: 100%, height: 7cm, fill: luma(235), stroke: none,
-      align(center + horizon)[_Architecture MediFL — des hôpitaux au modèle global_]),
+      align(center + horizon)[_Architecture MediFL --- des hôpitaux au modèle global_]),
     caption: [Vue d'ensemble de MediFL : chaque établissement entraîne localement et transmet des gradients bruités au serveur agrégateur.],
   )
 ]
@@ -54,22 +55,22 @@
 #isc-card(title: "Méthodologie")[
   Le protocole MediFL se déroule en trois phases par round :
 
-  + *Distribution* — le serveur envoie les poids globaux $theta_t$ aux $K$ participants sélectionnés aléatoirement.
-  + *Entraînement local + clipping* — chaque hôpital minimise la cross-entropie sur ses données puis clippe les gradients à norme $≤ C$.
-  + *Agrégation DP-FedAvg* — le serveur somme les gradients bruités et met à jour $theta_{t+1}$.
+  + *Distribution* --- le serveur envoie les poids globaux $theta_t$ aux $K$ participants sélectionnés aléatoirement.
+  + *Entraînement local + clipping* --- chaque hôpital minimise la cross-entropie sur ses données puis clippe les gradients à norme $<= C$.
+  + *Agrégation DP-FedAvg* --- le serveur somme les gradients bruités et met à jour $theta_(t+1)$.
 
   #table(
     columns: (1fr, auto, auto, auto),
     inset: 7pt,
     align: (left, center, center, center),
-    table.header([*Méthode*], [*AUC*], [*Rounds*], [*ε*]),
-    [FedAvg (baseline)],   [0.84], [50],   [∞],
+    table.header([*Méthode*], [*AUC*], [*Rounds*], [*#sym.epsilon*]),
+    [FedAvg (baseline)],   [0.84], [50],   [$oo$],
     [FedAvg + DP],         [0.82], [80],   [1.0],
     [*MediFL (hybride)*],  [*0.91*], [*60*], [*0.5*],
-    [Oracle centralisé],   [0.94], [—],    [∞],
+    [Oracle centralisé],   [0.94], [---],    [$oo$],
   )
 
-  Concrètement, le code correspond à une agrégation DP-FedAvg classique:  
+  Concrètement, le code correspond à une agrégation DP-FedAvg classique:
   #figure(
     ```python
     def dp_fedavg(grads, sizes, eps=0.5, C=1.0):
@@ -79,7 +80,7 @@
         w       = [n / sum(sizes) for n in sizes]
         return sum(wi * gi for wi, gi in zip(w, noisy))
     ```,
-        caption: [Agrégation DP-FedAvg — clipping + bruit gaussien calibré sur ε.],  
+        caption: [Agrégation DP-FedAvg --- clipping + bruit gaussien calibré sur #sym.epsilon.],
     )
 ]
 
@@ -133,14 +134,14 @@
     caption: [Graphe de connectivité inter-sites (gauche) et courbes de convergence AUC par méthode (droite). MediFL converge plus vite malgré le bruit différentiel.],
   )
 
-  Le budget de confidentialité ε = 0.5 est maintenu grâce à la composition RDP (*Rényi Differential Privacy*). L'écart résiduel avec l'oracle centralisé (3 points AUC)   s'explique principalement par l'hétérogénéité des distributions inter-sites (Non-IID). Sur les cohortes de plus de 10 000 patients, l'AUC monte à *0.93*.
+  Le budget de confidentialité $epsilon = 0.5$ est maintenu grâce à la composition RDP (*Rényi Differential Privacy*). L'écart résiduel avec l'oracle centralisé (3 points AUC)   s'explique principalement par l'hétérogénéité des distributions inter-sites (Non-IID). Sur les cohortes de plus de 10 000 patients, l'AUC monte à *0.93*.
 ]
 
 #isc-card(title: "Discussion")[
-  *Forces :* MediFL ne nécessite aucun transfert de données brutes entre établissements. La confidentialité est prouvable formellement (ε = 0.5, δ = 10⁻⁵). L'architecture
+  *Forces :* MediFL ne nécessite aucun transfert de données brutes entre établissements. La confidentialité est prouvable formellement ($epsilon = 0.5$, $delta = 10^(-5)$). L'architecture
   tolère jusqu'à 30 % de participants défaillants par round grâce à l'agrégation pondérée par taille de cohorte.
 
-  *Limites :* l'ajout de bruit gaussien dégrade la convergence sur les cohortes de petite taille (\< 2 000 patients). L'optimisation conjointe du budget ε et du taux de
+  *Limites :* l'ajout de bruit gaussien dégrade la convergence sur les cohortes de petite taille (< 2 000 patients). L'optimisation conjointe du budget #sym.epsilon et du taux de
   participation par round reste un problème ouvert. La communication reste un goulot d'étranglement pour des réseaux hospitaliers à faible bande passante.
 
   *Perspective :* extension à la confidentialité locale (LDP) pour des scénarios sans serveur central de confiance, et intégration de techniques de compression de gradients
@@ -149,7 +150,7 @@
 
 #isc-card(title: "Conclusion")[
   MediFL démontre qu'il est possible d'approcher la précision d'un modèle centralisé (AUC 0.91 vs 0.94) tout en offrant des garanties formelles de confidentialité
-  différentielle (ε = 0.5). Le cadre est générique : il s'applique à toute tâche de classification médicale distribuée sans modification architecturale majeure. Le code
+  différentielle ($epsilon = 0.5$). Le cadre est générique : il s'applique à toute tâche de classification médicale distribuée sans modification architecturale majeure. Le code
   source est publié en open source sous licence Apache 2.0.
 ]
 

@@ -17,7 +17,7 @@
 
 // This is where you put the content of your executive summary
 == Objectives
-The primary objective of DataFlowX is to provide organizations with a robust and scalable platform for real-time analytics on large, diverse datasets. By automating the processes of data ingestion, transformation, and validation, DataFlowX aims to streamline data workflows and ensure high quality. 
+The primary objective of DataFlowX is to provide organizations with a robust and scalable platform for real-time analytics on large, diverse datasets. By automating the processes of data ingestion, transformation, and validation, DataFlowX aims to streamline data workflows and ensure high quality.
 
 The platform leverages distributed processing and intelligent scheduling to optimize performance and resource utilization. Additionally, DataFlowX is designed to seamlessly integrate with modern business intelligence tools, enabling faster and more accurate insights. Ultimately, the project seeks to empower businesses to make data-driven decisions efficiently and confidently in dynamic environments.
 
@@ -65,24 +65,24 @@ The platform leverages distributed processing and intelligent scheduling to opti
   })
 })
 
-#align(center, scale-to-width(45%, ex_fig)) 
+#align(center, scale-to-width(45%, ex_fig))
 
 == Explanation
 The development of DataFlowX followed an agile methodology, emphasizing iterative progress and continuous feedback. The project began with requirements gathering and architectural design, focusing on scalability and integration capabilities. Core modules for data ingestion, transformation, and validation were implemented using distributed processing frameworks. Automated testing and code reviews ensured reliability and maintainability throughout development. 
 
-Regular meetings with stakeholders guided feature prioritization and refinements. Integration with business intelligence tools was achieved via standardized APIs. Performance benchmarks and user acceptance testing validated the system’s effectiveness.
+Regular meetings with stakeholders guided feature prioritization and refinements. Integration with business intelligence tools was achieved via standardized APIs. Performance benchmarks and user acceptance testing validated the system's effectiveness.
 
 #colbreak() // As Typst does not support auto column balancing, this must be put to break the columns evenly. Move it to a location that makes the columns even.
 
-== Conclusion / Benefits 
-DataFlowX delivers significant benefits by enabling organizations to harness real-time analytics on large, heterogeneous datasets with ease. Its automated data ingestion, transformation, and validation processes reduce manual effort and minimize errors, ensuring high data quality. The platform’s distributed architecture and intelligent scheduling optimize resource usage and scalability, supporting growing business needs. By streamlining complex data workflows and providing robust performance, DataFlowX empowers businesses to respond quickly to changing environments and make informed, data-driven decisions with confidence and efficiency.
+== Conclusion / Benefits
+DataFlowX delivers significant benefits by enabling organizations to harness real-time analytics on large, heterogeneous datasets with ease. Its automated data ingestion, transformation, and validation processes reduce manual effort and minimize errors, ensuring high data quality. The platform's distributed architecture and intelligent scheduling optimize resource usage and scalability, supporting growing business needs. By streamlining complex data workflows and providing robust performance, DataFlowX empowers businesses to respond quickly to changing environments and make informed, data-driven decisions with confidence and efficiency.
 
 #figure(code(numbering: none)[
 ```scala
   def lambda(val x : Any) : Int =
     x match :
       case f: Int => f
-      case _ => 42 // The answer  
+      case _ => 42 // The answer
   ```
 ], caption: "A code snippet")
 
@@ -101,10 +101,10 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 
 // TODO: please modify the following to suit your needs.
 #show: exec-summary.with(
-  title: "DataFlowX — Real-Time Data Analytics",
+  title: "DataFlowX " + sym.dash.em + " Real-Time Data Analytics",
   subtitle: "Automated ingestion, transformation and validation at scale", // Optional, use none if not needed
   language: "en", // Valid values are [en, fr]
-  authors: "Stormy Peters", 
+  authors: "Stormy Peters",
   student-picture: image("figs/random_image.png"), // [Optional], put none if not used
   permanent-email: "stormy.peters@example.com", // [Optional], put none if not used. Prefer a long term viable address!
   video-url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // A link to the video of you project, or none
@@ -118,7 +118,7 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
   summary: summary, // Not to be changed
   content: content, // Not to be changed
 
-  thesis-supervisor: "Prof. Dr John von Neumann", 
+  thesis-supervisor: "Prof. Dr John von Neumann",
   thesis-co-supervisor: "Lady Ada Lovelace", // Optional, use none if not needed
   thesis-expert: "Dr Grace Hopper", // Optional, use none if not needed
   academic-year: "2025-2026", // Optional, use none if not needed
@@ -132,4 +132,4 @@ DataFlowX delivers significant benefits by enabling organizations to harness rea
 
   bind: right, // Bind the left side of the page
   footer: none, // align(right, text(0.9em)[This is some content for the footer])
-) 
+)

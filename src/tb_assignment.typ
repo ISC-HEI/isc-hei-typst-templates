@@ -82,8 +82,8 @@
 #let tb-material-dep = 3
 #let tb-material-explanation = "Un oscilloscope et une carte FPGA"
 #let tb-material-cost = "CHF 250.-" // ex. "CHF 500.–" (required if dep = 3)
-#let tb-material-procedure = "Achat online chez XXX, en stock normalement. Si pas disponible, utilisation d'un autre fournisseur (ces composants sont bien sourcés et nous n'anticipons pas de problèmes de livraison). 
- 
+#let tb-material-procedure = "Achat online chez XXX, en stock normalement. Si pas disponible, utilisation d'un autre fournisseur (ces composants sont bien sourcés et nous n'anticipons pas de problèmes de livraison).
+
 En cas d'indisponibilité, nous utiliserons un ancien modèle que nous avons déjà." // HW acquisition procedure (required if dep = 3)
 
 // Extra information (none = empty section)

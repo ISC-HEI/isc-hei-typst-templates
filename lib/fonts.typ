@@ -40,7 +40,7 @@
       inset: (x: 2em, y: 1.8em),
       {
         align(center,
-          text(size: 1.8em, weight: "bold", fill: accent)[⚠ ISC Template — Fonts Not Installed]
+          text(size: 1.8em, weight: "bold", fill: accent)[#emoji.warning ISC Template --- Fonts Not Installed]
         )
         v(1em)
         line(length: 100%, stroke: 0.5pt + luma(220))
@@ -50,7 +50,7 @@
         This document cannot be rendered with the correct typography.]
         v(0.6em)
         text(style: "italic", size: 0.9em, fill: luma(100))[
-          (Yes — we appreciate the irony of a carefully typeset page telling you
+          (Yes --- we appreciate the irony of a carefully typeset page telling you
           that typesetting is broken.)
         ]
         v(1.2em)
@@ -65,9 +65,9 @@
         [*Required fonts (all installed by the script above):*]
         v(0.3em)
         list(
-          [*Source Sans Pro* / Source Sans 3 — body text],
-          [*Fira Code* — source code listings],
-          [*Inria Sans* — headings],
+          [*Source Sans Pro* / Source Sans 3 --- body text],
+          [*Fira Code* --- source code listings],
+          [*Inria Sans* --- headings],
         )
         v(1.2em)
 

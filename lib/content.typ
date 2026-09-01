@@ -243,7 +243,7 @@
     linebreak()
     [ISC-HEI template by P.-A. Mudry · v#version]
     linebreak()
-    text(size: 8.5pt)[#programme-name — Sion, HES-SO Valais]
+    text(size: 8.5pt)[#programme-name --- Sion, HES-SO Valais]
     v(0.9em)
     text(size: 8pt, style: "italic", fill: luma(60%),
       "No LaTeX was harmed in the making of this document.")

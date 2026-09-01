@@ -111,7 +111,7 @@
         v(4pt * scale)
         set text(size: 10pt * scale, weight: 500)
         for it in issues {
-          block(below: 5pt * scale, [— #it])
+          block(below: 5pt * scale, [--- #it])
         }
       },
     )

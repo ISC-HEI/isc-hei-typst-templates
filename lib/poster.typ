@@ -91,7 +91,7 @@
   // Validate the major (same known set as project()); empty is allowed.
   validate-major(major)
 
-  // ISC TB aggregator — not user-facing; update here when the URL moves.  
+  // ISC TB aggregator — not user-facing; update here when the URL moves.
   let _isc-tbs-website = "https://tbs.isc-vs.ch/"
 
   // ── Logo resolution ───────────────────────────────────────────────────────
