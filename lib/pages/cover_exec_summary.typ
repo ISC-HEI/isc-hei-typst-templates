@@ -1,5 +1,5 @@
 #import "../includes.typ" as inc
-#import "../settings.typ": programme-name-isc
+#import "../settings.typ": programme-name-isc, summary-character-limit
 #import "../overflow.typ" as overflow
 #import "/isc_templates.typ" as isc
 
@@ -78,6 +78,14 @@
   // context (not layout) keeps the no-overflow case zero-footprint.
   context {
     let issues = overflow.title-overflow-issues(title, subtitle: subtitle)
+    if summary.len() > summary-character-limit {
+      issues.push(
+        i18n(
+          "summary-character-limit",
+          params: (limit: summary-character-limit)
+        )
+      )
+    }
     if overflow.summary-too-long(summary) { issues.push(i18n("summary-too-long")) }
     if issues.len() > 0 {
       overflow.overflow-warning-box(issues, font: font, width: 210mm - 1.5cm - 1cm)

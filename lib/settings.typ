@@ -26,6 +26,9 @@
 // (the exec-summary blurb uses a measured overflow check, not a length budget;
 //  see summary-too-long() in lib/overflow.typ)
 
+// Update comment in src/exec_summary.typ when changed
+#let summary-character-limit = 365
+
 // Canonical programme name (note the lowercase "systèmes"), as the default
 // `programme:` value so the spelling stays consistent. Two forms: bare, and with
 // the "(ISC)" suffix — pick per document type.
