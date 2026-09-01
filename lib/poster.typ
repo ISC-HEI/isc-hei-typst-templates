@@ -13,7 +13,8 @@
 
 #import "includes.typ" as inc
 #import "settings.typ": programme-name-isc, resolve-major, validate-major
-#import "decorations.typ": hash-rule
+#import "decorations.typ": id-rule
+#import "id-rule/code.typ": build-code
 #import "i18n.typ": i18n
 #import "fonts.typ": isc-fonts-available, _missing-fonts-page
 #import "overflow.typ" as overflow
@@ -294,7 +295,7 @@
   // Seed must match the bachelor cover (thesis-id + author, raw strings) so the
   // same document yields the same bit pattern across both templates.
   let _as-str = v => if v == none { "" } else if type(v) == str { v } else { repr(v) }
-  let _seed = _as-str(thesis-id) + _as-str(student)
+  let _code = build-code(_as-str(thesis-id))
   let _title-rule-seen = state("_isc-poster-title-rule", false)
   show line: it => {
     if it.length != 100% { return it }
@@ -306,7 +307,7 @@
         // so the title block keeps the original line's vertical footprint and
         // the cards still fit on a single page.
         box(width: 100%, height: 0pt, place(top, dy: -6pt,
-          layout(size => hash-rule(_seed, length: size.width, bits-length: 24cm,
+          layout(size => id-rule(_code, length: size.width, bits-length: 24cm,
             n-bits: 16, thickness: 2pt, square-size: 12pt, circle-r: 5pt))))
       }
     }

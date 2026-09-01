@@ -1,5 +1,6 @@
 #import "../includes.typ" as inc
 #import "../overflow.typ" as overflow
+#import "../id-rule/code.typ": build-code
 #import "/isc_templates.typ" as isc
 
 // Adapted from https://github.com/LasseRosenow/HAW-Hamburg-Typst-Template/tree/main
@@ -160,7 +161,7 @@
       // matching the original zero-height placement.
       context {
         let prog-width = measure(text(programme, size: 14pt, weight: 650)).width
-        place(dy: -4pt, isc.hash-rule(thesis-id + authors, length: prog-width))
+        place(dy: -4pt, isc.id-rule(build-code(thesis-id), length: prog-width))
       },
       v(5mm),
       text(programme, size: 14pt, weight: 650),
