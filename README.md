@@ -1,98 +1,92 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ISC-HEI/isc-logos/main/white/ISC%20Logo%20inline%20white%20v3%20-%20large.webp">
-  <img align="right" src="https://raw.githubusercontent.com/ISC-HEI/isc-logos/main/black/ISC%20Logo%20inline%20black%20v3%20-%20large.webp" alt="ISC Logo" height="50"/>
+  <source media="(prefers-color-scheme: dark)"
+          srcset="https://raw.githubusercontent.com/ISC-HEI/isc-logos/main/white/ISC%20Logo%20inline%20white%20v3%20-%20large.webp">
+  <img align="right" height="50" alt="ISC Logo"
+       src="https://raw.githubusercontent.com/ISC-HEI/isc-logos/main/black/ISC%20Logo%20inline%20black%20v3%20-%20large.webp"/>
 </picture>
 
-![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-report)
-![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-report?include_prereleases)
-![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)
+[![GitHub Repo stars](https://img.shields.io/github/stars/ISC-HEI/isc-hei-report)](https://github.com/ISC-HEI/isc-hei-report/stargazers)
+[![GitHub Release](https://img.shields.io/github/v/release/ISC-HEI/isc-hei-report?include_prereleases)](https://github.com/ISC-HEI/isc-hei-report/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-brightgreen)](./LICENSE)
+[![Typst](https://img.shields.io/badge/Typst-0d1117?logo=typst&logoColor=white)](https://typst.app/)
 
 # Document templates for the ISC curricula
 
-These are the official templates for reports, bachelor theses, project executive summaries, and posters for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. They are designed to help students focus on content by using `Typst` as the typesetting software.
+These are the official templates for reports, bachelor theses, project executive summaries and posters for the [ISC degree programme](https://isc.hevs.ch/) at the School of Engineering in Sion. They are authored in [Typst](https://typst.app/) so that students can focus on content rather than on layout, and they are published on the Typst universe as the `isc-hei-*` package family — nothing to clone, `typst init` is enough to get started.
+
+## Preview
 
 <p align="center">
-  <a href="examples/bachelor_thesis.pdf?raw=true"><img src="bachelor_thesis_thumb.png" alt="Bachelor Thesis" height="300"></a>
-  <a href="examples/exec_summary.pdf?raw=true"><img src="exec_summary.png" alt="Executive Summary" height="300"></a>
+  <a href="examples/bachelor_thesis.pdf?raw=true"><img src="bachelor_thesis_thumb.png" alt="Bachelor thesis" height="300"></a>
+  <a href="examples/exec_summary.pdf?raw=true"><img src="exec_summary.png" alt="Executive summary" height="300"></a>
   <a href="examples/report.pdf?raw=true"><img src="report_thumb.png" alt="Report" height="300"></a>
-  <a href="examples/document.pdf?raw=true"><img src="document_thumb.png" alt="Report" height="300"></a>
+  <a href="examples/document.pdf?raw=true"><img src="document_thumb.png" alt="Document" height="300"></a>
   <a href="examples/poster.pdf?raw=true"><img src="poster_thumb.png" alt="Poster" height="300"></a>
-  <a href="examples/tb_assignment.pdf?raw=true"><img src="tb_assignment_thumb.png" alt="Report" height="300"></a>
+  <a href="examples/tb_assignment.pdf?raw=true"><img src="tb_assignment_thumb.png" alt="Bachelor thesis assignment" height="300"></a>
 </p>
 
-## Using the template, on the Web
+## Features
 
-In the `Typst` web application, start with the `isc-hei-*` document and voilà ! 
+- **Six ready-made templates** — `document`, `report`, `bthesis`, `exec-summary`, `poster` and `tb-assignment`, each with its own cover page and sensible defaults
+- **Localised strings** — every caption, heading and boilerplate string comes from `i18n.json`, complete in French, English and German
+- **ISC visual identity** — official logos, colours and the institutional fonts, applied consistently across all templates
+- **Syntax-highlighted listings** — source files are included verbatim with a selectable colour theme from `src/themes/`
+- **Academic plumbing included** — table of contents, list of figures, listings and tables, acronym table, bibliography and appendices
+- **Compiled examples** — a fully-populated PDF for each template lives in `./examples/`, ready to be used as a reference
 
-## Using one of templates in your shell
+## Quick Start
 
-The package provides the following templates : 
+The fastest path is the [Typst web application](https://typst.app/): start a new project from any `isc-hei-*` template and voilà.
 
-```text
-@preview/isc-hei-document
-@preview/isc-hei-report
-@preview/isc-hei-bthesis
-@preview/isc-hei-exec-summary
-@preview/isc-hei-tb-assignment
-@preview/isc-hei-poster
-```
-
-First start by installing `Typst` on your machine. You can then initialize the project with the command :
+Locally, install Typst, then pick the template you need:
 
 ```bash
+# A project report — the most common starting point
 typst init @preview/isc-hei-report
-```
 
-This template will initialize an sample report with sensible default values.
-
-For the latest template for a bachelor thesis, use: 
-
-```bash
+# Other available templates
+typst init @preview/isc-hei-document
 typst init @preview/isc-hei-bthesis
-```
-
-or if you need a specific version, use:
-
-```bash
-typst init @preview/isc-hei-bthesis:0.5.0
-```
-
-For the latest template of the executive summary, use: 
-
-```bash
 typst init @preview/isc-hei-exec-summary
-```
+typst init @preview/isc-hei-poster
+typst init @preview/isc-hei-tb-assignment
 
-## Installing fonts locally
+# Pin a specific version if you need to
+typst init @preview/isc-hei-bthesis:0.8.1
 
-If you are running `typst` locally, you might miss some of the required fonts. For your convenience, a font download script is included in this repos. As all the fonts are released under the [SIL Open Font License](https://openfontlicense.org/), there are no file inclusion issues here.
-
-To the install the fonts locally in a Linux environment, simply type
-
-```bash
-source install_fonts.sh
-```
-
-from within the `fonts` directory.
-
-# Usage
-
-When used locally, creating a PDF is straightforward with the command
-
-```bash
+# Compile once, or recompile on every save
 typst compile report.typ
-```
-
-Even nicer, the following command compiles the report every time the file is modified.
-
-```bash
 typst watch report.typ
 ```
 
-Another nice possibility is of course to use VScod(e | ium) via the `Typst LSP` plugin which enables direct compilation.
+VS Code and VSCodium users can also compile directly from the editor through the [Tinymist](https://marketplace.visualstudio.com/items?itemName=myriad-dreamin.tinymist) extension.
 
-# Questions and help
+## Dependencies
 
-If you need any help for installing or running those tools, do not hesitate to get in touch with its maintainer [pmudry](https://github.com/pmudry).
+Writing a document only needs `typst` and the ISC fonts. The remaining tools are used by the maintenance recipes in the `Justfile`.
 
-You can of course also propose changes using PR or raise issues if something is not clear. Have fun writing things!
+| Tool | Required for | Linux (Debian/Ubuntu) | macOS (Homebrew) |
+| --- | --- | --- | --- |
+| **typst** | Compiling any document | [GitHub release](https://github.com/typst/typst/releases) tarball | `brew install typst` |
+| **ISC fonts** | Correct typography when compiling locally | `cd src/fonts && source install_fonts.sh` | `cd src/fonts && source install_fonts.sh` |
+| **just** | Running the packaging, test and thumbnail recipes | `sudo apt install just` | `brew install just` |
+| **pngquant** | Compressing the preview thumbnails | `sudo apt install pngquant` | `brew install pngquant` |
+| **zopflipng** | Lossless final pass on those thumbnails | `sudo apt install zopfli` | `brew install zopfli` |
+
+All the fonts are released under the [SIL Open Font License](https://openfontlicense.org/), so there is no redistribution issue with the download script.
+
+## Questions and help
+
+If you need any help installing or running these templates, get in touch with the maintainer [pmudry](https://github.com/pmudry). Pull requests and issues are welcome — see [`CONTRIBUTING.md`](./CONTRIBUTING.md). Have fun writing things!
+
+---
+
+## License
+
+Copyright © 2024-2026 Pierre-André Mudry et al. / ISC — HES-SO Valais. Released under the [MIT License](./LICENSE).
+
+You are free to use, modify and redistribute these templates, including for commercial purposes, as long as the copyright notice and the licence text are kept.
+
+---
+
+*Made with ♥ by mui, 2026*
